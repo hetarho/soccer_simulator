@@ -3,7 +3,6 @@ import 'package:soccer_simulator/entities/member.dart';
 
 class Player extends Member {
   Player({
-    required super.overall,
     required super.name,
     required super.birthDay,
     required super.national,

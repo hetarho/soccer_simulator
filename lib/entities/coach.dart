@@ -2,7 +2,6 @@ import 'package:soccer_simulator/entities/member.dart';
 
 class Coach extends Member {
   Coach({
-    required super.overall,
     required super.name,
     required super.birthDay,
     required super.national,
