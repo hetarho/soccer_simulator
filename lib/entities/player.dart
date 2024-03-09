@@ -21,6 +21,7 @@ class Player extends Member {
     required this.save,
     required this.freeKick,
     required this.penaltyKick,
+    required this.intersept,
     required this.sQ,
   });
 
@@ -37,12 +38,22 @@ class Player extends Member {
   int dribble;
   int shoot;
   int longShoot;
+
   int tackle;
+  int intersept;
+
+  //패스
   int shortPass;
   int longPass;
-  int save;
+
+  //프리킥
   int freeKick;
+
+  //패널티킥
   int penaltyKick;
+ 
+  //골키퍼 스텟
+  int save;
 
   //축구 지능
   int sQ;
