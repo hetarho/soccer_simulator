@@ -5,6 +5,7 @@ class Coach extends Member {
     required super.overall,
     required super.name,
     required super.birthDay,
+    required super.national,
     required this.playStyle,
   });
 
