@@ -32,28 +32,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   Player test = Player(
     name: '부카요 사카',
-    birthDay: DateTime(2002,03,01),
+    birthDay: DateTime(2002, 03, 01),
     national: National.england,
     tall: 177.3,
-    physical: 98,
-    speed: 65,
-    jump: 72,
-    dribble: 25,
-    shoot: 65,
-    shootPower: 72,
-    tackle: 55,
-    shortPass: 26,
-    longPass: 82,
-    save: 24,
-    freeKick: 45,
-    penaltyKick: 65,
-    intersept: 98,
-    reorientation: 29,
-    keyPass: 83,
-    sQ: 33,
+    stat: PlayerStat.init(),
   );
 
   @override
@@ -78,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              'test',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
