@@ -23,6 +23,10 @@ class Player extends Member {
     _potential = Random().nextDouble();
   }
 
+  PlayerStat get stat {
+    return _stat;
+  }
+
   ///선수의 키
   final double tall;
 
@@ -79,6 +83,8 @@ enum Position {
 }
 
 class PlayerStat {
+  PlayerStat();
+  
   PlayerStat.init({
     this.organization = 0,
     this.physical = 0,

@@ -32,20 +32,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Player test = Player(
+  final Player _player = Player(
     name: '부카요 사카',
     birthDay: DateTime(2002, 03, 01),
     national: National.england,
     tall: 177.3,
-    stat: PlayerStat.init(),
+    stat: PlayerStat(),
   );
 
   @override
   void initState() {
     super.initState();
-
-    print(test);
   }
+
+  bool _showStat = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,19 +54,44 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              'test',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+      body: Stack(
+        children: <Widget>[
+          Center(
+            child: ElevatedButton(
+                onPressed: () {
+                  _showStat = !_showStat;
+                  setState(() {});
+                },
+                child: Text(
+                  'show ${_player.name}`s stat',
+                )),
+          ),
+          if (_showStat)
+            Container(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text('조직력'),
+                      Text('조직력'),
+                      Text('조직력'),
+                      Text('조직력'),
+                      Text('조직력'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text((_player.stat.organization ?? '-').toString()),
+                      Text('조직력'),
+                      Text('조직력'),
+                      Text('조직력'),
+                      Text('조직력'),
+                    ],
+                  ),
+                ],
+              ),
+            )
+        ],
       ),
     );
   }
