@@ -10,9 +10,9 @@ class Player extends Member {
     required super.national,
     required this.tall,
     required PlayerStat stat,
-    this.personalTraningType = TraningType.normal,
-    this.teamTraningType = TraningType.normal,
-    this.teamTraningTypePercent = 0.5,
+    this.personalTrainingType = TrainingType.normal,
+    this.teamTrainingType = TrainingType.normal,
+    this.teamTrainingTypePercent = 0.5,
     this.position,
     double? potential,
   }) {
@@ -34,13 +34,13 @@ class Player extends Member {
   late PlayerStat _stat;
 
   ///팀 트레이닝시 훈련 종류
-  TraningType teamTraningType;
+  TrainingType teamTrainingType;
 
   ///개인 트레이닝 시 훈련 종류
-  TraningType personalTraningType;
+  TrainingType personalTrainingType;
 
   ///팀 트레이닝 베율
-  double teamTraningTypePercent;
+  double teamTrainingTypePercent;
 
   ///경기에 출전할 포지션
   Position? position;
@@ -49,7 +49,7 @@ class Player extends Member {
   late double _potential;
 
   ///선수를 트레이닝 시켜서 알고리즘에 따라 선수 능력치를 향상시키는 메소드
-  void traning() {
+  void training() {
     PlayerStat newStat = PlayerStat.init();
     _stat.add(newStat);
   }
@@ -63,7 +63,7 @@ class Player extends Member {
   void playGame() {}
 }
 
-enum TraningType {
+enum TrainingType {
   normal,
   att,
   def,
@@ -74,17 +74,17 @@ enum TraningType {
 enum Position {
   forward,
   midfielder,
-  deffender,
+  defender,
   goalKeeper,
   subForward,
   subMidfielder,
-  subDeffender,
+  subDefender,
   subGoalKeeper,
 }
 
 class PlayerStat {
   PlayerStat();
-  
+
   PlayerStat.init({
     this.organization = 0,
     this.physical = 0,
@@ -99,14 +99,14 @@ class PlayerStat {
     this.save = 0,
     this.freeKick = 0,
     this.penaltyKick = 0,
-    this.intersept = 0,
+    this.intercept = 0,
     this.reorientation = 0,
     this.keyPass = 0,
     this.sQ = 0,
   });
 
   ///트레이닝시 상승시킬 능력치
-  PlayerStat.tragnig(TraningType type, double potential) {
+  PlayerStat.tragnig(TrainingType type, double potential) {
     sQ = 1;
   }
 
@@ -152,7 +152,7 @@ class PlayerStat {
   int? tackle;
 
   ///가로채기 - 상대방이 패스시 볼 소유권 획득 가능
-  int? intersept;
+  int? intercept;
 
   ///프리킥
   int? freeKick;
