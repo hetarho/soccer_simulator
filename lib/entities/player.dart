@@ -52,6 +52,33 @@ class Player extends Member {
   ///선수의 컨디션
   double condition = 1;
 
+  ///골
+  int goal = 0;
+
+  /// 어시스트
+  int assist = 0;
+
+  /// 수비 성공
+  int defSuccess = 0;
+
+  /// 선방
+  int saveSucees = 0;
+
+  List<List<int>> seasonRecord = [];
+
+  //시즌 데이터 저장
+  _saveSeason() {
+    seasonRecord.add([goal, assist, defSuccess, saveSucees]);
+  }
+
+  newSeason() {
+    _saveSeason();
+    goal = 0;
+    assist = 0;
+    defSuccess = 0;
+    saveSucees = 0;
+  }
+
   /// 트레이팅, 게임시 성장할 수 있는 스텟
   late int _potential;
 
@@ -60,12 +87,12 @@ class Player extends Member {
   ///[coachAbility]
   ///
   /// ~0.2 하급 코치
-  /// 
+  ///
   /// ~0.4 중급 코치
-  /// 
+  ///
   /// ~0.6 고급 코치
-  /// 
-  /// ~ 0.8 엘리트 코치 
+  ///
+  /// ~ 0.8 엘리트 코치
   void training({
     required double coachAbility,
     List<TrainingType> teamTrainingTypes = const [

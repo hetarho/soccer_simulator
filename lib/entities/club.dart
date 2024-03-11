@@ -1,3 +1,5 @@
+import 'package:soccer_simulator/entities/player.dart';
+
 class Club {
   Club({required this.name});
 
@@ -7,4 +9,6 @@ class Club {
   int win = 0;
   int draw = 0;
   int lose = 0;
+
+  List<Player> players = [];
 }
