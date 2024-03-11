@@ -47,16 +47,9 @@ class _MyHomePageState extends State<MyHomePage> {
       name: '부카요 사카',
       birthDay: DateTime(2002, 03, 01),
       national: National.england,
+      position: Position.forward,
       tall: 177.3,
-      teamTrainingTypePercent: 0,
-      personalTrainingTypes: [TrainingType.att],
-      potential: 50,
-      stat: PlayerStat.create(
-        shoot: 50,
-        shootAccuracy: 50,
-        shootPower: 50,
-        dribble: 50,
-      ),
+      stat: PlayerStat.create(),
     );
 
     _beforeStat = _player.stat;
@@ -65,12 +58,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
       body: Column(
         children: <Widget>[
+          SizedBox(height: 64),
           ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -81,19 +71,20 @@ class _MyHomePageState extends State<MyHomePage> {
           ElevatedButton(
               onPressed: () {
                 setState(() {
-                  while (_player.potential > 0) {
-                    _player.training(coachAbility: 1);
-                  }
+                  List.generate(38, (index) {
+                    _player.training(coachAbility: 0.3);
+                    _player.playGame();
+                  });
                 });
               },
-              child: const Text('훈련')),
+              child: const Text('1시즌 시뮬레이션')),
           ElevatedButton(
               onPressed: () {
                 setState(() {
-                  _player.training(coachAbility: 1);
+                  List.generate(38, (index) => _player.training(coachAbility: 0.3));
                 });
               },
-              child: const Text('게임')),
+              child: const Text('1시즌 훈련만')),
           Container(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -142,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('키패스'),
+                    Text('포텐셜'),
                     Text('방향전환'),
                     Text('롱패스'),
                     Text('숏패스'),
@@ -152,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text((_player.stat.keyPass ?? '-').toString()),
+                    Text((_player.potential).toString()),
                     Text((_player.stat.reorientation ?? '-').toString()),
                     Text((_player.stat.longPass ?? '-').toString()),
                     Text((_player.stat.shortPass ?? '-').toString()),
@@ -165,8 +156,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     Text('가로채기'),
                     Text('태클'),
                     Text('선방'),
-                    Text('포텐셜'),
-                    Text(''),
+                    Text('공격'),
+                    Text('미드필더'),
+                    Text('수비'),
                   ],
                 ),
                 Row(
@@ -175,8 +167,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     Text((_player.stat.intercept ?? '-').toString()),
                     Text((_player.stat.tackle ?? '-').toString()),
                     Text((_player.stat.save ?? '-').toString()),
-                    Text(_player.potential.toString()),
-                    const Text(''),
+                    Text((_player.stat.attOverall).toString()),
+                    Text((_player.stat.midOverall).toString()),
+                    Text((_player.stat.defOverall).toString()),
                   ],
                 ),
               ],

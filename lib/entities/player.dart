@@ -23,7 +23,7 @@ class Player extends Member {
     _stat = stat;
 
     //포텐셜을 지정해주지 않으면 랜덤으로 책정
-    _potential = potential ?? (Random().nextInt(30) + 20);
+    _potential = potential ?? (Random().nextInt(120) + 30);
   }
 
   PlayerStat get stat {
@@ -56,6 +56,16 @@ class Player extends Member {
   late int _potential;
 
   ///선수를 트레이닝 시켜서 알고리즘에 따라 선수 능력치를 향상시키는 메소드
+  ///
+  ///[coachAbility]
+  ///
+  /// ~0.2 하급 코치
+  /// 
+  /// ~0.4 중급 코치
+  /// 
+  /// ~0.6 고급 코치
+  /// 
+  /// ~ 0.8 엘리트 코치 
   void training({
     required double coachAbility,
     List<TrainingType> teamTrainingTypes = const [
@@ -67,29 +77,28 @@ class Player extends Member {
   }) {
     //남은 포텐셜이 0보다 커야 성장 가능
     if (_potential > 0) {
-      double personalSuccessPercent = coachAbility * (1 - teamTrainingTypePercent);
+      double personalSuccessPercent =
+          coachAbility * (1 - teamTrainingTypePercent);
       double teamSuccessPercent = coachAbility * teamTrainingTypePercent;
 
-      int personalGrowPoint = personalSuccessPercent ~/ (Random().nextDouble() + 0.1);
-      int teamGrowPoint = teamSuccessPercent ~/ (Random().nextDouble() + 0.1);
+      int personalGrowPoint =
+          personalSuccessPercent ~/ (Random().nextDouble() + 0.05);
+      int teamGrowPoint = teamSuccessPercent ~/ (Random().nextDouble() + 0.05);
 
-      //성장 성공시 스텟 상승
-      if (personalGrowPoint > 0 || teamGrowPoint > 0) {
+      if (teamGrowPoint > 0 && _potential / 20 > Random().nextDouble()) {
         _potential -= 1;
-      }
-      if (teamGrowPoint > 0) {
         PlayerStat newStat = PlayerStat.training(
           type: teamTrainingTypes,
           point: teamGrowPoint,
-          isTeamTraining: true,
         );
         _stat.add(newStat);
+        _stat.add(PlayerStat(organization: 1));
       }
-      if (personalGrowPoint > 0) {
+      if (personalGrowPoint > 0 && _potential / 20 > Random().nextDouble()) {
+        _potential -= 1;
         PlayerStat newStat = PlayerStat.training(
           type: personalTrainingTypes,
           point: personalGrowPoint,
-          isTeamTraining: false,
         );
         _stat.add(newStat);
       }
@@ -103,9 +112,11 @@ class Player extends Member {
 
   ///실제 경기를 뛰면서 발생하는 스텟 성장 - 출전 포지션에 따라 다르게 성장
   void playGame() {
-    //남은 포텐셜이 0보다 커야 성장 가능
-    if (_potential > 0) {
-      PlayerStat newStat = PlayerStat();
+    //남은 포텐셜이 0보다 커야 성장 가능, 30이상이면 경기시마다 항상 성장
+    if (_potential / 30 > Random().nextDouble() && position != null) {
+      if (Random().nextDouble() > 0.7) _potential -= 1;
+      PlayerStat newStat =
+          PlayerStat.playGame(position: position!, point: Random().nextInt(3));
       _stat.add(newStat);
     }
   }
@@ -141,7 +152,7 @@ enum Position {
 
 /// 플레이어의 스텟
 ///
-/// 0 ~ 30 유소년
+/// 10 ~ 30 유소년
 ///
 /// 30 ~ 60 일반 선수
 ///
@@ -190,30 +201,29 @@ class PlayerStat {
     int? keyPass,
     int? sQ,
   }) {
-    this.stamina = stamina ?? 30 + Random().nextInt(30);
-    this.organization = organization ?? 30 + Random().nextInt(30);
-    this.physical = physical ?? 30 + Random().nextInt(30);
-    this.speed = speed ?? 30 + Random().nextInt(30);
-    this.jump = jump ?? 30 + Random().nextInt(30);
-    this.dribble = dribble ?? 30 + Random().nextInt(30);
-    this.shoot = shoot ?? 30 + Random().nextInt(30);
-    this.shootAccuracy = shootAccuracy ?? 30 + Random().nextInt(30);
-    this.shootPower = shootPower ?? 30 + Random().nextInt(30);
-    this.tackle = tackle ?? 30 + Random().nextInt(30);
-    this.shortPass = shortPass ?? 30 + Random().nextInt(30);
-    this.longPass = longPass ?? 30 + Random().nextInt(30);
-    this.save = save ?? 30 + Random().nextInt(30);
-    this.intercept = intercept ?? 30 + Random().nextInt(30);
-    this.reorientation = reorientation ?? 30 + Random().nextInt(30);
-    this.keyPass = keyPass ?? 30 + Random().nextInt(30);
-    this.sQ = sQ ?? 30 + Random().nextInt(30);
+    this.stamina = stamina ?? 15 + Random().nextInt(40);
+    this.organization = organization ?? 15 + Random().nextInt(40);
+    this.physical = physical ?? 15 + Random().nextInt(40);
+    this.speed = speed ?? 15 + Random().nextInt(40);
+    this.jump = jump ?? 15 + Random().nextInt(40);
+    this.dribble = dribble ?? 15 + Random().nextInt(40);
+    this.shoot = shoot ?? 15 + Random().nextInt(40);
+    this.shootAccuracy = shootAccuracy ?? 15 + Random().nextInt(40);
+    this.shootPower = shootPower ?? 15 + Random().nextInt(40);
+    this.tackle = tackle ?? 15 + Random().nextInt(40);
+    this.shortPass = shortPass ?? 15 + Random().nextInt(40);
+    this.longPass = longPass ?? 15 + Random().nextInt(40);
+    this.save = save ?? 15 + Random().nextInt(40);
+    this.intercept = intercept ?? 15 + Random().nextInt(40);
+    this.reorientation = reorientation ?? 15 + Random().nextInt(40);
+    this.keyPass = keyPass ?? 15 + Random().nextInt(40);
+    this.sQ = sQ ?? 15 + Random().nextInt(40);
   }
 
   ///훈련시 상승시킬 능력치
   PlayerStat.training({
     required List<TrainingType> type,
     required int point,
-    bool isTeamTraining = true,
   }) {
     List physicalStatList = [
       Stat.stamina,
@@ -238,6 +248,7 @@ class PlayerStat {
       Stat.keyPass,
       Stat.longPass,
       Stat.shortPass,
+      Stat.reorientation,
     ];
 
     List targetList = [
@@ -246,70 +257,110 @@ class PlayerStat {
       if (type.contains(TrainingType.def)) ...defStatList,
       if (type.contains(TrainingType.pass)) ...passStatList,
       if (type.contains(TrainingType.save)) Stat.save,
+      Stat.sQ
     ];
 
     List.generate(point, (index) {
       targetList.shuffle();
-      switch (targetList[0]) {
-        case Stat.stamina:
-          stamina = point;
-          break;
-        case Stat.organization:
-          organization = point;
-          break;
-        case Stat.physical:
-          physical = point;
-          break;
-        case Stat.speed:
-          speed = point;
-          break;
-        case Stat.jump:
-          jump = point;
-          break;
-        case Stat.dribble:
-          dribble = point;
-          break;
-        case Stat.shoot:
-          shoot = point;
-          break;
-        case Stat.shootAccuracy:
-          shootAccuracy = point;
-          break;
-        case Stat.shootPower:
-          shootPower = point;
-          break;
-        case Stat.tackle:
-          tackle = point;
-          break;
-        case Stat.shortPass:
-          shortPass = point;
-          break;
-        case Stat.longPass:
-          longPass = point;
-          break;
-        case Stat.save:
-          save = point;
-          break;
-        case Stat.intercept:
-          intercept = point;
-          break;
-        case Stat.reorientation:
-          reorientation = point;
-          break;
-        case Stat.keyPass:
-          keyPass = point;
-          break;
-        case Stat.sQ:
-          sQ = point;
-          break;
-      }
+      setPoint(targetList[0], point);
     });
-    if (isTeamTraining) organization = point;
   }
 
   ///게임 투입시 상승시킬 능력치
-  PlayerStat.playGame(Position position, double successPercent) {
-    sQ = 1;
+  PlayerStat.playGame({required Position position, required int point}) {
+    List midList = [
+      Stat.stamina,
+      Stat.physical,
+      Stat.speed,
+      Stat.jump,
+    ];
+
+    List forwardist = [
+      Stat.dribble,
+      Stat.shoot,
+      Stat.shootAccuracy,
+      Stat.shootPower,
+    ];
+
+    List defenderList = [
+      Stat.tackle,
+      Stat.intercept,
+    ];
+
+    List midfielderList = [
+      Stat.keyPass,
+      Stat.longPass,
+      Stat.shortPass,
+      Stat.reorientation,
+    ];
+
+    List targetList = switch (position) {
+      Position.forward => forwardist,
+      Position.midfielder => midfielderList,
+      Position.defender => defenderList,
+      _ => [],
+    };
+
+    List.generate(point, (index) {
+      targetList.shuffle();
+      setPoint(targetList[0], point);
+    });
+  }
+
+  setPoint(Stat stat, int point) {
+    switch (stat) {
+      case Stat.stamina:
+        stamina = point;
+        break;
+      case Stat.organization:
+        organization = point;
+        break;
+      case Stat.physical:
+        physical = point;
+        break;
+      case Stat.speed:
+        speed = point;
+        break;
+      case Stat.jump:
+        jump = point;
+        break;
+      case Stat.dribble:
+        dribble = point;
+        break;
+      case Stat.shoot:
+        shoot = point;
+        break;
+      case Stat.shootAccuracy:
+        shootAccuracy = point;
+        break;
+      case Stat.shootPower:
+        shootPower = point;
+        break;
+      case Stat.tackle:
+        tackle = point;
+        break;
+      case Stat.shortPass:
+        shortPass = point;
+        break;
+      case Stat.longPass:
+        longPass = point;
+        break;
+      case Stat.save:
+        save = point;
+        break;
+      case Stat.intercept:
+        intercept = point;
+        break;
+      case Stat.reorientation:
+        reorientation = point;
+        break;
+      case Stat.keyPass:
+        keyPass = point;
+        break;
+      case Stat.sQ:
+        sQ = point;
+        break;
+    }
   }
 
   ///조직력
@@ -362,6 +413,73 @@ class PlayerStat {
 
   ///축구 지능
   int? sQ;
+
+  int get attOverall {
+    if (dribble == null ||
+        shoot == null ||
+        shootAccuracy == null ||
+        keyPass == null ||
+        longPass == null ||
+        speed == null ||
+        shortPass == null ||
+        shootPower == null) {
+      return 0;
+    } else {
+      return ((dribble! +
+                      shoot! +
+                      shootAccuracy! +
+                      shootPower! +
+                      keyPass! +
+                      speed! +
+                      longPass! +
+                      shortPass!) /
+                  8 +
+              (sQ ?? 0) / 10)
+          .round();
+    }
+  }
+
+  int get midOverall {
+    if (intercept == null ||
+        dribble == null ||
+        keyPass == null ||
+        longPass == null ||
+        shortPass == null ||
+        shootPower == null) {
+      return 0;
+    } else {
+      return ((dribble! +
+                      intercept! +
+                      shootPower! +
+                      keyPass! +
+                      longPass! +
+                      shortPass!) /
+                  6 +
+              (sQ ?? 0) / 10)
+          .round();
+    }
+  }
+
+  int get defOverall {
+    if (tackle == null ||
+        intercept == null ||
+        longPass == null ||
+        stamina == null ||
+        physical == null ||
+        shortPass == null) {
+      return 0;
+    } else {
+      return ((tackle! +
+                      intercept! +
+                      longPass! +
+                      stamina! +
+                      physical! +
+                      shortPass!) /
+                  6 +
+              (sQ ?? 0) / 10)
+          .round();
+    }
+  }
 
   ///새로운 스탯을 더하면 스텟이 올라가는 함수
   add(PlayerStat newStat) {
