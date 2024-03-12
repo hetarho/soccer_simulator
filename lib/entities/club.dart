@@ -5,10 +5,19 @@ class Club {
 
   final String name;
 
-  int pts = 0;
   int win = 0;
   int draw = 0;
   int lose = 0;
+
+  int get pts {
+    return win * 3 + draw;
+  }
+
+  newSeason() {
+    win = 0;
+    draw = 0;
+    lose = 0;
+  }
 
   List<Player> players = [];
 }

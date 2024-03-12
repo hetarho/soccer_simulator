@@ -122,23 +122,18 @@ class PlayerStat {
 
   ///게임 투입시 상승시킬 능력치
   PlayerStat.playGame({required Position position, required int point}) {
-    List midList = [
-      Stat.stamina,
-      Stat.physical,
-      Stat.speed,
-      Stat.jump,
-    ];
-
-    List forwardist = [
+    List forwardList = [
       Stat.dribble,
       Stat.shoot,
       Stat.shootAccuracy,
       Stat.shootPower,
+      Stat.sQ,
     ];
 
     List defenderList = [
       Stat.tackle,
       Stat.intercept,
+      Stat.sQ,
     ];
 
     List midfielderList = [
@@ -146,10 +141,11 @@ class PlayerStat {
       Stat.longPass,
       Stat.shortPass,
       Stat.reorientation,
+      Stat.sQ,
     ];
 
     List targetList = switch (position) {
-      Position.forward => forwardist,
+      Position.forward => forwardList,
       Position.midfielder => midfielderList,
       Position.defender => defenderList,
       _ => [],
