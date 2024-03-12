@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:soccer_simulator/entities/member.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
+import 'package:soccer_simulator/enum/stat.dart';
 import 'package:soccer_simulator/enum/training_type.dart';
 import 'package:soccer_simulator/enum/position.dart';
 
@@ -48,6 +49,9 @@ class Player extends Member {
   ///팀 트레이닝 베율
   double teamTrainingTypePercent;
 
+  ///추가로 상승시킬 스탯
+  int extraStat = 0;
+
   ///경기에 출전할 포지션
   Position? position;
 
@@ -67,6 +71,10 @@ class Player extends Member {
   int saveSuccess = 0;
 
   List<List<int>> seasonRecord = [];
+
+  addExtraStat(int point) {
+    extraStat += point;
+  }
 
   //시즌 데이터 저장
   _saveSeason() {
@@ -133,8 +141,29 @@ class Player extends Member {
   }
 
   ///선수의 특정 능력치를 향상시켜주는 메소드
-  void addStat(PlayerStat newStat) {
+  void addStat(Stat stat, int point) {
+    int newPoint = min(extraStat, point);
+    PlayerStat newStat = switch (stat) {
+      Stat.dribble => PlayerStat(dribble: newPoint),
+      Stat.intercept => PlayerStat(intercept: newPoint),
+      Stat.jump => PlayerStat(jump: newPoint),
+      Stat.keyPass => PlayerStat(keyPass: newPoint),
+      Stat.longPass => PlayerStat(longPass: newPoint),
+      Stat.organization => PlayerStat(organization: newPoint),
+      Stat.physical => PlayerStat(physical: newPoint),
+      Stat.reorientation => PlayerStat(reorientation: newPoint),
+      Stat.sQ => PlayerStat(sQ: newPoint),
+      Stat.save => PlayerStat(save: newPoint),
+      Stat.shoot => PlayerStat(shoot: newPoint),
+      Stat.shootAccuracy => PlayerStat(shootAccuracy: newPoint),
+      Stat.shootPower => PlayerStat(shootPower: newPoint),
+      Stat.shortPass => PlayerStat(shortPass: newPoint),
+      Stat.speed => PlayerStat(speed: newPoint),
+      Stat.stamina => PlayerStat(stamina: newPoint),
+      Stat.tackle => PlayerStat(tackle: newPoint),
+    };
     _stat.add(newStat);
+    extraStat -= newPoint;
   }
 
   ///실제 경기를 뛰면서 발생하는 스텟 성장 - 출전 포지션에 따라 다르게 성장

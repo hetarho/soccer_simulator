@@ -4,6 +4,7 @@ import 'package:soccer_simulator/entities/player.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
 import 'package:soccer_simulator/enum/national.dart';
 import 'package:soccer_simulator/enum/position.dart';
+import 'package:soccer_simulator/enum/stat.dart';
 import 'package:soccer_simulator/enum/training_type.dart';
 
 void main() {
@@ -57,6 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
       potential: 150,
       stat: PlayerStat.create(),
     );
+
+    _player.addExtraStat(50);
 
     playerList = List.generate(
         20 * 20 * 20,
@@ -117,110 +120,119 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
               },
               child: const Text('부하테스트')),
-          Container(
-            height: 300,
-            child: ListView.builder(
-              itemCount: playerList.length,
-              itemBuilder: (context, index) => Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(playerList[index].name),
-                Text(playerList[index].stat.attOverall.toString()),
-                Text(playerList[index].stat.midOverall.toString()),
-                Text(playerList[index].stat.defOverall.toString()),
-                Text(playerList[index].potential.toString()),
-              ]),
-            ),
-          ),
           if (false)
             Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('조직력'),
-                      Text('스피드'),
-                      Text('점프'),
-                      Text('피지컬'),
-                      Text('체력'),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text((_player.stat.organization ?? '-').toString()),
-                      Text((_player.stat.speed ?? '-').toString()),
-                      Text((_player.stat.jump ?? '-').toString()),
-                      Text((_player.stat.physical ?? '-').toString()),
-                      Text((_player.stat.stamina ?? '-').toString()),
-                    ],
-                  ),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('드리블'),
-                      Text('슈팅'),
-                      Text('슈팅파워'),
-                      Text('슈팅 정확도'),
-                      Text('키패스'),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text((_player.stat.dribble ?? '-').toString()),
-                      Text((_player.stat.shoot ?? '-').toString()),
-                      Text((_player.stat.shootPower ?? '-').toString()),
-                      Text((_player.stat.shootAccuracy ?? '-').toString()),
-                      Text((_player.stat.keyPass ?? '-').toString()),
-                    ],
-                  ),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('포텐셜'),
-                      Text('방향전환'),
-                      Text('롱패스'),
-                      Text('숏패스'),
-                      Text('축구지능'),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text((_player.potential).toString()),
-                      Text((_player.stat.reorientation ?? '-').toString()),
-                      Text((_player.stat.longPass ?? '-').toString()),
-                      Text((_player.stat.shortPass ?? '-').toString()),
-                      Text((_player.stat.sQ ?? '-').toString()),
-                    ],
-                  ),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('가로채기'),
-                      Text('태클'),
-                      Text('선방'),
-                      Text('공격'),
-                      Text('미드필더'),
-                      Text('수비'),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text((_player.stat.intercept ?? '-').toString()),
-                      Text((_player.stat.tackle ?? '-').toString()),
-                      Text((_player.stat.save ?? '-').toString()),
-                      Text((_player.stat.attOverall).toString()),
-                      Text((_player.stat.midOverall).toString()),
-                      Text((_player.stat.defOverall).toString()),
-                    ],
-                  ),
-                ],
+              height: 300,
+              child: ListView.builder(
+                itemCount: playerList.length,
+                itemBuilder: (context, index) => Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Text(playerList[index].name),
+                  Text(playerList[index].stat.attOverall.toString()),
+                  Text(playerList[index].stat.midOverall.toString()),
+                  Text(playerList[index].stat.defOverall.toString()),
+                  Text(playerList[index].potential.toString()),
+                ]),
               ),
-            )
+            ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('추가스텟'),
+                    Text('조직력'),
+                    Text('스피드'),
+                    Text('점프'),
+                    Text('피지컬'),
+                    Text('체력'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text((_player.extraStat).toString()),
+                    Text((_player.stat.organization ?? '-').toString()),
+                    Text((_player.stat.speed ?? '-').toString()),
+                    Text((_player.stat.jump ?? '-').toString()),
+                    Text((_player.stat.physical ?? '-').toString()),
+                    Text((_player.stat.stamina ?? '-').toString()),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _player.addStat(Stat.dribble, 3);
+                        });
+                      },
+                      child: Text('드리블'),
+                    ),
+                    Text('슈팅'),
+                    Text('슈팅파워'),
+                    Text('슈팅 정확도'),
+                    Text('키패스'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text((_player.stat.dribble ?? '-').toString()),
+                    Text((_player.stat.shoot ?? '-').toString()),
+                    Text((_player.stat.shootPower ?? '-').toString()),
+                    Text((_player.stat.shootAccuracy ?? '-').toString()),
+                    Text((_player.stat.keyPass ?? '-').toString()),
+                  ],
+                ),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('포텐셜'),
+                    Text('방향전환'),
+                    Text('롱패스'),
+                    Text('숏패스'),
+                    Text('축구지능'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text((_player.potential).toString()),
+                    Text((_player.stat.reorientation ?? '-').toString()),
+                    Text((_player.stat.longPass ?? '-').toString()),
+                    Text((_player.stat.shortPass ?? '-').toString()),
+                    Text((_player.stat.sQ ?? '-').toString()),
+                  ],
+                ),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('가로채기'),
+                    Text('태클'),
+                    Text('선방'),
+                    Text('공격'),
+                    Text('미드필더'),
+                    Text('수비'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text((_player.stat.intercept ?? '-').toString()),
+                    Text((_player.stat.tackle ?? '-').toString()),
+                    Text((_player.stat.save ?? '-').toString()),
+                    Text((_player.stat.attOverall).toString()),
+                    Text((_player.stat.midOverall).toString()),
+                    Text((_player.stat.defOverall).toString()),
+                  ],
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
