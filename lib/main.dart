@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:random_name_generator/random_name_generator.dart';
 import 'package:soccer_simulator/entities/player.dart';
 import 'package:soccer_simulator/enum/national.dart';
 
@@ -34,18 +35,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late Player _player;
 
-  late PlayerStat _beforeStat;
-
-  List<Player> playerList = List.generate(
-      20 * 20 * 20,
-      (index) => Player(
-            name: 'test player$index',
-            birthDay: DateTime(2002, 03, 01),
-            national: National.england,
-            position: Position.forward,
-            tall: 177,
-            stat: PlayerStat.create(),
-          ));
+  List<Player> playerList = [];
 
   @override
   void initState() {
@@ -68,15 +58,13 @@ class _MyHomePageState extends State<MyHomePage> {
     playerList = List.generate(
         20 * 20 * 20,
         (index) => Player(
-              name: 'test player$index',
+              name: RandomNames(Zone.us).manFullName(),
               birthDay: DateTime(2002, 03, 01),
               national: National.england,
               position: Position.forward,
               tall: 177,
               stat: PlayerStat.create(),
             ));
-
-    _beforeStat = _player.stat;
   }
 
   @override
@@ -127,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('부하테스트')),
           Container(
-            height: 500,
+            height: 300,
             child: ListView.builder(
               itemCount: playerList.length,
               itemBuilder: (context, index) => Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
