@@ -62,13 +62,13 @@ class Player extends Member {
   int defSuccess = 0;
 
   /// 선방
-  int saveSucees = 0;
+  int saveSuccess = 0;
 
   List<List<int>> seasonRecord = [];
 
   //시즌 데이터 저장
   _saveSeason() {
-    seasonRecord.add([goal, assist, defSuccess, saveSucees]);
+    seasonRecord.add([goal, assist, defSuccess, saveSuccess]);
   }
 
   newSeason() {
@@ -76,7 +76,7 @@ class Player extends Member {
     goal = 0;
     assist = 0;
     defSuccess = 0;
-    saveSucees = 0;
+    saveSuccess = 0;
   }
 
   /// 트레이팅, 게임시 성장할 수 있는 스텟
@@ -104,13 +104,11 @@ class Player extends Member {
   }) {
     //남은 포텐셜이 0보다 커야 성장 가능
     if (_potential > 0) {
-      double personalSuccessPercent =
-          coachAbility * (1 - teamTrainingTypePercent);
+      double personalSuccessPercent = coachAbility * (1 - teamTrainingTypePercent);
       double teamSuccessPercent = coachAbility * teamTrainingTypePercent;
 
-      int personalGrowPoint =
-          personalSuccessPercent ~/ (Random().nextDouble() + 0.05);
-      int teamGrowPoint = teamSuccessPercent ~/ (Random().nextDouble() + 0.05);
+      int personalGrowPoint = personalSuccessPercent ~/ (Random().nextDouble() + 0.03);
+      int teamGrowPoint = teamSuccessPercent ~/ (Random().nextDouble() + 0.03);
 
       if (teamGrowPoint > 0 && _potential / 20 > Random().nextDouble()) {
         _potential -= 1;
@@ -142,8 +140,7 @@ class Player extends Member {
     //남은 포텐셜이 0보다 커야 성장 가능, 30이상이면 경기시마다 항상 성장
     if (_potential / 30 > Random().nextDouble() && position != null) {
       if (Random().nextDouble() > 0.7) _potential -= 1;
-      PlayerStat newStat =
-          PlayerStat.playGame(position: position!, point: Random().nextInt(3));
+      PlayerStat newStat = PlayerStat.playGame(position: position!, point: Random().nextInt(3));
       _stat.add(newStat);
     }
   }
@@ -151,11 +148,16 @@ class Player extends Member {
 
 //선수 고유 속성
 enum HiddenType {
+  normal,
+
   /// 하드워커 - 스테미너가 천천히 소진된다.
   hardWorker,
 
   ///천재 - 성장 확률이 대폭 상승한다
   genius,
+
+  ///리더 - 같이 뛰는 동료들의 능력을 향상시킨다.
+  leader,
 }
 
 enum TrainingType {
@@ -442,69 +444,26 @@ class PlayerStat {
   int? sQ;
 
   int get attOverall {
-    if (dribble == null ||
-        shoot == null ||
-        shootAccuracy == null ||
-        keyPass == null ||
-        longPass == null ||
-        speed == null ||
-        shortPass == null ||
-        shootPower == null) {
+    if (dribble == null || shoot == null || shootAccuracy == null || keyPass == null || longPass == null || speed == null || shortPass == null || shootPower == null) {
       return 0;
     } else {
-      return ((dribble! +
-                      shoot! +
-                      shootAccuracy! +
-                      shootPower! +
-                      keyPass! +
-                      speed! +
-                      longPass! +
-                      shortPass!) /
-                  8 +
-              (sQ ?? 0) / 10)
-          .round();
+      return ((dribble! + shoot! + shootAccuracy! + shootPower! + keyPass! + speed! + longPass! + shortPass!) / 8 + (sQ ?? 0) / 10).round();
     }
   }
 
   int get midOverall {
-    if (intercept == null ||
-        dribble == null ||
-        keyPass == null ||
-        longPass == null ||
-        shortPass == null ||
-        shootPower == null) {
+    if (intercept == null || dribble == null || keyPass == null || longPass == null || shortPass == null || shootPower == null) {
       return 0;
     } else {
-      return ((dribble! +
-                      intercept! +
-                      shootPower! +
-                      keyPass! +
-                      longPass! +
-                      shortPass!) /
-                  6 +
-              (sQ ?? 0) / 10)
-          .round();
+      return ((dribble! + intercept! + shootPower! + keyPass! + longPass! + shortPass!) / 6 + (sQ ?? 0) / 10).round();
     }
   }
 
   int get defOverall {
-    if (tackle == null ||
-        intercept == null ||
-        longPass == null ||
-        stamina == null ||
-        physical == null ||
-        shortPass == null) {
+    if (tackle == null || intercept == null || longPass == null || stamina == null || physical == null || shortPass == null) {
       return 0;
     } else {
-      return ((tackle! +
-                      intercept! +
-                      longPass! +
-                      stamina! +
-                      physical! +
-                      shortPass!) /
-                  6 +
-              (sQ ?? 0) / 10)
-          .round();
+      return ((tackle! + intercept! + longPass! + stamina! + physical! + shortPass!) / 6 + (sQ ?? 0) / 10).round();
     }
   }
 
