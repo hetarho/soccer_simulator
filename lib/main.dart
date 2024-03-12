@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:random_name_generator/random_name_generator.dart';
 import 'package:soccer_simulator/entities/player.dart';
+import 'package:soccer_simulator/entities/player_stat.dart';
 import 'package:soccer_simulator/enum/national.dart';
+import 'package:soccer_simulator/enum/position.dart';
+import 'package:soccer_simulator/enum/training_type.dart';
 
 void main() {
   runApp(const MyApp());
