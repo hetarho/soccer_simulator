@@ -5,6 +5,8 @@ class Club {
 
   final String name;
 
+  bool hasBall = false;
+
   int won = 0;
   int drawn = 0;
   int lost = 0;

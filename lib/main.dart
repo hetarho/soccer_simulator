@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:random_name_generator/random_name_generator.dart';
 import 'package:soccer_simulator/entities/club.dart';
+import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/player.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
 import 'package:soccer_simulator/enum/national.dart';
@@ -46,6 +47,7 @@ final playerProvider = StateProvider<Player?>((_) => null);
 class _MyHomePageState extends ConsumerState<MyHomePage> {
   late Club _club1;
   late Club _club2;
+  late List<Fixture> _fixtures;
 
   List<Player> playerList = [];
 
@@ -88,6 +90,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               tall: 177,
               stat: PlayerStat.create(),
             ));
+    _fixtures = List.generate(5, (index) => Fixture(homeClub: _club1, awayClub: _club2));
   }
 
   @override
@@ -120,18 +123,65 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           //       });
           //     },
           //     child: const Text('1시즌 훈련만')),
+          // ElevatedButton(
+          //   onPressed: () {
+          //     setState(() {
+          //       for (var player in playerList) {
+          //         List.generate(38, (index) {
+          //           player.training(coachAbility: 0.3, teamTrainingTypes: [TrainingType.pass]);
+          //           player.playGame();
+          //         });
+          //       }
+          //     });
+          //   },
+          //   child: const Text('부하테스트'),
+          // ),
           ElevatedButton(
-            onPressed: () {
-              setState(() {
-                for (var player in playerList) {
-                  List.generate(38, (index) {
-                    player.training(coachAbility: 0.3, teamTrainingTypes: [TrainingType.pass]);
-                    player.playGame();
-                  });
-                }
-              });
+            onPressed: () async {
+              await Future.wait(_fixtures.map((e) => e.gameStart(setState)));
+              print('게임 전부 끝');
+
+              setState(() {});
             },
-            child: const Text('부하테스트'),
+            child: const Text('game start'),
+          ),
+          Container(
+            height: 800,
+            width: 800,
+            child: ListView.builder(
+              itemCount: _fixtures.length,
+              itemBuilder: (context, index) => Container(
+                child: Stack(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          height: 50,
+                          width: 800 * _fixtures[index].homeTeamBallPercentage,
+                          color: Colors.green,
+                        ),
+                        Container(
+                          height: 50,
+                          width: 800 * (1 - _fixtures[index].homeTeamBallPercentage),
+                          color: Colors.yellow,
+                        ),
+                      ],
+                    ),
+                    Container(
+                      // color: _fixtures[index].isPlayed ? Colors.blue : Colors.red,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(_fixtures[index].homeClub.name),
+                          const Text('vs'),
+                          Text(_fixtures[index].awayClub.name),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
