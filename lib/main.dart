@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:random_name_generator/random_name_generator.dart';
@@ -104,13 +105,13 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       body: Column(
         children: <Widget>[
           const SizedBox(height: 64),
-          // ElevatedButton(
-          //     onPressed: () {
-          //       setState(() {
-          //         init();
-          //       });
-          //     },
-          //     child: const Text('리셋')),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  init();
+                });
+              },
+              child: const Text('리셋')),
           // ElevatedButton(
           //     onPressed: () {
           //       setState(() {
@@ -150,8 +151,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             child: const Text('game start'),
           ),
           Container(
-            height: 800,
-            width: 800,
+            height: 500,
+            width: 400,
             child: ListView.builder(
               itemCount: _fixtures.length,
               itemBuilder: (context, index) => Container(
@@ -162,14 +163,18 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       children: [
                         Row(
                           children: [
-                            Container(
-                              height: 50,
-                              width: 800 * _fixtures[index].homeTeamBallPercentage,
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 100),
+                              height: 30,
+                              width:
+                                  400 * _fixtures[index].homeTeamBallPercentage,
                               color: Colors.green,
                             ),
-                            Container(
-                              height: 50,
-                              width: 800 * (1 - _fixtures[index].homeTeamBallPercentage),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 100),
+                              height: 30,
+                              width: 400 *
+                                  (1 - _fixtures[index].homeTeamBallPercentage),
                               color: Colors.yellow,
                             ),
                           ],
