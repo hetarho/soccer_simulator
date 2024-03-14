@@ -55,4 +55,5 @@ class Club {
   }
 
   List<Player> players = [];
+  List<Player> startPlayers = [];
 }
