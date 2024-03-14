@@ -90,7 +90,12 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               tall: 177,
               stat: PlayerStat.create(),
             ));
-    _fixtures = List.generate(5, (index) => Fixture(homeClub: _club1, awayClub: _club2));
+    _fixtures = List.generate(
+        5,
+        (index) => Fixture(homeClub: _club1, awayClub: _club2)
+          ..gameStream.listen((event) {
+            setState(() {});
+          }));
   }
 
   @override
@@ -138,10 +143,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           // ),
           ElevatedButton(
             onPressed: () async {
-              await Future.wait(_fixtures.map((e) => e.gameStart(setState)));
-              print('게임 전부 끝');
-
-              setState(() {});
+              for (var e in _fixtures) {
+                e.gameStart();
+              }
             },
             child: const Text('game start'),
           ),
@@ -151,32 +155,37 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             child: ListView.builder(
               itemCount: _fixtures.length,
               itemBuilder: (context, index) => Container(
-                child: Stack(
+                child: Column(
                   children: [
-                    Row(
+                    Text('time:${_fixtures[index].playTime}'),
+                    Stack(
                       children: [
-                        Container(
-                          height: 50,
-                          width: 800 * _fixtures[index].homeTeamBallPercentage,
-                          color: Colors.green,
+                        Row(
+                          children: [
+                            Container(
+                              height: 50,
+                              width: 800 * _fixtures[index].homeTeamBallPercentage,
+                              color: Colors.green,
+                            ),
+                            Container(
+                              height: 50,
+                              width: 800 * (1 - _fixtures[index].homeTeamBallPercentage),
+                              color: Colors.yellow,
+                            ),
+                          ],
                         ),
                         Container(
-                          height: 50,
-                          width: 800 * (1 - _fixtures[index].homeTeamBallPercentage),
-                          color: Colors.yellow,
+                          // color: _fixtures[index].isPlayed ? Colors.blue : Colors.red,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(_fixtures[index].homeClub.name),
+                              const Text('vs'),
+                              Text(_fixtures[index].awayClub.name),
+                            ],
+                          ),
                         ),
                       ],
-                    ),
-                    Container(
-                      // color: _fixtures[index].isPlayed ? Colors.blue : Colors.red,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_fixtures[index].homeClub.name),
-                          const Text('vs'),
-                          Text(_fixtures[index].awayClub.name),
-                        ],
-                      ),
                     ),
                   ],
                 ),
