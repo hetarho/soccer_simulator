@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:random_name_generator/random_name_generator.dart';
@@ -8,7 +7,6 @@ import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/player.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
 import 'package:soccer_simulator/enum/national.dart';
-import 'package:soccer_simulator/enum/training_type.dart';
 import 'package:soccer_simulator/router/routes.dart';
 
 void main() {
