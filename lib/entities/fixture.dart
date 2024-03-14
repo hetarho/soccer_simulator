@@ -14,7 +14,7 @@ class Fixture {
   }
 
   ///0.01초 = 실제 1초
-  Duration playSpeed = const Duration(milliseconds: 10);
+  Duration playSpeed = const Duration(milliseconds: 20);
 
   gameStart(Function callback) async {
     await _nextSec(callback);
