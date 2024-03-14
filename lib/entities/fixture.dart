@@ -28,11 +28,11 @@ class Fixture {
   }
 
   ///0.01초 = 실제 1초
-  Duration playSpeed = const Duration(milliseconds: 10);
+  Duration _playSpeed = const Duration(milliseconds: 10);
 
   gameStart() async {
     _timer?.cancel(); // 이전 타이머가 있다면 취소
-    _timer = Timer.periodic(playSpeed, (timer) {
+    _timer = Timer.periodic(_playSpeed, (timer) {
       if (isGameEnd) {
         gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
       } else {
@@ -49,7 +49,7 @@ class Fixture {
   }
 
   void updateTimeSpeed(Duration newTimeSpeed) {
-    playSpeed = newTimeSpeed;
+    _playSpeed = newTimeSpeed;
     if (_timer?.isActive ?? false) {
       gameStart(); // 타이머가 활성 상태인 경우, play를 다시 호출하여 타이머를 재시작
     }
