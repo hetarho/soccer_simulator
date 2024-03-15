@@ -44,11 +44,7 @@ final playerListProvider = StateProvider<List<Player>>((_) => []);
 final playerProvider = StateProvider<Player?>((_) => null);
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
-  late Club _club1;
-  late Club _club2;
   late List<Fixture> _fixtures;
-
-  List<Player> playerList = [];
 
   @override
   void initState() {
@@ -57,41 +53,31 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 
   init() {
-    playerList = List.generate(
-        20,
-        (index) => Player(
-              name: RandomNames(Zone.us).manFullName(),
-              birthDay: DateTime(2002, 03, 01),
-              national: National.england,
-              tall: 177,
-              stat: PlayerStat.create(),
-            ));
-
-    _club1 = Club(
-      name: 'arsenal',
-    )..players = List.generate(
-        20,
-        (index) => Player(
-              name: RandomNames(Zone.us).manFullName(),
-              birthDay: DateTime(2002, 03, 01),
-              national: National.england,
-              tall: 177,
-              stat: PlayerStat.create(),
-            ));
-    _club2 = Club(
-      name: 'manU',
-    )..players = List.generate(
-        20,
-        (index) => Player(
-              name: RandomNames(Zone.us).manFullName(),
-              birthDay: DateTime(2002, 03, 01),
-              national: National.england,
-              tall: 177,
-              stat: PlayerStat.create(),
-            ));
     _fixtures = List.generate(
         20,
-        (index) => Fixture(homeClub: _club1, awayClub: _club2)
+        (index) => Fixture(
+            homeClub: Club(
+              name: 'arsenal',
+            )..startPlayers = List.generate(
+                11,
+                (index) => Player(
+                      name: RandomNames(Zone.us).manFullName(),
+                      birthDay: DateTime(2002, 03, 01),
+                      national: National.england,
+                      tall: 177,
+                      stat: PlayerStat.create(),
+                    )),
+            awayClub: Club(
+              name: 'manU',
+            )..startPlayers = List.generate(
+                11,
+                (index) => Player(
+                      name: RandomNames(Zone.us).manFullName(),
+                      birthDay: DateTime(2002, 03, 01),
+                      national: National.england,
+                      tall: 177,
+                      stat: PlayerStat.create(),
+                    )))
           ..gameStream.listen((event) {
             setState(() {});
           }));
@@ -148,9 +134,29 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             },
             child: const Text('game start'),
           ),
+          ElevatedButton(
+            onPressed: () async {
+              _fixtures = _fixtures
+                  .map((e) => Fixture(homeClub: e.homeClub, awayClub: e.awayClub)
+                    ..gameStream.listen((event) {
+                      setState(() {
+                        if (event) {
+                          for (var players in e.homeClub.startPlayers) {
+                            players.growAfterPlay();
+                          }
+                          for (var players in e.awayClub.startPlayers) {
+                            players.growAfterPlay();
+                          }
+                        }
+                      });
+                    }))
+                  .toList();
+              setState(() {});
+            },
+            child: const Text('다음경기로'),
+          ),
           Container(
             height: 500,
-            width: 400,
             child: ListView.builder(
               itemCount: _fixtures.length,
               itemBuilder: (context, index) => Container(
@@ -159,44 +165,60 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                     Text('time:${_fixtures[index].playTime}'),
                     Stack(
                       children: [
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            return Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  width: constraints.maxWidth * _fixtures[index].homeTeamBallPercentage,
+                                  height: 30,
+                                  color: Colors.green,
+                                ),
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  width: constraints.maxWidth * (1 - _fixtures[index].homeTeamBallPercentage),
+                                  height: 30,
+                                  color: Colors.yellow,
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 100),
-                              height: 30,
-                              width: 400 * _fixtures[index].homeTeamBallPercentage,
-                              color: Colors.green,
-                            ),
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 100),
-                              height: 30,
-                              width: 400 * (1 - _fixtures[index].homeTeamBallPercentage),
-                              color: Colors.yellow,
+                            GestureDetector(
+                                onTap: () {
+                                  ref.read(playerListProvider.notifier).state = _fixtures[index].homeClub.startPlayers;
+                                  print(_fixtures[index].homeClub.startPlayers[0].stat.stamina.toString());
+                                  context.push('/players');
+                                },
+                                child: Row(
+                                  children: [
+                                    Text(_fixtures[index].homeClub.name),
+                                    Text(_fixtures[index].homeClub.attOverall.toString()),
+                                    Text(_fixtures[index].homeClub.midOverall.toString()),
+                                    Text(_fixtures[index].homeClub.defOverall.toString()),
+                                  ],
+                                )),
+                            const Text('vs'),
+                            GestureDetector(
+                              onTap: () {
+                                ref.read(playerListProvider.notifier).state = _fixtures[index].awayClub.startPlayers;
+                                context.push('/players');
+                              },
+                              child: Row(
+                                children: [
+                                  Text(_fixtures[index].awayClub.name),
+                                  Text(_fixtures[index].awayClub.attOverall.toString()),
+                                  Text(_fixtures[index].awayClub.midOverall.toString()),
+                                  Text(_fixtures[index].awayClub.defOverall.toString()),
+                                ],
+                              ),
                             ),
                           ],
-                        ),
-                        Container(
-                          // color: _fixtures[index].isPlayed ? Colors.blue : Colors.red,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  ref.read(playerListProvider.notifier).state = _fixtures[index].homeClub.players;
-                                  context.push('/players');
-                                },
-                                child: Text(_fixtures[index].homeClub.name),
-                              ),
-                              const Text('vs'),
-                              GestureDetector(
-                                onTap: () {
-                                  ref.read(playerListProvider.notifier).state = _fixtures[index].awayClub.players;
-                                  context.push('/players');
-                                },
-                                child: Text(_fixtures[index].awayClub.name),
-                              ),
-                            ],
-                          ),
                         ),
                       ],
                     ),

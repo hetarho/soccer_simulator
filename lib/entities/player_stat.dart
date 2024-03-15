@@ -36,6 +36,28 @@ class PlayerStat {
     this.sQ,
   });
 
+  @override
+  toString() {
+    return '''
+    stamina = $stamina
+organization = $organization
+physical = $physical
+speed = $speed
+jump = $jump
+dribble = $dribble
+shoot = $shoot
+shootAccuracy = $shootAccuracy
+shootPower = $shootPower
+tackle = $tackle
+shortPass = $shortPass
+longPass = $longPass
+save = $save
+intercept = $intercept
+reorientation = $reorientation
+keyPass = $keyPass
+sQ = $sQ''';
+  }
+
   PlayerStat.create({
     int? stamina,
     int? organization,

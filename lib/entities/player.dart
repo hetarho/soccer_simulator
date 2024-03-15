@@ -50,7 +50,7 @@ class Player extends Member {
   double teamTrainingTypePercent;
 
   ///추가로 상승시킬 스탯
-  int extraStat = 0;
+  int _extraStat = 0;
 
   ///경기에 출전할 포지션
   Position? position;
@@ -74,7 +74,7 @@ class Player extends Member {
 
   Position get wantPosition {
     List<int> statList = [stat.attOverall, stat.midOverall, stat.defOverall];
-    statList.sort((a, b) => b-a);
+    statList.sort((a, b) => b - a);
 
     if (statList[0] == stat.attOverall) {
       return Position.forward;
@@ -85,8 +85,12 @@ class Player extends Member {
     }
   }
 
+  get extraStat {
+    return _extraStat;
+  }
+
   addExtraStat(int point) {
-    extraStat += point;
+    _extraStat += point;
   }
 
   //시즌 데이터 저장
@@ -155,7 +159,7 @@ class Player extends Member {
 
   ///선수의 특정 능력치를 향상시켜주는 메소드
   void addStat(Stat stat, int point) {
-    int newPoint = min(extraStat, point);
+    int newPoint = min(_extraStat, point);
     PlayerStat newStat = switch (stat) {
       Stat.dribble => PlayerStat(dribble: newPoint),
       Stat.intercept => PlayerStat(intercept: newPoint),
@@ -176,15 +180,15 @@ class Player extends Member {
       Stat.tackle => PlayerStat(tackle: newPoint),
     };
     _stat.add(newStat);
-    extraStat -= newPoint;
+    _extraStat -= newPoint;
   }
 
   ///실제 경기를 뛰면서 발생하는 스텟 성장 - 출전 포지션에 따라 다르게 성장
   void growAfterPlay() {
     //남은 포텐셜이 0보다 커야 성장 가능, 30이상이면 경기시마다 항상 성장
-    if (_potential / 30 > Random().nextDouble() && position != null) {
+    if (_potential / 30 > Random().nextDouble()) {
       if (Random().nextDouble() > 0.7) _potential -= 1;
-      PlayerStat newStat = PlayerStat.playGame(position: position!, point: Random().nextInt(3));
+      PlayerStat newStat = PlayerStat.playGame(position: position ?? wantPosition, point: Random().nextInt(3));
       _stat.add(newStat);
     }
   }
