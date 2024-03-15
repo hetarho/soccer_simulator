@@ -90,7 +90,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               stat: PlayerStat.create(),
             ));
     _fixtures = List.generate(
-        5,
+        20,
         (index) => Fixture(homeClub: _club1, awayClub: _club2)
           ..gameStream.listen((event) {
             setState(() {});
@@ -164,15 +164,13 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                             AnimatedContainer(
                               duration: const Duration(milliseconds: 100),
                               height: 30,
-                              width:
-                                  400 * _fixtures[index].homeTeamBallPercentage,
+                              width: 400 * _fixtures[index].homeTeamBallPercentage,
                               color: Colors.green,
                             ),
                             AnimatedContainer(
                               duration: const Duration(milliseconds: 100),
                               height: 30,
-                              width: 400 *
-                                  (1 - _fixtures[index].homeTeamBallPercentage),
+                              width: 400 * (1 - _fixtures[index].homeTeamBallPercentage),
                               color: Colors.yellow,
                             ),
                           ],
@@ -182,9 +180,21 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(_fixtures[index].homeClub.name),
+                              GestureDetector(
+                                onTap: () {
+                                  ref.read(playerListProvider.notifier).state = _fixtures[index].homeClub.players;
+                                  context.push('/players');
+                                },
+                                child: Text(_fixtures[index].homeClub.name),
+                              ),
                               const Text('vs'),
-                              Text(_fixtures[index].awayClub.name),
+                              GestureDetector(
+                                onTap: () {
+                                  ref.read(playerListProvider.notifier).state = _fixtures[index].awayClub.players;
+                                  context.push('/players');
+                                },
+                                child: Text(_fixtures[index].awayClub.name),
+                              ),
                             ],
                           ),
                         ),
@@ -194,20 +204,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 ),
               ),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              ref.read(playerListProvider.notifier).state = _club1.players;
-              context.push('/players');
-            },
-            child: Text(_club1.name),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              ref.read(playerListProvider.notifier).state = _club2.players;
-              context.push('/players');
-            },
-            child: Text(_club2.name),
           ),
         ],
       ),

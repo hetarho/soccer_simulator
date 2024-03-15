@@ -105,6 +105,18 @@ class PlayerDetail extends ConsumerWidget {
                 Text((_player.stat.defOverall).toString()),
               ],
             ),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('선호포지션'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text((_player.wantPosition).toString()),
+              ],
+            ),
           ],
         ),
       ),

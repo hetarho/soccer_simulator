@@ -72,6 +72,19 @@ class Player extends Member {
 
   List<List<int>> seasonRecord = [];
 
+  Position get wantPosition {
+    List<int> statList = [stat.attOverall, stat.midOverall, stat.defOverall];
+    statList.sort((a, b) => b-a);
+
+    if (statList[0] == stat.attOverall) {
+      return Position.forward;
+    } else if (statList[0] == stat.midOverall) {
+      return Position.midfielder;
+    } else {
+      return Position.defender;
+    }
+  }
+
   addExtraStat(int point) {
     extraStat += point;
   }
