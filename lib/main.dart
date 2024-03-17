@@ -105,137 +105,117 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          const SizedBox(height: 64),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  init();
-                });
-              },
-              child: const Text('리셋')),
-          ElevatedButton(
-            onPressed: () async {
-              _startAllFixtures();
-            },
-            child: const Text('game start'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              initFixture();
-              setState(() {});
-            },
-            child: const Text('다음경기로'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              _autoPlaying();
-            },
-            child: const Text('한 시즌 자동 재생'),
-          ),
-          Text('round : ${_league.round}'),
-          Container(
-            height: 500,
-            child: ListView.builder(
-              itemCount: _fixtures.length,
-              itemBuilder: (context, index) => Container(
-                child: Column(
-                  children: [
-                    Text('time:${_fixtures[index].playTime}'),
-                    Stack(
-                      children: [
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            return Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  width: constraints.maxWidth *
-                                      _fixtures[index].homeTeamBallPercentage,
-                                  height: 30,
-                                  color: Colors.green,
-                                ),
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  width: constraints.maxWidth *
-                                      (1 -
-                                          _fixtures[index]
-                                              .homeTeamBallPercentage),
-                                  height: 30,
-                                  color: Colors.yellow,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                                onTap: () {
-                                  ref.read(playerListProvider.notifier).state =
-                                      _fixtures[index].homeClub.startPlayers;
-                                  print(_fixtures[index]
-                                      .homeClub
-                                      .startPlayers[0]
-                                      .stat
-                                      .stamina
-                                      .toString());
-                                  context.push('/players');
-                                },
-                                child: Row(
-                                  children: [
-                                    Text(_fixtures[index].homeClub.name),
-                                    Text(_fixtures[index]
-                                        .homeClub
-                                        .attOverall
-                                        .toString()),
-                                    Text(_fixtures[index]
-                                        .homeClub
-                                        .midOverall
-                                        .toString()),
-                                    Text(_fixtures[index]
-                                        .homeClub
-                                        .defOverall
-                                        .toString()),
-                                  ],
-                                )),
-                            const Text('vs'),
-                            GestureDetector(
-                              onTap: () {
-                                ref.read(playerListProvider.notifier).state =
-                                    _fixtures[index].awayClub.startPlayers;
-                                context.push('/players');
-                              },
-                              child: Row(
-                                children: [
-                                  Text(_fixtures[index].awayClub.name),
-                                  Text(_fixtures[index]
-                                      .awayClub
-                                      .attOverall
-                                      .toString()),
-                                  Text(_fixtures[index]
-                                      .awayClub
-                                      .midOverall
-                                      .toString()),
-                                  Text(_fixtures[index]
-                                      .awayClub
-                                      .defOverall
-                                      .toString()),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+      body: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Column(
+              children: <Widget>[
+                const SizedBox(height: 64),
+                ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        init();
+                      });
+                    },
+                    child: const Text('리셋')),
+                ElevatedButton(
+                  onPressed: () async {
+                    _startAllFixtures();
+                  },
+                  child: const Text('game start'),
                 ),
-              ),
+                ElevatedButton(
+                  onPressed: () async {
+                    initFixture();
+                    setState(() {});
+                  },
+                  child: const Text('다음경기로'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    _autoPlaying();
+                  },
+                  child: const Text('한 시즌 자동 재생'),
+                ),
+                Text('round : ${_league.round}'),
+                Expanded(
+                  child: Column(
+                    children: _fixtures
+                        .map(
+                          (fixture) => Column(
+                            children: [
+                              Text('time:${fixture.playTime}'),
+                              Container(
+                                height: 30,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    LayoutBuilder(
+                                      builder: (context, constraints) {
+                                        return Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            AnimatedContainer(
+                                              duration: const Duration(milliseconds: 200),
+                                              width: constraints.maxWidth * fixture.homeTeamBallPercentage,
+                                              color: Colors.green,
+                                            ),
+                                            AnimatedContainer(
+                                              duration: const Duration(milliseconds: 200),
+                                              width: constraints.maxWidth * (1 - fixture.homeTeamBallPercentage),
+                                              color: Colors.yellow,
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        GestureDetector(
+                                            onTap: () {
+                                              ref.read(playerListProvider.notifier).state = fixture.homeClub.startPlayers;
+                                              print(fixture.homeClub.startPlayers[0].stat.stamina.toString());
+                                              context.push('/players');
+                                            },
+                                            child: Row(
+                                              children: [
+                                                Text(fixture.homeClub.name),
+                                                Text(fixture.homeClub.attOverall.toString()),
+                                                Text(fixture.homeClub.midOverall.toString()),
+                                                Text(fixture.homeClub.defOverall.toString()),
+                                              ],
+                                            )),
+                                        const Text('vs'),
+                                        GestureDetector(
+                                          onTap: () {
+                                            ref.read(playerListProvider.notifier).state = fixture.awayClub.startPlayers;
+                                            context.push('/players');
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Text(fixture.awayClub.name),
+                                              Text(fixture.awayClub.attOverall.toString()),
+                                              Text(fixture.awayClub.midOverall.toString()),
+                                              Text(fixture.awayClub.defOverall.toString()),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+              ],
             ),
-          ),
+          )
         ],
       ),
     );
