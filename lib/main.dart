@@ -45,6 +45,9 @@ final playerProvider = StateProvider<Player?>((_) => null);
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
   late List<Fixture> _fixtures;
+  int _round = 0;
+  bool _isAutoPlay = false;
+  List _fixtureRes = [];
 
   @override
   void initState() {
@@ -53,6 +56,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 
   init() {
+    _round = 0;
+    _isAutoPlay = false;
+    _fixtureRes = [];
     _fixtures = List.generate(
         20,
         (index) => Fixture(
@@ -83,6 +89,49 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           }));
   }
 
+  initFixture() {
+    int i = 0;
+    _fixtures = _fixtures
+        .map((e){
+          i++;
+          return Fixture(homeClub: e.homeClub, awayClub: e.awayClub)
+          ..gameStream.listen((event) {
+            setState(() {
+              if (event) {
+                for (var players in e.homeClub.startPlayers) {
+                  players.growAfterPlay();
+                }
+                for (var players in e.awayClub.startPlayers) {
+                  players.growAfterPlay();
+                }
+                if (event && _isAutoPlay) {
+                  _fixtureRes.add(event);
+                  if (_fixtureRes.length == _fixtures.length && _round < 38) {
+                    print(i);
+                    _fixtureRes = [];
+                    _autoPlaying();
+                  }
+                }
+              }
+            });
+          });
+        })
+        .toList();
+  }
+
+  _startAllFixtures() {
+    for (var e in _fixtures) {
+      e.gameStart();
+    }
+  }
+
+  _autoPlaying() {
+    _isAutoPlay = true;
+    initFixture();
+    _startAllFixtures();
+    _round++;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,65 +145,27 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 });
               },
               child: const Text('리셋')),
-          // ElevatedButton(
-          //     onPressed: () {
-          //       setState(() {
-          //         List.generate(38, (index) {
-          //           _player.training(coachAbility: 0.3, teamTrainingTypes: [TrainingType.pass]);
-          //           _player.playGame();
-          //         });
-          //       });
-          //     },
-          //     child: const Text('1시즌 시뮬레이션')),
-          // ElevatedButton(
-          //     onPressed: () {
-          //       setState(() {
-          //         List.generate(38, (index) => _player.training(coachAbility: 0.3, teamTrainingTypes: [TrainingType.pass]));
-          //       });
-          //     },
-          //     child: const Text('1시즌 훈련만')),
-          // ElevatedButton(
-          //   onPressed: () {
-          //     setState(() {
-          //       for (var player in playerList) {
-          //         List.generate(38, (index) {
-          //           player.training(coachAbility: 0.3, teamTrainingTypes: [TrainingType.pass]);
-          //           player.playGame();
-          //         });
-          //       }
-          //     });
-          //   },
-          //   child: const Text('부하테스트'),
-          // ),
           ElevatedButton(
             onPressed: () async {
-              for (var e in _fixtures) {
-                e.gameStart();
-              }
+              _round++;
+              _startAllFixtures();
             },
             child: const Text('game start'),
           ),
           ElevatedButton(
             onPressed: () async {
-              _fixtures = _fixtures
-                  .map((e) => Fixture(homeClub: e.homeClub, awayClub: e.awayClub)
-                    ..gameStream.listen((event) {
-                      setState(() {
-                        if (event) {
-                          for (var players in e.homeClub.startPlayers) {
-                            players.growAfterPlay();
-                          }
-                          for (var players in e.awayClub.startPlayers) {
-                            players.growAfterPlay();
-                          }
-                        }
-                      });
-                    }))
-                  .toList();
+              initFixture();
               setState(() {});
             },
             child: const Text('다음경기로'),
           ),
+          ElevatedButton(
+            onPressed: () async {
+              _autoPlaying();
+            },
+            child: const Text('한 시즌 자동 재생'),
+          ),
+          Text('round : $_round'),
           Container(
             height: 500,
             child: ListView.builder(
@@ -172,13 +183,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                               children: [
                                 AnimatedContainer(
                                   duration: const Duration(milliseconds: 200),
-                                  width: constraints.maxWidth * _fixtures[index].homeTeamBallPercentage,
+                                  width: constraints.maxWidth *
+                                      _fixtures[index].homeTeamBallPercentage,
                                   height: 30,
                                   color: Colors.green,
                                 ),
                                 AnimatedContainer(
                                   duration: const Duration(milliseconds: 200),
-                                  width: constraints.maxWidth * (1 - _fixtures[index].homeTeamBallPercentage),
+                                  width: constraints.maxWidth *
+                                      (1 -
+                                          _fixtures[index]
+                                              .homeTeamBallPercentage),
                                   height: 30,
                                   color: Colors.yellow,
                                 ),
@@ -191,30 +206,55 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           children: [
                             GestureDetector(
                                 onTap: () {
-                                  ref.read(playerListProvider.notifier).state = _fixtures[index].homeClub.startPlayers;
-                                  print(_fixtures[index].homeClub.startPlayers[0].stat.stamina.toString());
+                                  ref.read(playerListProvider.notifier).state =
+                                      _fixtures[index].homeClub.startPlayers;
+                                  print(_fixtures[index]
+                                      .homeClub
+                                      .startPlayers[0]
+                                      .stat
+                                      .stamina
+                                      .toString());
                                   context.push('/players');
                                 },
                                 child: Row(
                                   children: [
                                     Text(_fixtures[index].homeClub.name),
-                                    Text(_fixtures[index].homeClub.attOverall.toString()),
-                                    Text(_fixtures[index].homeClub.midOverall.toString()),
-                                    Text(_fixtures[index].homeClub.defOverall.toString()),
+                                    Text(_fixtures[index]
+                                        .homeClub
+                                        .attOverall
+                                        .toString()),
+                                    Text(_fixtures[index]
+                                        .homeClub
+                                        .midOverall
+                                        .toString()),
+                                    Text(_fixtures[index]
+                                        .homeClub
+                                        .defOverall
+                                        .toString()),
                                   ],
                                 )),
                             const Text('vs'),
                             GestureDetector(
                               onTap: () {
-                                ref.read(playerListProvider.notifier).state = _fixtures[index].awayClub.startPlayers;
+                                ref.read(playerListProvider.notifier).state =
+                                    _fixtures[index].awayClub.startPlayers;
                                 context.push('/players');
                               },
                               child: Row(
                                 children: [
                                   Text(_fixtures[index].awayClub.name),
-                                  Text(_fixtures[index].awayClub.attOverall.toString()),
-                                  Text(_fixtures[index].awayClub.midOverall.toString()),
-                                  Text(_fixtures[index].awayClub.defOverall.toString()),
+                                  Text(_fixtures[index]
+                                      .awayClub
+                                      .attOverall
+                                      .toString()),
+                                  Text(_fixtures[index]
+                                      .awayClub
+                                      .midOverall
+                                      .toString()),
+                                  Text(_fixtures[index]
+                                      .awayClub
+                                      .defOverall
+                                      .toString()),
                                 ],
                               ),
                             ),

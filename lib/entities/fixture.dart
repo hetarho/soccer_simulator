@@ -28,7 +28,7 @@ class Fixture {
   }
 
   ///0.01초 = 실제 1초
-  Duration _playSpeed = const Duration(milliseconds: 1);
+  Duration _playSpeed = const Duration(milliseconds: 0);
 
   gameStart() async {
     _timer?.cancel(); // 이전 타이머가 있다면 취소
