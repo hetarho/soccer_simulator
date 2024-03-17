@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:random_name_generator/random_name_generator.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
+import 'package:soccer_simulator/entities/league.dart';
 import 'package:soccer_simulator/entities/player.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
 import 'package:soccer_simulator/enum/national.dart';
@@ -48,10 +49,29 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   int _round = 0;
   bool _isAutoPlay = false;
   List _fixtureRes = [];
+  late League _league;
 
   @override
   void initState() {
     super.initState();
+
+    List<Club> clubs = List.generate(
+        20,
+        (index) => Club(name: RandomNames(Zone.us).manName())
+          ..startPlayers = List.generate(
+              11,
+              (index) => Player(
+                    name: RandomNames(Zone.us).manFullName(),
+                    birthDay: DateTime(2002, 03, 01),
+                    national: National.england,
+                    tall: 177,
+                    stat: PlayerStat.create(),
+                  )));
+    _league = League(clubs: clubs);
+    _league.startNewSeason();
+    _league.gameCallback = () {
+      setState(() {});
+    };
     init();
   }
 
@@ -59,64 +79,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     _round = 0;
     _isAutoPlay = false;
     _fixtureRes = [];
-    _fixtures = List.generate(
-        20,
-        (index) => Fixture(
-            homeClub: Club(
-              name: 'arsenal',
-            )..startPlayers = List.generate(
-                11,
-                (index) => Player(
-                      name: RandomNames(Zone.us).manFullName(),
-                      birthDay: DateTime(2002, 03, 01),
-                      national: National.england,
-                      tall: 177,
-                      stat: PlayerStat.create(),
-                    )),
-            awayClub: Club(
-              name: 'manU',
-            )..startPlayers = List.generate(
-                11,
-                (index) => Player(
-                      name: RandomNames(Zone.us).manFullName(),
-                      birthDay: DateTime(2002, 03, 01),
-                      national: National.england,
-                      tall: 177,
-                      stat: PlayerStat.create(),
-                    )))
-          ..gameStream.listen((event) {
-            setState(() {});
-          }));
+
+    _fixtures = _league.nextFixtures();
   }
 
   initFixture() {
-    int i = 0;
-    _fixtures = _fixtures
-        .map((e){
-          i++;
-          return Fixture(homeClub: e.homeClub, awayClub: e.awayClub)
-          ..gameStream.listen((event) {
-            setState(() {
-              if (event) {
-                for (var players in e.homeClub.startPlayers) {
-                  players.growAfterPlay();
-                }
-                for (var players in e.awayClub.startPlayers) {
-                  players.growAfterPlay();
-                }
-                if (event && _isAutoPlay) {
-                  _fixtureRes.add(event);
-                  if (_fixtureRes.length == _fixtures.length && _round < 38) {
-                    print(i);
-                    _fixtureRes = [];
-                    _autoPlaying();
-                  }
-                }
-              }
-            });
-          });
-        })
-        .toList();
+    _league.nextRound();
+    _fixtures = _league.nextFixtures();
+    setState(() {});
   }
 
   _startAllFixtures() {
@@ -147,7 +117,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               child: const Text('리셋')),
           ElevatedButton(
             onPressed: () async {
-              _round++;
               _startAllFixtures();
             },
             child: const Text('game start'),
@@ -165,7 +134,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             },
             child: const Text('한 시즌 자동 재생'),
           ),
-          Text('round : $_round'),
+          Text('round : ${_league.round}'),
           Container(
             height: 500,
             child: ListView.builder(
