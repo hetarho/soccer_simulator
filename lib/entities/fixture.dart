@@ -31,17 +31,18 @@ class Fixture {
   Duration _playSpeed = const Duration(milliseconds: 0);
 
   gameStart() async {
-    _timer?.cancel(); // 이전 타이머가 있다면 취소
-    _timer = Timer.periodic(_playSpeed, (timer) {
-      if (isGameEnd) {
-        _streamController.add(isGameEnd);
-        gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
-      } else {
-        playTime = Duration(seconds: playTime.inSeconds + 10);
-        homeTeamBallPercentage = min(max(0, homeTeamBallPercentage + (Random().nextDouble() * 0.2 - 0.1)), 1);
-        _streamController.add(isGameEnd);
-      }
-    });
+    if (!_streamController.isClosed) {
+      _timer?.cancel(); // 이전 타이머가 있다면 취소
+      _timer = Timer.periodic(_playSpeed, (timer) {
+        if (isGameEnd) {
+          gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
+        } else {
+          playTime = Duration(seconds: playTime.inSeconds + 10);
+          homeTeamBallPercentage = min(max(0, homeTeamBallPercentage + (Random().nextDouble() * 0.2 - 0.1)), 1);
+          _streamController.add(isGameEnd);
+        }
+      });
+    }
   }
 
   void gameEnd() {

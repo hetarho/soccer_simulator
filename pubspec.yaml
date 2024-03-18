@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   hive:
+  async:
   hive_flutter:
   go_router: ^13.2.0
   bloc:

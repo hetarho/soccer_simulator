@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
 
@@ -19,12 +21,12 @@ class League {
     _currentSeason = Season.create(clubs: clubs);
   }
 
-  List<Fixture> nextFixtures() {
-    return _currentSeason.nextRound().fixtures;
+  List<Fixture> getNextFixtures() {
+    return _currentSeason.getNextRound().fixtures;
   }
 
   nextRound() {
-    _currentSeason.roundNumber++;
+    _currentSeason.nextRound();
   }
 }
 
@@ -37,11 +39,25 @@ class Round {
 
 class Season {
   late List<Round> rounds;
-  int roundNumber = 1;
+  int _roundNumber = 1;
   Function? gameCallback;
+  late StreamController<bool> _streamController;
+  Stream<bool> get gameStream => _streamController.stream;
 
-  Round nextRound() {
-    return rounds.firstWhere((round) => round.number == roundNumber);
+  int get roundNumber {
+    return _roundNumber;
+  }
+
+  nextRound() {
+    if (_roundNumber < rounds.length) _roundNumber++;
+  }
+
+  Round getNextRound() {
+    return rounds.firstWhere((round) => round.number == _roundNumber);
+  }
+
+  bool get seasonEnd {
+    return _roundNumber == rounds.length;
   }
 
   Season.create({required List clubs}) {
@@ -56,31 +72,9 @@ class Season {
 
       for (int i = 0; i < n / 2; i++) {
         if (firstHalfRound) {
-          fixtures.add(Fixture(homeClub: clubs[i], awayClub: clubs[n - 1 - i])
-            ..gameStream.listen((event) {
-              if (gameCallback != null) gameCallback!();
-              if (event) {
-                for (var players in clubs[i].startPlayers) {
-                  players.growAfterPlay();
-                }
-                for (var players in clubs[n - 1 - i].startPlayers) {
-                  players.growAfterPlay();
-                }
-              }
-            }));
+          fixtures.add(Fixture(homeClub: clubs[i], awayClub: clubs[n - 1 - i]));
         } else {
-          fixtures.add(Fixture(homeClub: clubs[n - 1 - i], awayClub: clubs[i])
-            ..gameStream.listen((event) {
-              if (gameCallback != null) gameCallback!();
-              if (event) {
-                for (var players in clubs[n - 1 - i].startPlayers) {
-                  players.growAfterPlay();
-                }
-                for (var players in clubs[i].startPlayers) {
-                  players.growAfterPlay();
-                }
-              }
-            }));
+          fixtures.add(Fixture(homeClub: clubs[n - 1 - i], awayClub: clubs[i]));
         }
       }
 
@@ -89,10 +83,8 @@ class Season {
 
       clubs.insert(1, clubs.removeLast());
     }
-    List<Round> firstHalfRounds =
-        newRounds.sublist(0, (newRounds.length / 2).round());
-    List<Round> secondHalfRounds =
-        newRounds.sublist((newRounds.length / 2).round());
+    List<Round> firstHalfRounds = newRounds.sublist(0, (newRounds.length / 2).round());
+    List<Round> secondHalfRounds = newRounds.sublist((newRounds.length / 2).round());
 
     firstHalfRounds.shuffle();
     secondHalfRounds.shuffle();

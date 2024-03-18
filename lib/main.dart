@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -46,15 +49,19 @@ final playerProvider = StateProvider<Player?>((_) => null);
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
   late List<Fixture> _fixtures;
-  int _round = 0;
   bool _isAutoPlay = false;
-  List _fixtureRes = [];
   late League _league;
+  late Stream<bool> _roundStream;
+  StreamSubscription<bool>? _roundSubscription;
+  int _finishedFixtureNum = 0;
 
   @override
   void initState() {
     super.initState();
+    init();
+  }
 
+  init() {
     List<Club> clubs = List.generate(
         20,
         (index) => Club(name: RandomNames(Zone.us).manName())
@@ -69,23 +76,39 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   )));
     _league = League(clubs: clubs);
     _league.startNewSeason();
-    _league.gameCallback = () {
-      setState(() {});
-    };
-    init();
-  }
-
-  init() {
-    _round = 0;
     _isAutoPlay = false;
-    _fixtureRes = [];
-
-    _fixtures = _league.nextFixtures();
+    _initFixture();
   }
 
-  initFixture() {
-    _league.nextRound();
-    _fixtures = _league.nextFixtures();
+  _initFixture() {
+    _fixtures = _league.getNextFixtures();
+    _roundStream = StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
+
+    _roundSubscription?.cancel();
+    _roundSubscription = _roundStream.listen((event) {
+      if (event && _isAutoPlay) {
+        _finishedFixtureNum++;
+        if (_finishedFixtureNum == 10) {
+          _finishedFixtureNum = 0;
+          _league.nextRound();
+          _autoPlaying();
+        }
+      }
+    });
+
+    for (var fixture in _fixtures) {
+      fixture.gameStream.listen((event) {
+        if (event) {
+          for (var players in fixture.homeClub.startPlayers) {
+            players.growAfterPlay();
+          }
+          for (var players in fixture.awayClub.startPlayers) {
+            players.growAfterPlay();
+          }
+        }
+        setState(() {});
+      });
+    }
     setState(() {});
   }
 
@@ -97,9 +120,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   _autoPlaying() {
     _isAutoPlay = true;
-    initFixture();
+    _initFixture();
     _startAllFixtures();
-    _round++;
   }
 
   @override
@@ -127,7 +149,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    initFixture();
+                    _league.nextRound();
+                    _initFixture();
                     setState(() {});
                   },
                   child: const Text('다음경기로'),
@@ -147,7 +170,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                             children: [
                               Text('time:${fixture.playTime}'),
                               Container(
-                                height: 30,
+                                height: 50,
                                 child: Stack(
                                   alignment: Alignment.center,
                                   children: [
@@ -176,7 +199,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                         GestureDetector(
                                             onTap: () {
                                               ref.read(playerListProvider.notifier).state = fixture.homeClub.startPlayers;
-                                              print(fixture.homeClub.startPlayers[0].stat.stamina.toString());
                                               context.push('/players');
                                             },
                                             child: Row(
@@ -213,6 +235,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         .toList(),
                   ),
                 ),
+                const SizedBox(
+                  height: 40,
+                )
               ],
             ),
           )
