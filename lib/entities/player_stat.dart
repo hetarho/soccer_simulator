@@ -59,6 +59,8 @@ sQ = $sQ''';
   }
 
   PlayerStat.create({
+    int seed = 15,
+    int potential = 40,
     int? stamina,
     int? organization,
     int? physical,
@@ -77,23 +79,23 @@ sQ = $sQ''';
     int? keyPass,
     int? sQ,
   }) {
-    this.stamina = stamina ?? 15 + Random().nextInt(40);
-    this.organization = organization ?? 15 + Random().nextInt(40);
-    this.physical = physical ?? 15 + Random().nextInt(40);
-    this.speed = speed ?? 15 + Random().nextInt(40);
-    this.jump = jump ?? 15 + Random().nextInt(40);
-    this.dribble = dribble ?? 15 + Random().nextInt(40);
-    this.shoot = shoot ?? 15 + Random().nextInt(40);
-    this.shootAccuracy = shootAccuracy ?? 15 + Random().nextInt(40);
-    this.shootPower = shootPower ?? 15 + Random().nextInt(40);
-    this.tackle = tackle ?? 15 + Random().nextInt(40);
-    this.shortPass = shortPass ?? 15 + Random().nextInt(40);
-    this.longPass = longPass ?? 15 + Random().nextInt(40);
-    this.save = save ?? 15 + Random().nextInt(40);
-    this.intercept = intercept ?? 15 + Random().nextInt(40);
-    this.reorientation = reorientation ?? 15 + Random().nextInt(40);
-    this.keyPass = keyPass ?? 15 + Random().nextInt(40);
-    this.sQ = sQ ?? 15 + Random().nextInt(40);
+    this.stamina = stamina ?? seed + Random().nextInt(potential);
+    this.organization = organization ?? seed + Random().nextInt(potential);
+    this.physical = physical ?? seed + Random().nextInt(potential);
+    this.speed = speed ?? seed + Random().nextInt(potential);
+    this.jump = jump ?? seed + Random().nextInt(potential);
+    this.dribble = dribble ?? seed + Random().nextInt(potential);
+    this.shoot = shoot ?? seed + Random().nextInt(potential);
+    this.shootAccuracy = shootAccuracy ?? seed + Random().nextInt(potential);
+    this.shootPower = shootPower ?? seed + Random().nextInt(potential);
+    this.tackle = tackle ?? seed + Random().nextInt(potential);
+    this.shortPass = shortPass ?? seed + Random().nextInt(potential);
+    this.longPass = longPass ?? seed + Random().nextInt(potential);
+    this.save = save ?? seed + Random().nextInt(potential);
+    this.intercept = intercept ?? seed + Random().nextInt(potential);
+    this.reorientation = reorientation ?? seed + Random().nextInt(potential);
+    this.keyPass = keyPass ?? seed + Random().nextInt(potential);
+    this.sQ = sQ ?? seed + Random().nextInt(potential);
   }
 
   ///훈련시 상승시킬 능력치

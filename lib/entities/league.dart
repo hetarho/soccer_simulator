@@ -9,10 +9,6 @@ class League {
   List<Club> clubs;
   League({required this.clubs});
 
-  set gameCallback(Function function) {
-    _currentSeason.gameCallback = function;
-  }
-
   get round {
     return _currentSeason.roundNumber;
   }
@@ -22,11 +18,11 @@ class League {
   }
 
   List<Fixture> getNextFixtures() {
-    return _currentSeason.getNextRound().fixtures;
+    return _currentSeason.currentRound.fixtures;
   }
 
   nextRound() {
-    _currentSeason.nextRound();
+    if (_currentSeason.currentRound.isAllGameEnd) _currentSeason.nextRound();
   }
 }
 
@@ -34,13 +30,16 @@ class Round {
   final List<Fixture> fixtures;
   final int number;
 
+  get isAllGameEnd {
+    return fixtures.fold(true, (pre, curr) => curr.isGameEnd && pre);
+  }
+
   Round({required this.fixtures, required this.number});
 }
 
 class Season {
   late List<Round> rounds;
   int _roundNumber = 1;
-  Function? gameCallback;
   late StreamController<bool> _streamController;
   Stream<bool> get gameStream => _streamController.stream;
 
@@ -52,7 +51,7 @@ class Season {
     if (_roundNumber < rounds.length) _roundNumber++;
   }
 
-  Round getNextRound() {
+  Round get currentRound {
     return rounds.firstWhere((round) => round.number == _roundNumber);
   }
 

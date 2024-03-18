@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +73,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                     birthDay: DateTime(2002, 03, 01),
                     national: National.england,
                     tall: 177,
-                    stat: PlayerStat.create(),
+                    stat: PlayerStat.create(
+                      seed: Random().nextInt(30)+10,
+                      potential: Random().nextInt(30)+30,
+                    ),
                   )));
     _league = League(clubs: clubs);
     _league.startNewSeason();
