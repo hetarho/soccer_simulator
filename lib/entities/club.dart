@@ -66,6 +66,10 @@ class Club {
     return (startPlayers.fold(0, (pre, curr) => pre + curr.stat.defOverall) / 11).round();
   }
 
+  int get overall{
+    return ((attOverall + midOverall + defOverall) /3).round();
+  }
+
   List<Player> players = [];
   List<Player> startPlayers = [];
 }

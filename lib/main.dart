@@ -65,7 +65,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   init() {
     List<Club> clubs = List.generate(
         20,
-        (index) => Club(name: RandomNames(Zone.us).manName())
+        (index) => Club(name: RandomNames(Zone.germany).manName())
           ..startPlayers = List.generate(
               11,
               (index) => Player(
@@ -74,8 +74,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                     national: National.england,
                     tall: 177,
                     stat: PlayerStat.create(
-                      seed: Random().nextInt(30)+10,
-                      potential: Random().nextInt(30)+30,
+                      seed: Random().nextInt(50) + 10,
+                      potential: Random().nextInt(60) + 30,
                     ),
                   )));
     _league = League(clubs: clubs);
@@ -86,7 +86,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   _initFixture() {
     _fixtures = _league.getNextFixtures();
-    _roundStream = StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
+    _roundStream =
+        StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
 
     _roundSubscription?.cancel();
     _roundSubscription = _roundStream.listen((event) {
@@ -184,13 +185,20 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                           mainAxisSize: MainAxisSize.max,
                                           children: [
                                             AnimatedContainer(
-                                              duration: const Duration(milliseconds: 200),
-                                              width: constraints.maxWidth * fixture.homeTeamBallPercentage,
+                                              duration: const Duration(
+                                                  milliseconds: 200),
+                                              width: constraints.maxWidth *
+                                                  fixture
+                                                      .homeTeamBallPercentage,
                                               color: Colors.green,
                                             ),
                                             AnimatedContainer(
-                                              duration: const Duration(milliseconds: 200),
-                                              width: constraints.maxWidth * (1 - fixture.homeTeamBallPercentage),
+                                              duration: const Duration(
+                                                  milliseconds: 200),
+                                              width: constraints.maxWidth *
+                                                  (1 -
+                                                      fixture
+                                                          .homeTeamBallPercentage),
                                               color: Colors.yellow,
                                             ),
                                           ],
@@ -198,36 +206,36 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                       },
                                     ),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         GestureDetector(
                                             onTap: () {
-                                              ref.read(playerListProvider.notifier).state = fixture.homeClub.startPlayers;
+                                              ref
+                                                      .read(playerListProvider
+                                                          .notifier)
+                                                      .state =
+                                                  fixture.homeClub.startPlayers;
                                               context.push('/players');
                                             },
-                                            child: Row(
-                                              children: [
-                                                Text(fixture.homeClub.name),
-                                                Text(fixture.homeClub.attOverall.toString()),
-                                                Text(fixture.homeClub.midOverall.toString()),
-                                                Text(fixture.homeClub.defOverall.toString()),
-                                              ],
+                                            child: ClubInfo(
+                                              club: fixture.homeClub,
                                             )),
+                                        Text('${fixture.homaTeamGoal}'),
                                         const Text('vs'),
+                                        Text('${fixture.awayTeamGoal}'),
                                         GestureDetector(
-                                          onTap: () {
-                                            ref.read(playerListProvider.notifier).state = fixture.awayClub.startPlayers;
-                                            context.push('/players');
-                                          },
-                                          child: Row(
-                                            children: [
-                                              Text(fixture.awayClub.name),
-                                              Text(fixture.awayClub.attOverall.toString()),
-                                              Text(fixture.awayClub.midOverall.toString()),
-                                              Text(fixture.awayClub.defOverall.toString()),
-                                            ],
-                                          ),
-                                        ),
+                                            onTap: () {
+                                              ref
+                                                      .read(playerListProvider
+                                                          .notifier)
+                                                      .state =
+                                                  fixture.awayClub.startPlayers;
+                                              context.push('/players');
+                                            },
+                                            child: ClubInfo(
+                                              club: fixture.awayClub,
+                                            )),
                                       ],
                                     ),
                                   ],
@@ -239,14 +247,46 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         .toList(),
                   ),
                 ),
-                const SizedBox(
-                  height: 40,
-                )
+                const SizedBox(height: 40),
+                ...[..._league.clubs..sort((a, b) => b.pts - a.pts)]
+                    .map((club) => Row(
+                          children: [
+                            Text(
+                                '${club.name}(${club.overall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}')
+                          ],
+                        ))
+                    .toList(),
+                const SizedBox(height: 40),
               ],
             ),
           )
         ],
       ),
+    );
+  }
+}
+
+class ClubInfo extends StatelessWidget {
+  const ClubInfo({super.key, required this.club});
+  final Club club;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            Text(club.name),
+            Text(club.attOverall.toString()),
+            Text(club.midOverall.toString()),
+            Text(club.defOverall.toString()),
+          ],
+        ),
+        Row(
+          children: [Text('${club.won}/${club.drawn}/${club.lost}')],
+        )
+      ],
     );
   }
 }

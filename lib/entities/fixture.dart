@@ -11,6 +11,9 @@ class Fixture {
   final Club homeClub;
   final Club awayClub;
 
+  int homaTeamGoal = 0;
+  int awayTeamGoal = 0;
+
   Timer? _timer; // Timer 인스턴스를 저장할 변수
   late StreamController<bool> _streamController;
 
@@ -38,7 +41,25 @@ class Fixture {
           gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
         } else {
           playTime = Duration(seconds: playTime.inSeconds + 10);
-          homeTeamBallPercentage = min(max(0, homeTeamBallPercentage + (Random().nextDouble() * 0.2 - 0.1)), 1);
+          homeTeamBallPercentage = min(
+              max(
+                  0,
+                  homeTeamBallPercentage +
+                      (Random().nextDouble() *
+                              0.2 *
+                              homeClub.overall /
+                              awayClub.overall -
+                          0.1)),
+              1);
+
+          bool homeGoal = Random().nextDouble() * 0.3 >
+              homeClub.attOverall / (awayClub.defOverall + homeClub.attOverall);
+          bool awayGoal = Random().nextDouble() * 0.3 >
+              awayClub.attOverall / (homeClub.defOverall + awayClub.attOverall);
+
+          if (homeGoal) homaTeamGoal++;
+          if (awayGoal) awayTeamGoal++;
+
           _streamController.add(isGameEnd);
         }
       });
@@ -46,6 +67,17 @@ class Fixture {
   }
 
   void gameEnd() {
+    if (homaTeamGoal == awayTeamGoal) {
+      homeClub.draw();
+      awayClub.draw();
+    } else if (homaTeamGoal > awayTeamGoal) {
+      homeClub.win();
+      awayClub.lose();
+    } else {
+      awayClub.win();
+      homeClub.lose();
+    }
+
     _timer?.cancel();
     _streamController.close();
   }
