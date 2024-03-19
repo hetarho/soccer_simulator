@@ -77,6 +77,8 @@ class Season {
         }
       }
 
+      fixtures.shuffle();
+
       newRounds.add(Round(fixtures: fixtures, number: roundNumber + 1));
       fixtures = [];
 
