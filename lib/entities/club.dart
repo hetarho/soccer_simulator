@@ -1,8 +1,10 @@
 import 'package:soccer_simulator/entities/player.dart';
+import 'package:uuid/uuid.dart';
 
 class Club {
   Club({required this.name});
 
+  final String id = const Uuid().v4();
   final String name;
 
   bool hasBall = false;
@@ -66,8 +68,8 @@ class Club {
     return (startPlayers.fold(0, (pre, curr) => pre + curr.stat.defOverall) / 11).round();
   }
 
-  int get overall{
-    return ((attOverall + midOverall + defOverall) /3).round();
+  int get overall {
+    return ((attOverall + midOverall + defOverall) / 3).round();
   }
 
   List<Player> players = [];

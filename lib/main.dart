@@ -64,7 +64,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   init() {
     List<Club> clubs = List.generate(
-        20,
+        19,
         (index) => Club(name: RandomNames(Zone.germany).manName())
           ..startPlayers = List.generate(
               11,
@@ -77,7 +77,20 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       seed: Random().nextInt(50) + 10,
                       potential: Random().nextInt(60) + 30,
                     ),
-                  )));
+                  )))
+      ..add(Club(name: 'Arsenal')
+        ..startPlayers = List.generate(
+            11,
+            (index) => Player(
+                  name: RandomNames(Zone.us).manFullName(),
+                  birthDay: DateTime(2002, 03, 01),
+                  national: National.england,
+                  tall: 177,
+                  stat: PlayerStat.create(
+                    seed: 70,
+                    potential: 90,
+                  ),
+                )));
     _league = League(clubs: clubs);
     _league.startNewSeason();
     _isAutoPlay = false;
@@ -86,8 +99,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   _initFixture() {
     _fixtures = _league.getNextFixtures();
-    _roundStream =
-        StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
+    _roundStream = StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
 
     _roundSubscription?.cancel();
     _roundSubscription = _roundStream.listen((event) {
@@ -185,20 +197,13 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                           mainAxisSize: MainAxisSize.max,
                                           children: [
                                             AnimatedContainer(
-                                              duration: const Duration(
-                                                  milliseconds: 200),
-                                              width: constraints.maxWidth *
-                                                  fixture
-                                                      .homeTeamBallPercentage,
+                                              duration: const Duration(milliseconds: 200),
+                                              width: constraints.maxWidth * fixture.homeTeamBallPercentage,
                                               color: Colors.green,
                                             ),
                                             AnimatedContainer(
-                                              duration: const Duration(
-                                                  milliseconds: 200),
-                                              width: constraints.maxWidth *
-                                                  (1 -
-                                                      fixture
-                                                          .homeTeamBallPercentage),
+                                              duration: const Duration(milliseconds: 200),
+                                              width: constraints.maxWidth * (1 - fixture.homeTeamBallPercentage),
                                               color: Colors.yellow,
                                             ),
                                           ],
@@ -206,31 +211,22 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                       },
                                     ),
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         GestureDetector(
                                             onTap: () {
-                                              ref
-                                                      .read(playerListProvider
-                                                          .notifier)
-                                                      .state =
-                                                  fixture.homeClub.startPlayers;
+                                              ref.read(playerListProvider.notifier).state = fixture.homeClub.startPlayers;
                                               context.push('/players');
                                             },
                                             child: ClubInfo(
                                               club: fixture.homeClub,
                                             )),
-                                        Text('${fixture.homaTeamGoal}'),
+                                        Text('${fixture.homeTeamGoal}'),
                                         const Text('vs'),
                                         Text('${fixture.awayTeamGoal}'),
                                         GestureDetector(
                                             onTap: () {
-                                              ref
-                                                      .read(playerListProvider
-                                                          .notifier)
-                                                      .state =
-                                                  fixture.awayClub.startPlayers;
+                                              ref.read(playerListProvider.notifier).state = fixture.awayClub.startPlayers;
                                               context.push('/players');
                                             },
                                             child: ClubInfo(
@@ -250,10 +246,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 const SizedBox(height: 40),
                 ...[..._league.clubs..sort((a, b) => b.pts - a.pts)]
                     .map((club) => Row(
-                          children: [
-                            Text(
-                                '${club.name}(${club.overall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}')
-                          ],
+                          children: [Text('${club.name}(${club.overall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}')],
                         ))
                     .toList(),
                 const SizedBox(height: 40),

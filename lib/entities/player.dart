@@ -5,6 +5,7 @@ import 'package:soccer_simulator/entities/player_stat.dart';
 import 'package:soccer_simulator/enum/stat.dart';
 import 'package:soccer_simulator/enum/training_type.dart';
 import 'package:soccer_simulator/enum/position.dart';
+import 'package:uuid/uuid.dart';
 
 class Player extends Member {
   Player({
@@ -28,6 +29,7 @@ class Player extends Member {
     //포텐셜을 지정해주지 않으면 랜덤으로 책정
     _potential = potential ?? (Random().nextInt(120) + 30);
   }
+  final String id = const Uuid().v4();
 
   PlayerStat get stat {
     return _stat;
