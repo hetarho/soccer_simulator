@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:random_name_generator/random_name_generator.dart';
@@ -13,6 +14,7 @@ import 'package:soccer_simulator/entities/player.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
 import 'package:soccer_simulator/enum/national.dart';
 import 'package:soccer_simulator/router/routes.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   runApp(
@@ -55,6 +57,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   late Stream<bool> _roundStream;
   StreamSubscription<bool>? _roundSubscription;
   int _finishedFixtureNum = 0;
+  bool _showFixtures = true;
+  bool _showLeagueTable = true;
+  String? _selectedClubId;
 
   @override
   void initState() {
@@ -99,7 +104,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   _initFixture() {
     _fixtures = _league.getNextFixtures();
-    _roundStream = StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
+    _roundStream =
+        StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
 
     _roundSubscription?.cancel();
     _roundSubscription = _roundStream.listen((event) {
@@ -151,104 +157,106 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             child: Column(
               children: <Widget>[
                 const SizedBox(height: 64),
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        init();
-                      });
-                    },
-                    child: const Text('리셋')),
-                ElevatedButton(
-                  onPressed: () async {
-                    _startAllFixtures();
-                  },
-                  child: const Text('game start'),
+                Row(
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            init();
+                          });
+                        },
+                        child: const Text('리셋')),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _startAllFixtures();
+                      },
+                      child: const Text('game start'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _league.nextRound();
+                        _initFixture();
+                        setState(() {});
+                      },
+                      child: const Text('다음경기로'),
+                    ),
+                  ],
                 ),
-                ElevatedButton(
-                  onPressed: () async {
-                    _league.nextRound();
-                    _initFixture();
-                    setState(() {});
-                  },
-                  child: const Text('다음경기로'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    _autoPlaying();
-                  },
-                  child: const Text('한 시즌 자동 재생'),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        _autoPlaying();
+                      },
+                      child: const Text('한 시즌 자동 재생'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showFixtures = !_showFixtures;
+                        });
+                      },
+                      child: const Text('경기들 보기'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showLeagueTable = !_showLeagueTable;
+                        });
+                      },
+                      child: const Text('순위 보기'),
+                    )
+                  ],
                 ),
                 Text('round : ${_league.round}'),
-                Expanded(
-                  child: Column(
-                    children: _fixtures
-                        .map(
-                          (fixture) => Column(
-                            children: [
-                              Text('time:${fixture.playTime}'),
-                              Container(
-                                height: 50,
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    LayoutBuilder(
-                                      builder: (context, constraints) {
-                                        return Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            AnimatedContainer(
-                                              duration: const Duration(milliseconds: 200),
-                                              width: constraints.maxWidth * fixture.homeTeamBallPercentage,
-                                              color: Colors.green,
-                                            ),
-                                            AnimatedContainer(
-                                              duration: const Duration(milliseconds: 200),
-                                              width: constraints.maxWidth * (1 - fixture.homeTeamBallPercentage),
-                                              color: Colors.yellow,
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        GestureDetector(
-                                            onTap: () {
-                                              ref.read(playerListProvider.notifier).state = fixture.homeClub.startPlayers;
-                                              context.push('/players');
-                                            },
-                                            child: ClubInfo(
-                                              club: fixture.homeClub,
-                                            )),
-                                        Text('${fixture.homeTeamGoal}'),
-                                        const Text('vs'),
-                                        Text('${fixture.awayTeamGoal}'),
-                                        GestureDetector(
-                                            onTap: () {
-                                              ref.read(playerListProvider.notifier).state = fixture.awayClub.startPlayers;
-                                              context.push('/players');
-                                            },
-                                            child: ClubInfo(
-                                              club: fixture.awayClub,
-                                            )),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                        .toList(),
+                if (_showFixtures)
+                  Expanded(
+                    child: Column(
+                      children: _fixtures
+                          .map((fixture) => FixtrureInfo(
+                                fixture: fixture,
+                              ))
+                          .toList(),
+                    ),
                   ),
-                ),
                 const SizedBox(height: 40),
-                ...[..._league.clubs..sort((a, b) => b.pts - a.pts)]
-                    .map((club) => Row(
-                          children: [Text('${club.name}(${club.overall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}')],
-                        ))
-                    .toList(),
+                if (_showLeagueTable)
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children:
+                          [..._league.clubs..sort((a, b) => b.pts - a.pts)]
+                              .map((club) => Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _selectedClubId = club.id;
+                                          });
+                                        },
+                                        child: Text(
+                                            '${club.name}(${club.overall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
+                                      )
+                                    ],
+                                  ))
+                              .toList(),
+                    ),
+                  ),
+                const SizedBox(height: 40),
+                if (_selectedClubId != null)
+                  ...[
+                    ..._league.seasons[0].rounds
+                      ..sort((a, b) => a.number - b.number)
+                  ]
+                      .map((round) => round.fixtures)
+                      .expand((list) => list)
+                      .where((fixture) =>
+                          fixture.awayClub.id == _selectedClubId ||
+                          fixture.homeClub.id == _selectedClubId)
+                      .map((fixture) => FixtrureInfo(
+                            fixture: fixture,
+                            targetId: _selectedClubId,
+                          )),
                 const SizedBox(height: 40),
               ],
             ),
@@ -279,6 +287,93 @@ class ClubInfo extends StatelessWidget {
         Row(
           children: [Text('${club.won}/${club.drawn}/${club.lost}')],
         )
+      ],
+    );
+  }
+}
+
+class FixtrureInfo extends ConsumerWidget {
+  const FixtrureInfo({super.key, required this.fixture, this.targetId});
+  final Fixture fixture;
+  final String? targetId;
+
+  @override
+  Widget build(BuildContext context, ref) {
+    Club leftClub = targetId == null
+        ? fixture.homeClub
+        : (fixture.homeClub.id == targetId
+            ? fixture.homeClub
+            : fixture.awayClub);
+    Club rightClub = targetId == null
+        ? fixture.homeClub
+        : (fixture.homeClub.id == targetId
+            ? fixture.homeClub
+            : fixture.awayClub);
+    int leftGoal = (fixture.homeClub.id == targetId
+        ? fixture.homeTeamGoal
+        : fixture.awayTeamGoal);
+    int rightGoal = (fixture.homeClub.id == targetId
+        ? fixture.awayTeamGoal
+        : fixture.homeTeamGoal);
+
+    return Column(
+      children: [
+        Text('time:${fixture.playTime}'),
+        Container(
+          height: 50,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: constraints.maxWidth *
+                            ((leftGoal + 1) / (leftGoal + rightGoal + 2)),
+                        color: Colors.green,
+                      ),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: constraints.maxWidth *
+                            ((rightGoal + 1) / (leftGoal + rightGoal + 2)),
+                        color: Colors.yellow,
+                      ),
+                    ],
+                  );
+                },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                      onTap: () {
+                        ref.read(playerListProvider.notifier).state =
+                            leftClub.startPlayers;
+                        context.push('/players');
+                      },
+                      child: ClubInfo(
+                        club: leftClub,
+                      )),
+                  Text('${fixture.homeTeamGoal}'),
+                  const Text('vs'),
+                  Text('${fixture.awayTeamGoal}'),
+                  GestureDetector(
+                      onTap: () {
+                        ref.read(playerListProvider.notifier).state =
+                            rightClub.startPlayers;
+                        context.push('/players');
+                      },
+                      child: ClubInfo(
+                        club: rightClub,
+                      )),
+                ],
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

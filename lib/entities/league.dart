@@ -15,6 +15,7 @@ class League {
 
   startNewSeason() {
     _currentSeason = Season.create(clubs: clubs);
+    seasons.add(_currentSeason);
   }
 
   List<Fixture> getNextFixtures() {
