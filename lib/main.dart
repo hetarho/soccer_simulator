@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:random_name_generator/random_name_generator.dart';
@@ -14,7 +13,6 @@ import 'package:soccer_simulator/entities/player.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
 import 'package:soccer_simulator/enum/national.dart';
 import 'package:soccer_simulator/router/routes.dart';
-import 'package:uuid/uuid.dart';
 
 void main() {
   runApp(
@@ -70,7 +68,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   init() {
     List<Club> clubs = List.generate(
         19,
-        (index) => Club(name: RandomNames(Zone.germany).manName())
+        (index) => Club(
+            name: RandomNames(Zone.germany).manName(),
+            color: Color.fromRGBO(
+              Random().nextInt(180) + 75,
+              Random().nextInt(180) + 75,
+              Random().nextInt(180) + 75,
+              1,
+            ))
           ..startPlayers = List.generate(
               11,
               (index) => Player(
@@ -83,7 +88,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       potential: Random().nextInt(60) + 30,
                     ),
                   )))
-      ..add(Club(name: 'Arsenal')
+      ..add(Club(name: 'Arsenal', color: Colors.red)
         ..startPlayers = List.generate(
             11,
             (index) => Player(
@@ -104,8 +109,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   _initFixture() {
     _fixtures = _league.getNextFixtures();
-    _roundStream =
-        StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
+    _roundStream = StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
 
     _roundSubscription?.cancel();
     _roundSubscription = _roundStream.listen((event) {
@@ -213,7 +217,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   Expanded(
                     child: Column(
                       children: _fixtures
-                          .map((fixture) => FixtrureInfo(
+                          .map((fixture) => FixtureInfo(
                                 fixture: fixture,
                               ))
                           .toList(),
@@ -224,40 +228,34 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: Column(
-                      children:
-                          [..._league.clubs..sort((a, b) => b.pts - a.pts)]
-                              .map((club) => Row(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _selectedClubId = club.id;
-                                          });
-                                        },
-                                        child: Text(
-                                            '${club.name}(${club.overall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
-                                      )
-                                    ],
-                                  ))
-                              .toList(),
+                      children: [..._league.clubs..sort((a, b) => b.pts - a.pts)]
+                          .map((club) => Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedClubId = club.id;
+                                      });
+                                    },
+                                    child: Text('${club.name}(${club.overall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
+                                  )
+                                ],
+                              ))
+                          .toList(),
                     ),
                   ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 8),
                 if (_selectedClubId != null)
-                  ...[
-                    ..._league.seasons[0].rounds
-                      ..sort((a, b) => a.number - b.number)
-                  ]
+                  ...[..._league.seasons[0].rounds..sort((a, b) => a.number - b.number)]
                       .map((round) => round.fixtures)
                       .expand((list) => list)
-                      .where((fixture) =>
-                          fixture.awayClub.id == _selectedClubId ||
-                          fixture.homeClub.id == _selectedClubId)
-                      .map((fixture) => FixtrureInfo(
+                      .where((fixture) => fixture.awayClub.id == _selectedClubId || fixture.homeClub.id == _selectedClubId)
+                      .map((fixture) => FixtureInfo(
                             fixture: fixture,
-                            targetId: _selectedClubId,
+                            // targetId: _selectedClubId,
+                            showWDL: false,
                           )),
-                const SizedBox(height: 40),
+                const SizedBox(height: 8),
               ],
             ),
           )
@@ -268,8 +266,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 }
 
 class ClubInfo extends StatelessWidget {
-  const ClubInfo({super.key, required this.club});
+  const ClubInfo({super.key, required this.club, required this.showWDL});
   final Club club;
+  final bool showWDL;
 
   @override
   Widget build(BuildContext context) {
@@ -284,43 +283,33 @@ class ClubInfo extends StatelessWidget {
             Text(club.defOverall.toString()),
           ],
         ),
-        Row(
-          children: [Text('${club.won}/${club.drawn}/${club.lost}')],
-        )
+        if (showWDL)
+          Row(
+            children: [Text('${club.won}/${club.drawn}/${club.lost}')],
+          )
       ],
     );
   }
 }
 
-class FixtrureInfo extends ConsumerWidget {
-  const FixtrureInfo({super.key, required this.fixture, this.targetId});
+class FixtureInfo extends ConsumerWidget {
+  const FixtureInfo({super.key, required this.fixture, this.targetId, this.showWDL = true});
   final Fixture fixture;
   final String? targetId;
+  final bool showWDL;
 
   @override
   Widget build(BuildContext context, ref) {
-    Club leftClub = targetId == null
-        ? fixture.homeClub
-        : (fixture.homeClub.id == targetId
-            ? fixture.homeClub
-            : fixture.awayClub);
-    Club rightClub = targetId == null
-        ? fixture.homeClub
-        : (fixture.homeClub.id == targetId
-            ? fixture.homeClub
-            : fixture.awayClub);
-    int leftGoal = (fixture.homeClub.id == targetId
-        ? fixture.homeTeamGoal
-        : fixture.awayTeamGoal);
-    int rightGoal = (fixture.homeClub.id == targetId
-        ? fixture.awayTeamGoal
-        : fixture.homeTeamGoal);
+    Club leftClub = targetId == null ? fixture.homeClub : (fixture.homeClub.id == targetId ? fixture.homeClub : fixture.awayClub);
+    Club rightClub = targetId == null ? fixture.awayClub : (fixture.homeClub.id == targetId ? fixture.homeClub : fixture.awayClub);
+    int leftGoal = (fixture.homeClub.id == targetId ? fixture.homeTeamGoal : fixture.awayTeamGoal);
+    int rightGoal = (fixture.homeClub.id == targetId ? fixture.awayTeamGoal : fixture.homeTeamGoal);
 
     return Column(
       children: [
         Text('time:${fixture.playTime}'),
         Container(
-          height: 50,
+          height: showWDL ? 50 : 30,
           child: Stack(
             alignment: Alignment.center,
             children: [
@@ -331,15 +320,13 @@ class FixtrureInfo extends ConsumerWidget {
                     children: [
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        width: constraints.maxWidth *
-                            ((leftGoal + 1) / (leftGoal + rightGoal + 2)),
-                        color: Colors.green,
+                        width: constraints.maxWidth * ((leftGoal + 1) / (leftGoal + rightGoal + 2)),
+                        color: leftClub.color,
                       ),
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        width: constraints.maxWidth *
-                            ((rightGoal + 1) / (leftGoal + rightGoal + 2)),
-                        color: Colors.yellow,
+                        width: constraints.maxWidth * ((rightGoal + 1) / (leftGoal + rightGoal + 2)),
+                        color: rightClub.color,
                       ),
                     ],
                   );
@@ -350,24 +337,24 @@ class FixtrureInfo extends ConsumerWidget {
                 children: [
                   GestureDetector(
                       onTap: () {
-                        ref.read(playerListProvider.notifier).state =
-                            leftClub.startPlayers;
+                        ref.read(playerListProvider.notifier).state = leftClub.startPlayers;
                         context.push('/players');
                       },
                       child: ClubInfo(
                         club: leftClub,
+                        showWDL: showWDL,
                       )),
                   Text('${fixture.homeTeamGoal}'),
                   const Text('vs'),
                   Text('${fixture.awayTeamGoal}'),
                   GestureDetector(
                       onTap: () {
-                        ref.read(playerListProvider.notifier).state =
-                            rightClub.startPlayers;
+                        ref.read(playerListProvider.notifier).state = rightClub.startPlayers;
                         context.push('/players');
                       },
                       child: ClubInfo(
                         club: rightClub,
+                        showWDL: showWDL,
                       )),
                 ],
               ),

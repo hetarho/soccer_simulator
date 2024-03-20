@@ -78,3 +78,9 @@ class Fixture {
     }
   }
 }
+
+// class ClubInFixture {
+//   final Club club;
+//   final int goal;
+//   final int playTime;
+// }

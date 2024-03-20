@@ -1,11 +1,18 @@
-import 'package:soccer_simulator/entities/player.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:soccer_simulator/entities/player.dart';
+
 class Club {
-  Club({required this.name});
+  Club({
+    required this.name,
+    required this.color,
+  });
 
   final String id = const Uuid().v4();
   final String name;
+  final Color color;
 
   bool hasBall = false;
 
