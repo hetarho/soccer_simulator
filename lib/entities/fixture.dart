@@ -26,10 +26,11 @@ class Fixture {
   }
 
   ///0.01초 = 실제 1초
-  Duration _playSpeed = const Duration(milliseconds: 0);
+  Duration _playSpeed = const Duration(milliseconds: 4);
   final _playTimeAmount = 10;
 
   gameStart() async {
+    print('asdf');
     if (!_streamController.isClosed) {
       _timer?.cancel(); // 이전 타이머가 있다면 취소
       _timer = Timer.periodic(_playSpeed, (timer) {

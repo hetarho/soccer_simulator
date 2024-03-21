@@ -3,6 +3,8 @@ import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:random_name_generator/random_name_generator.dart';
@@ -33,6 +35,15 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'), // English
+        Locale('ko'), // korean
+      ],
       routerConfig: router,
     );
   }
@@ -47,6 +58,8 @@ class MyHomePage extends ConsumerStatefulWidget {
 
 final playerListProvider = StateProvider<List<Player>>((_) => []);
 final playerProvider = StateProvider<Player?>((_) => null);
+final moneyProvider = StateProvider<int>((_) => 10000);
+final selectedClubProvider = StateProvider<Club?>((_) => null);
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
   late List<Fixture> _fixtures;
@@ -55,8 +68,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   late Stream<bool> _roundStream;
   StreamSubscription<bool>? _roundSubscription;
   int _finishedFixtureNum = 0;
-  bool _showFixtures = true;
-  bool _showLeagueTable = true;
+  bool _showFixtures = false;
+  bool _showLeagueTable = false;
   String? _selectedClubId;
 
   @override
@@ -109,7 +122,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   _initFixture() {
     _fixtures = _league.getNextFixtures();
-    _roundStream = StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
+    _roundStream =
+        StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
 
     _roundSubscription?.cancel();
     _roundSubscription = _roundStream.listen((event) {
@@ -123,19 +137,36 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       }
     });
 
-    for (var fixture in _fixtures) {
-      fixture.gameStream.listen((event) {
-        if (event) {
-          for (var players in fixture.home.club.startPlayers) {
-            players.growAfterPlay();
-          }
-          for (var players in fixture.away.club.startPlayers) {
-            players.growAfterPlay();
-          }
-        }
-        setState(() {});
-      });
-    }
+    // for (var fixture in _fixtures) {
+    //   fixture.gameStream.listen((event) {
+    //     if (event) {
+    //       for (var players in fixture.home.club.startPlayers) {
+    //         players.growAfterPlay();
+    //       }
+    //       for (var players in fixture.away.club.startPlayers) {
+    //         players.growAfterPlay();
+    //       }
+
+    //       if (ref.read(selectedClubProvider) != null) {
+    //         if (fixture.home.goal == fixture.away.goal) {
+    //           ref.read(moneyProvider.notifier).state =
+    //               (1.1 * ref.read(moneyProvider.notifier).state).round();
+    //         } else if (fixture.home.goal > fixture.away.goal ||
+    //             ref.read(selectedClubProvider)!.id ==
+    //                 fixture.home.club.id) {
+    //           ref.read(moneyProvider.notifier).state =
+    //               (1.5 * ref.read(moneyProvider.notifier).state).round();
+    //         } else if (fixture.away.goal > fixture.home.goal ||
+    //             ref.read(selectedClubProvider)!.id ==
+    //                 fixture.away.club.id) {
+    //           ref.read(moneyProvider.notifier).state =
+    //               (1.5 * ref.read(moneyProvider.notifier).state).round();
+    //         }
+    //       }
+    //     }
+    //     setState(() {});
+    //   });
+    // }
     setState(() {});
   }
 
@@ -154,111 +185,126 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Column(
-              children: <Widget>[
-                const SizedBox(height: 64),
-                Row(
-                  children: [
-                    ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            init();
-                          });
-                        },
-                        child: const Text('리셋')),
-                    ElevatedButton(
-                      onPressed: () async {
-                        _startAllFixtures();
-                      },
-                      child: const Text('game start'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        _league.nextRound();
-                        _initFixture();
-                        setState(() {});
-                      },
-                      child: const Text('다음경기로'),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        _autoPlaying();
-                      },
-                      child: const Text('한 시즌 자동 재생'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _showFixtures = !_showFixtures;
-                        });
-                      },
-                      child: const Text('경기들 보기'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _showLeagueTable = !_showLeagueTable;
-                        });
-                      },
-                      child: const Text('순위 보기'),
-                    )
-                  ],
-                ),
-                Text('round : ${_league.round}'),
-                if (_showFixtures)
-                  Expanded(
-                    child: Column(
-                      children: _fixtures
+      body: Column(
+        children: [
+          const SizedBox(height: 64),
+          Row(
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      init();
+                    });
+                  },
+                  child: const Text('리셋')),
+              ElevatedButton(
+                onPressed: () async {
+                  _startAllFixtures();
+                },
+                child: const Text('game start'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  _league.nextRound();
+                  _initFixture();
+                  setState(() {});
+                },
+                child: const Text('다음경기로'),
+              ),
+            ],
+          ),
+          // Row(
+          //   children: [
+          //     ElevatedButton(
+          //       onPressed: () async {
+          //         _autoPlaying();
+          //       },
+          //       child: const Text('한 시즌 자동 재생'),
+          //     ),
+          //     ElevatedButton(
+          //       onPressed: () {
+          //         setState(() {
+          //           _showFixtures = !_showFixtures;
+          //         });
+          //       },
+          //       child: const Text('경기들 보기'),
+          //     ),
+          //     ElevatedButton(
+          //       onPressed: () {
+          //         setState(() {
+          //           _showLeagueTable = !_showLeagueTable;
+          //         });
+          //       },
+          //       child: const Text('순위 보기'),
+          //     )
+          //   ],
+          // ),
+          Text('round : ${_league.round}'),
+          SizedBox(height: 20),
+          Text('MONEY : ${ref.watch(moneyProvider)}'),
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(
+                    children: <Widget>[
+                      if (_showFixtures)
+                        Expanded(
+                          child: Column(
+                            children: _fixtures
+                                .map((fixture) => FixtureInfo(
+                                      fixture: fixture,
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                      if (_showLeagueTable)
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            children: [
+                              ..._league.clubs..sort((a, b) => b.pts - a.pts)
+                            ]
+                                .map((club) => Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              _selectedClubId = club.id;
+                                            });
+                                          },
+                                          child: Text(
+                                              '${club.name}(${club.overall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
+                                        )
+                                      ],
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+                      // if (_selectedClubId != null)
+                      ...[
+                        ..._league.seasons[0].rounds
+                          ..sort((a, b) => a.number - b.number)
+                      ]
+                          .map((round) => round.fixtures)
+                          .expand((list) => list)
+                          .where((fixture) =>
+                              fixture.away.club.name == 'Arsenal' ||
+                              fixture.home.club.name == 'Arsenal')
                           .map((fixture) => FixtureInfo(
                                 fixture: fixture,
-                              ))
-                          .toList(),
-                    ),
+                                // targetId: _selectedClubId,
+                                showWDL: false,
+                              )),
+                      const SizedBox(height: 8),
+                    ],
                   ),
-                const SizedBox(height: 40),
-                if (_showLeagueTable)
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [..._league.clubs..sort((a, b) => b.pts - a.pts)]
-                          .map((club) => Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _selectedClubId = club.id;
-                                      });
-                                    },
-                                    child: Text('${club.name}(${club.overall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
-                                  )
-                                ],
-                              ))
-                          .toList(),
-                    ),
-                  ),
-                const SizedBox(height: 8),
-                if (_selectedClubId != null)
-                  ...[..._league.seasons[0].rounds..sort((a, b) => a.number - b.number)]
-                      .map((round) => round.fixtures)
-                      .expand((list) => list)
-                      .where((fixture) => fixture.away.club.id == _selectedClubId || fixture.home.club.id == _selectedClubId)
-                      .map((fixture) => FixtureInfo(
-                            fixture: fixture,
-                            // targetId: _selectedClubId,
-                            showWDL: false,
-                          )),
-                const SizedBox(height: 8),
+                )
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -292,24 +338,54 @@ class ClubInfo extends StatelessWidget {
   }
 }
 
-class FixtureInfo extends ConsumerWidget {
-  const FixtureInfo({super.key, required this.fixture, this.targetId, this.showWDL = true});
+class FixtureInfo extends ConsumerStatefulWidget {
+  const FixtureInfo({super.key, required this.fixture, this.showWDL = true});
   final Fixture fixture;
-  final String? targetId;
   final bool showWDL;
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _FixtureInfoState();
+}
+
+class _FixtureInfoState extends ConsumerState<FixtureInfo> {
+  StreamSubscription<bool>? _streamSubscription;
 
   @override
-  Widget build(BuildContext context, ref) {
-    Club leftClub = targetId == null ? fixture.home.club : (fixture.home.club.id == targetId ? fixture.home.club : fixture.away.club);
-    Club rightClub = targetId == null ? fixture.away.club : (fixture.home.club.id == targetId ? fixture.home.club : fixture.away.club);
-    int leftGoal = (fixture.home.club.id == targetId ? fixture.home.goal : fixture.away.goal);
-    int rightGoal = (fixture.home.club.id == targetId ? fixture.away.goal : fixture.home.goal);
+  Widget build(BuildContext context) {
+    if(_streamSubscription!= null) _streamSubscription!.cancel();
+    _streamSubscription = widget.fixture.gameStream.listen((event) {
+      if (event) {
+        for (var players in widget.fixture.home.club.startPlayers) {
+          players.growAfterPlay();
+        }
+        for (var players in widget.fixture.away.club.startPlayers) {
+          players.growAfterPlay();
+        }
+
+        if (ref.read(selectedClubProvider) != null) {
+          if (widget.fixture.home.goal == widget.fixture.away.goal) {
+            ref.read(moneyProvider.notifier).state =
+                (1.05 * ref.read(moneyProvider.notifier).state).round();
+          } else if (widget.fixture.home.goal > widget.fixture.away.goal &&
+              ref.read(selectedClubProvider)!.id ==
+                  widget.fixture.home.club.id) {
+            ref.read(moneyProvider.notifier).state =
+                (1.1 * ref.read(moneyProvider.notifier).state).round();
+          } else if (widget.fixture.away.goal > widget.fixture.home.goal &&
+              ref.read(selectedClubProvider)!.id ==
+                  widget.fixture.away.club.id) {
+            ref.read(moneyProvider.notifier).state =
+                (1.1 * ref.read(moneyProvider.notifier).state).round();
+          }
+        }
+      }
+      setState(() {});
+    });
 
     return Column(
       children: [
-        Text('time:${fixture.playTime}'),
+        Text('time:${widget.fixture.playTime}'),
         Container(
-          height: showWDL ? 50 : 30,
+          height: widget.showWDL ? 60 : 40,
           child: Stack(
             alignment: Alignment.center,
             children: [
@@ -320,13 +396,21 @@ class FixtureInfo extends ConsumerWidget {
                     children: [
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        width: constraints.maxWidth * ((leftGoal + 1) / (leftGoal + rightGoal + 2)),
-                        color: leftClub.color,
+                        width: constraints.maxWidth *
+                            ((widget.fixture.home.goal + 1) /
+                                (widget.fixture.home.goal +
+                                    widget.fixture.away.goal +
+                                    2)),
+                        color: widget.fixture.home.club.color,
                       ),
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        width: constraints.maxWidth * ((rightGoal + 1) / (leftGoal + rightGoal + 2)),
-                        color: rightClub.color,
+                        width: constraints.maxWidth *
+                            ((widget.fixture.away.goal + 1) /
+                                (widget.fixture.home.goal +
+                                    widget.fixture.away.goal +
+                                    2)),
+                        color: widget.fixture.away.club.color,
                       ),
                     ],
                   );
@@ -337,24 +421,26 @@ class FixtureInfo extends ConsumerWidget {
                 children: [
                   GestureDetector(
                       onTap: () {
-                        ref.read(playerListProvider.notifier).state = leftClub.startPlayers;
-                        context.push('/players');
+                        ref.read(selectedClubProvider.notifier).state =
+                            widget.fixture.home.club;
+                        widget.fixture.gameStart();
                       },
                       child: ClubInfo(
-                        club: leftClub,
-                        showWDL: showWDL,
+                        club: widget.fixture.home.club,
+                        showWDL: widget.showWDL,
                       )),
-                  Text('${fixture.home.goal}'),
+                  Text('${widget.fixture.home.goal}'),
                   const Text('vs'),
-                  Text('${fixture.away.goal}'),
+                  Text('${widget.fixture.away.goal}'),
                   GestureDetector(
                       onTap: () {
-                        ref.read(playerListProvider.notifier).state = rightClub.startPlayers;
-                        context.push('/players');
+                        ref.read(selectedClubProvider.notifier).state =
+                            widget.fixture.away.club;
+                        widget.fixture.gameStart();
                       },
                       child: ClubInfo(
-                        club: rightClub,
-                        showWDL: showWDL,
+                        club: widget.fixture.away.club,
+                        showWDL: widget.showWDL,
                       )),
                 ],
               ),
