@@ -1,18 +1,16 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:math';
 
 import 'package:soccer_simulator/entities/club.dart';
 
 class Fixture {
-  Fixture({required this.homeClub, required this.awayClub}) {
+  Fixture({required this.home, required this.away}) {
     _streamController = StreamController<bool>.broadcast();
   }
 
-  final Club homeClub;
-  final Club awayClub;
-
-  int homeTeamGoal = 0;
-  int awayTeamGoal = 0;
+  final ClubInFixture home;
+  final ClubInFixture away;
 
   Timer? _timer; // Timer 인스턴스를 저장할 변수
   late StreamController<bool> _streamController;
@@ -22,9 +20,6 @@ class Fixture {
   ///현재 경기 시간
   Duration playTime = const Duration(seconds: 0);
 
-  ///홈팀의 점유율 (1로 시작)
-  double homeTeamBallPercentage = 1;
-
   ///경기가 종료 되었는지 안되었는지
   bool get isGameEnd {
     return playTime.compareTo(const Duration(minutes: 90)) >= 0;
@@ -32,6 +27,7 @@ class Fixture {
 
   ///0.01초 = 실제 1초
   Duration _playSpeed = const Duration(milliseconds: 0);
+  final _playTimeAmount = 10;
 
   gameStart() async {
     if (!_streamController.isClosed) {
@@ -40,14 +36,13 @@ class Fixture {
         if (isGameEnd) {
           gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
         } else {
-          playTime = Duration(seconds: playTime.inSeconds + 10);
-          homeTeamBallPercentage = min(max(0, homeTeamBallPercentage + (Random().nextDouble() * 0.2 * homeClub.overall / awayClub.overall - 0.1)), 1);
+          playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
-          bool homeGoal = Random().nextDouble() * 150 < homeClub.attOverall / (awayClub.defOverall + homeClub.attOverall);
-          bool awayGoal = Random().nextDouble() * 150 < awayClub.attOverall / (homeClub.defOverall + awayClub.attOverall);
+          bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
+          bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
-          if (homeGoal) homeTeamGoal++;
-          if (awayGoal) awayTeamGoal++;
+          if (homeScored) home.goal++;
+          if (awayScored) away.goal++;
 
           _streamController.add(isGameEnd);
         }
@@ -56,15 +51,15 @@ class Fixture {
   }
 
   void gameEnd() {
-    if (homeTeamGoal == awayTeamGoal) {
-      homeClub.draw();
-      awayClub.draw();
-    } else if (homeTeamGoal > awayTeamGoal) {
-      homeClub.win();
-      awayClub.lose();
+    if (home.goal == away.goal) {
+      home.club.draw();
+      away.club.draw();
+    } else if (home.goal > away.goal) {
+      home.club.win();
+      away.club.lose();
     } else {
-      awayClub.win();
-      homeClub.lose();
+      away.club.win();
+      home.club.lose();
     }
 
     _timer?.cancel();
@@ -79,8 +74,12 @@ class Fixture {
   }
 }
 
-// class ClubInFixture {
-//   final Club club;
-//   final int goal;
-//   final int playTime;
-// }
+class ClubInFixture {
+  final Club club;
+  int goal = 0;
+  int hasBallTime = 0;
+
+  ClubInFixture({
+    required this.club,
+  });
+}

@@ -126,10 +126,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     for (var fixture in _fixtures) {
       fixture.gameStream.listen((event) {
         if (event) {
-          for (var players in fixture.homeClub.startPlayers) {
+          for (var players in fixture.home.club.startPlayers) {
             players.growAfterPlay();
           }
-          for (var players in fixture.awayClub.startPlayers) {
+          for (var players in fixture.away.club.startPlayers) {
             players.growAfterPlay();
           }
         }
@@ -249,7 +249,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   ...[..._league.seasons[0].rounds..sort((a, b) => a.number - b.number)]
                       .map((round) => round.fixtures)
                       .expand((list) => list)
-                      .where((fixture) => fixture.awayClub.id == _selectedClubId || fixture.homeClub.id == _selectedClubId)
+                      .where((fixture) => fixture.away.club.id == _selectedClubId || fixture.home.club.id == _selectedClubId)
                       .map((fixture) => FixtureInfo(
                             fixture: fixture,
                             // targetId: _selectedClubId,
@@ -300,10 +300,10 @@ class FixtureInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    Club leftClub = targetId == null ? fixture.homeClub : (fixture.homeClub.id == targetId ? fixture.homeClub : fixture.awayClub);
-    Club rightClub = targetId == null ? fixture.awayClub : (fixture.homeClub.id == targetId ? fixture.homeClub : fixture.awayClub);
-    int leftGoal = (fixture.homeClub.id == targetId ? fixture.homeTeamGoal : fixture.awayTeamGoal);
-    int rightGoal = (fixture.homeClub.id == targetId ? fixture.awayTeamGoal : fixture.homeTeamGoal);
+    Club leftClub = targetId == null ? fixture.home.club : (fixture.home.club.id == targetId ? fixture.home.club : fixture.away.club);
+    Club rightClub = targetId == null ? fixture.away.club : (fixture.home.club.id == targetId ? fixture.home.club : fixture.away.club);
+    int leftGoal = (fixture.home.club.id == targetId ? fixture.home.goal : fixture.away.goal);
+    int rightGoal = (fixture.home.club.id == targetId ? fixture.away.goal : fixture.home.goal);
 
     return Column(
       children: [
@@ -344,9 +344,9 @@ class FixtureInfo extends ConsumerWidget {
                         club: leftClub,
                         showWDL: showWDL,
                       )),
-                  Text('${fixture.homeTeamGoal}'),
+                  Text('${fixture.home.goal}'),
                   const Text('vs'),
-                  Text('${fixture.awayTeamGoal}'),
+                  Text('${fixture.away.goal}'),
                   GestureDetector(
                       onTap: () {
                         ref.read(playerListProvider.notifier).state = rightClub.startPlayers;

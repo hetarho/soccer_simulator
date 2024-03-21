@@ -82,7 +82,7 @@ class Season {
           awayClub = temp;
         }
 
-        fixtures.add(Fixture(homeClub: homeClub, awayClub: awayClub));
+        fixtures.add(Fixture(home: ClubInFixture(club: homeClub), away: ClubInFixture(club: awayClub)));
         // 마지막 홈 경기 여부 업데이트
         lastHomeGame[homeClub] = true;
         lastHomeGame[awayClub] = false;
