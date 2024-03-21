@@ -351,7 +351,7 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
 
   @override
   Widget build(BuildContext context) {
-    if(_streamSubscription!= null) _streamSubscription!.cancel();
+    if (_streamSubscription != null) _streamSubscription!.cancel();
     _streamSubscription = widget.fixture.gameStream.listen((event) {
       if (event) {
         for (var players in widget.fixture.home.club.startPlayers) {
@@ -381,73 +381,76 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
       setState(() {});
     });
 
-    return Column(
-      children: [
-        Text('time:${widget.fixture.playTime}'),
-        Container(
-          height: widget.showWDL ? 60 : 40,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  return Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: constraints.maxWidth *
-                            ((widget.fixture.home.goal + 1) /
-                                (widget.fixture.home.goal +
-                                    widget.fixture.away.goal +
-                                    2)),
-                        color: widget.fixture.home.club.color,
-                      ),
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: constraints.maxWidth *
-                            ((widget.fixture.away.goal + 1) /
-                                (widget.fixture.home.goal +
-                                    widget.fixture.away.goal +
-                                    2)),
-                        color: widget.fixture.away.club.color,
-                      ),
-                    ],
-                  );
-                },
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                      onTap: () {
-                        ref.read(selectedClubProvider.notifier).state =
-                            widget.fixture.home.club;
-                        widget.fixture.gameStart();
-                      },
-                      child: ClubInfo(
-                        club: widget.fixture.home.club,
-                        showWDL: widget.showWDL,
-                      )),
-                  Text('${widget.fixture.home.goal}'),
-                  const Text('vs'),
-                  Text('${widget.fixture.away.goal}'),
-                  GestureDetector(
-                      onTap: () {
-                        ref.read(selectedClubProvider.notifier).state =
-                            widget.fixture.away.club;
-                        widget.fixture.gameStart();
-                      },
-                      child: ClubInfo(
-                        club: widget.fixture.away.club,
-                        showWDL: widget.showWDL,
-                      )),
-                ],
-              ),
-            ],
+    return Opacity(
+      opacity: widget.fixture.isGameEnd ? 0.4 : 1,
+      child: Column(
+        children: [
+          Text('time:${widget.fixture.playTime}'),
+          Container(
+            height: widget.showWDL ? 60 : 40,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: constraints.maxWidth *
+                              ((widget.fixture.home.goal + 1) /
+                                  (widget.fixture.home.goal +
+                                      widget.fixture.away.goal +
+                                      2)),
+                          color: widget.fixture.home.club.color,
+                        ),
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: constraints.maxWidth *
+                              ((widget.fixture.away.goal + 1) /
+                                  (widget.fixture.home.goal +
+                                      widget.fixture.away.goal +
+                                      2)),
+                          color: widget.fixture.away.club.color,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                        onTap: () {
+                          ref.read(selectedClubProvider.notifier).state =
+                              widget.fixture.home.club;
+                          widget.fixture.gameStart();
+                        },
+                        child: ClubInfo(
+                          club: widget.fixture.home.club,
+                          showWDL: widget.showWDL,
+                        )),
+                    Text('${widget.fixture.home.goal}'),
+                    const Text('vs'),
+                    Text('${widget.fixture.away.goal}'),
+                    GestureDetector(
+                        onTap: () {
+                          ref.read(selectedClubProvider.notifier).state =
+                              widget.fixture.away.club;
+                          widget.fixture.gameStart();
+                        },
+                        child: ClubInfo(
+                          club: widget.fixture.away.club,
+                          showWDL: widget.showWDL,
+                        )),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
