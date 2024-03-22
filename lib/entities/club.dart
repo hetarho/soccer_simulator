@@ -25,9 +25,16 @@ class Club {
   int loseStack = 0;
   int noWinStack = 0;
 
+  ///득점수
   int gf = 0;
+
+  ///실점 수
   int ga = 0;
-  int gd = 0;
+
+  ///골득실
+  get gd {
+    return gf - ga;
+  }
 
   int get pts {
     return won * 3 + drawn;

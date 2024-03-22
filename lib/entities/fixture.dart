@@ -42,8 +42,14 @@ class Fixture {
           bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
           bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
-          if (homeScored) home.goal++;
-          if (awayScored) away.goal++;
+          if (homeScored) {
+            home.score();
+            away.concede();
+          }
+          if (awayScored) {
+            home.concede();
+            away.score();
+          }
 
           _streamController.add(isGameEnd);
         }
@@ -77,8 +83,20 @@ class Fixture {
 
 class ClubInFixture {
   final Club club;
-  int goal = 0;
+  int _scoredGoal = 0;
   int hasBallTime = 0;
+  score() {
+    _scoredGoal += 1;
+    club.gf++;
+  }
+
+  concede() {
+    club.ga++;
+  }
+
+  get goal {
+    return _scoredGoal;
+  }
 
   ClubInFixture({
     required this.club,
