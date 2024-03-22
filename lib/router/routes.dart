@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soccer_simulator/main.dart';
+import 'package:soccer_simulator/pages/fixture/fixture_page.dart';
 import 'package:soccer_simulator/pages/player/player_detail.dart';
 import 'package:soccer_simulator/pages/player/player_list.dart';
 
@@ -10,6 +11,12 @@ final GoRouter router = GoRouter(
       path: '/',
       builder: (BuildContext context, GoRouterState state) {
         return const MyHomePage();
+      },
+    ),
+    GoRoute(
+      path: '/fixture',
+      builder: (BuildContext context, GoRouterState state) {
+        return const FixturePage();
       },
     ),
     GoRoute(

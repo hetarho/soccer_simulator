@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:async/async.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -14,6 +15,7 @@ import 'package:soccer_simulator/entities/league.dart';
 import 'package:soccer_simulator/entities/player.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
 import 'package:soccer_simulator/enum/national.dart';
+import 'package:soccer_simulator/providers/fixture_provider.dart';
 import 'package:soccer_simulator/router/routes.dart';
 
 void main() {
@@ -122,7 +124,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   _initFixture() {
     _fixtures = _league.getNextFixtures();
-    _roundStream = StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
+    _roundStream =
+        StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
 
     _roundSubscription?.cancel();
     _roundSubscription = _roundStream.listen((event) {
@@ -239,7 +242,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           //   ],
           // ),
           Text('round : ${_league.round}'),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text('MONEY : ${ref.watch(moneyProvider)}'),
           Expanded(
             child: CustomScrollView(
@@ -262,7 +265,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         Padding(
                           padding: const EdgeInsets.all(20),
                           child: Column(
-                            children: [..._league.clubs..sort((a, b) => b.pts - a.pts)]
+                            children: [
+                              ..._league.clubs..sort((a, b) => b.pts - a.pts)
+                            ]
                                 .map((club) => Row(
                                       children: [
                                         GestureDetector(
@@ -271,7 +276,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                               _selectedClubId = club.id;
                                             });
                                           },
-                                          child: Text('${club.name}(${club.overall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
+                                          child: Text(
+                                              '${club.name}(${club.overall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
                                         )
                                       ],
                                     ))
@@ -280,10 +286,15 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         ),
                       const SizedBox(height: 8),
                       // if (_selectedClubId != null)
-                      ...[..._league.seasons[0].rounds..sort((a, b) => a.number - b.number)]
+                      ...[
+                        ..._league.seasons[0].rounds
+                          ..sort((a, b) => a.number - b.number)
+                      ]
                           .map((round) => round.fixtures)
                           .expand((list) => list)
-                          .where((fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
+                          .where((fixture) =>
+                              fixture.away.club.name == 'Arsenal' ||
+                              fixture.home.club.name == 'Arsenal')
                           .map((fixture) => FixtureInfo(
                                 fixture: fixture,
                                 // targetId: _selectedClubId,
@@ -355,13 +366,20 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
 
         if (ref.read(selectedClubProvider) != null) {
           if (widget.fixture.home.goal == widget.fixture.away.goal) {
-            ref.read(moneyProvider.notifier).state = (1.05 * ref.read(moneyProvider)).round();
+            ref.read(moneyProvider.notifier).state =
+                (1.05 * ref.read(moneyProvider)).round();
             _bgColor = Colors.blue;
-          } else if (widget.fixture.home.goal > widget.fixture.away.goal && ref.read(selectedClubProvider)!.id == widget.fixture.home.club.id) {
-            ref.read(moneyProvider.notifier).state = (1.1 * ref.read(moneyProvider)).round();
+          } else if (widget.fixture.home.goal > widget.fixture.away.goal &&
+              ref.read(selectedClubProvider)!.id ==
+                  widget.fixture.home.club.id) {
+            ref.read(moneyProvider.notifier).state =
+                (1.1 * ref.read(moneyProvider)).round();
             _bgColor = Colors.green;
-          } else if (widget.fixture.away.goal > widget.fixture.home.goal && ref.read(selectedClubProvider)!.id == widget.fixture.away.club.id) {
-            ref.read(moneyProvider.notifier).state = (1.1 * ref.read(moneyProvider)).round();
+          } else if (widget.fixture.away.goal > widget.fixture.home.goal &&
+              ref.read(selectedClubProvider)!.id ==
+                  widget.fixture.away.club.id) {
+            ref.read(moneyProvider.notifier).state =
+                (1.1 * ref.read(moneyProvider)).round();
             _bgColor = Colors.green;
           }
         }
@@ -372,60 +390,76 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
     return Column(
       children: [
         Text('time:${widget.fixture.playTime}'),
-        Container(
-          height: widget.showWDL ? 60 : 40,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  return Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: constraints.maxWidth * ((widget.fixture.home.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
-                        color: widget.fixture.home.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
-                      ),
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: constraints.maxWidth * ((widget.fixture.away.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
-                        color: widget.fixture.away.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
-                      ),
-                    ],
-                  );
-                },
-              ),
-              Container(
-                color: _bgColor?.withOpacity(0.7),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                      onTap: () {
-                        ref.read(selectedClubProvider.notifier).state = widget.fixture.home.club;
-                        widget.fixture.gameStart();
-                      },
-                      child: ClubInfo(
-                        club: widget.fixture.home.club,
-                        showWDL: widget.showWDL,
-                      )),
-                  Text('${widget.fixture.home.goal}'),
-                  const Text('vs'),
-                  Text('${widget.fixture.away.goal}'),
-                  GestureDetector(
-                      onTap: () {
-                        ref.read(selectedClubProvider.notifier).state = widget.fixture.away.club;
-                        widget.fixture.gameStart();
-                      },
-                      child: ClubInfo(
-                        club: widget.fixture.away.club,
-                        showWDL: widget.showWDL,
-                      )),
-                ],
-              ),
-            ],
+        GestureDetector(
+          onTap: () {
+            ref.read(fixtureProvider.notifier).state = widget.fixture;
+            context.push('/fixture');
+          },
+          child: Container(
+            height: widget.showWDL ? 60 : 40,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: constraints.maxWidth *
+                              ((widget.fixture.home.goal + 1) /
+                                  (widget.fixture.home.goal +
+                                      widget.fixture.away.goal +
+                                      2)),
+                          color: widget.fixture.home.club.color
+                              .withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
+                        ),
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: constraints.maxWidth *
+                              ((widget.fixture.away.goal + 1) /
+                                  (widget.fixture.home.goal +
+                                      widget.fixture.away.goal +
+                                      2)),
+                          color: widget.fixture.away.club.color
+                              .withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Container(
+                  color: _bgColor?.withOpacity(0.7),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                        onTap: () {
+                          // ref.read(selectedClubProvider.notifier).state = widget.fixture.home.club;
+                          // widget.fixture.gameStart();
+                        },
+                        child: ClubInfo(
+                          club: widget.fixture.home.club,
+                          showWDL: widget.showWDL,
+                        )),
+                    Text('${widget.fixture.home.goal}'),
+                    const Text('vs'),
+                    Text('${widget.fixture.away.goal}'),
+                    GestureDetector(
+                        onTap: () {
+                          // ref.read(selectedClubProvider.notifier).state = widget.fixture.away.club;
+                          // widget.fixture.gameStart();
+                        },
+                        child: ClubInfo(
+                          club: widget.fixture.away.club,
+                          showWDL: widget.showWDL,
+                        )),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ],
