@@ -139,36 +139,36 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       }
     });
 
-    // for (var fixture in _fixtures) {
-    //   fixture.gameStream.listen((event) {
-    //     if (event) {
-    //       for (var players in fixture.home.club.startPlayers) {
-    //         players.growAfterPlay();
-    //       }
-    //       for (var players in fixture.away.club.startPlayers) {
-    //         players.growAfterPlay();
-    //       }
+    for (var fixture in _fixtures) {
+      fixture.gameStream.listen((event) {
+        if (event) {
+          for (var players in fixture.home.club.startPlayers) {
+            players.growAfterPlay();
+          }
+          for (var players in fixture.away.club.startPlayers) {
+            players.growAfterPlay();
+          }
 
-    //       if (ref.read(selectedClubProvider) != null) {
-    //         if (fixture.home.goal == fixture.away.goal) {
-    //           ref.read(moneyProvider.notifier).state =
-    //               (1.1 * ref.read(moneyProvider.notifier).state).round();
-    //         } else if (fixture.home.goal > fixture.away.goal ||
-    //             ref.read(selectedClubProvider)!.id ==
-    //                 fixture.home.club.id) {
-    //           ref.read(moneyProvider.notifier).state =
-    //               (1.5 * ref.read(moneyProvider.notifier).state).round();
-    //         } else if (fixture.away.goal > fixture.home.goal ||
-    //             ref.read(selectedClubProvider)!.id ==
-    //                 fixture.away.club.id) {
-    //           ref.read(moneyProvider.notifier).state =
-    //               (1.5 * ref.read(moneyProvider.notifier).state).round();
-    //         }
-    //       }
-    //     }
-    //     setState(() {});
-    //   });
-    // }
+          if (ref.read(selectedClubProvider) != null) {
+            if (fixture.home.goal == fixture.away.goal) {
+              ref.read(moneyProvider.notifier).state =
+                  (1.1 * ref.read(moneyProvider.notifier).state).round();
+            } else if (fixture.home.goal > fixture.away.goal ||
+                ref.read(selectedClubProvider)!.id ==
+                    fixture.home.club.id) {
+              ref.read(moneyProvider.notifier).state =
+                  (1.5 * ref.read(moneyProvider.notifier).state).round();
+            } else if (fixture.away.goal > fixture.home.goal ||
+                ref.read(selectedClubProvider)!.id ==
+                    fixture.away.club.id) {
+              ref.read(moneyProvider.notifier).state =
+                  (1.5 * ref.read(moneyProvider.notifier).state).round();
+            }
+          }
+        }
+        setState(() {});
+      });
+    }
     setState(() {});
   }
 
@@ -215,32 +215,32 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             ],
           ),
-          // Row(
-          //   children: [
-          //     ElevatedButton(
-          //       onPressed: () async {
-          //         _autoPlaying();
-          //       },
-          //       child: const Text('한 시즌 자동 재생'),
-          //     ),
-          //     ElevatedButton(
-          //       onPressed: () {
-          //         setState(() {
-          //           _showFixtures = !_showFixtures;
-          //         });
-          //       },
-          //       child: const Text('경기들 보기'),
-          //     ),
-          //     ElevatedButton(
-          //       onPressed: () {
-          //         setState(() {
-          //           _showLeagueTable = !_showLeagueTable;
-          //         });
-          //       },
-          //       child: const Text('순위 보기'),
-          //     )
-          //   ],
-          // ),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  _autoPlaying();
+                },
+                child: const Text('한 시즌 자동 재생'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _showFixtures = !_showFixtures;
+                  });
+                },
+                child: const Text('경기들 보기'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _showLeagueTable = !_showLeagueTable;
+                  });
+                },
+                child: const Text('순위 보기'),
+              )
+            ],
+          ),
           Text('round : ${_league.round}'),
           const SizedBox(height: 20),
           Text('MONEY : ${ref.watch(moneyProvider)}'),

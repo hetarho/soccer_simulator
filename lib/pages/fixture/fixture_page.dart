@@ -11,6 +11,8 @@ class FixturePage extends ConsumerStatefulWidget {
 }
 
 class _FixturePageState extends ConsumerState<FixturePage> {
+  bool isFastMode = true;
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +51,14 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                 ],
               ],
             ),
+            ElevatedButton(
+                onPressed: () {
+                  fixture?.updateTimeSpeed(isFastMode
+                      ? Duration(milliseconds: 100)
+                      : Duration(milliseconds: 10));
+                  isFastMode = !isFastMode;
+                },
+                child: Text('스피드 빠르게 / 느리게'))
           ],
         ),
       ),

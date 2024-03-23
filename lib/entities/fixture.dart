@@ -26,7 +26,7 @@ class Fixture {
   }
 
   ///0.01초 = 실제 1초
-  Duration _playSpeed = const Duration(milliseconds: 4);
+  Duration _playSpeed = const Duration(milliseconds: 10);
   final _playTimeAmount = 10;
 
   gameStart() async {
@@ -38,8 +38,10 @@ class Fixture {
         } else {
           playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
-          bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
-          bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
+          bool homeScored =
+              Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
+          bool awayScored =
+              Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
           if (homeScored) {
             home.score();
