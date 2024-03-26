@@ -39,23 +39,23 @@ class PlayerStat {
   @override
   toString() {
     return '''
-    stamina = $stamina
-organization = $organization
-physical = $physical
-speed = $speed
-jump = $jump
-dribble = $dribble
-shoot = $shoot
-shootAccuracy = $shootAccuracy
-shootPower = $shootPower
-tackle = $tackle
-shortPass = $shortPass
-longPass = $longPass
-save = $save
-intercept = $intercept
-reorientation = $reorientation
-keyPass = $keyPass
-sQ = $sQ''';
+      stamina = $stamina
+      organization = $organization
+      physical = $physical
+      speed = $speed
+      jump = $jump
+      dribble = $dribble
+      shoot = $shoot
+      shootAccuracy = $shootAccuracy
+      shootPower = $shootPower
+      tackle = $tackle
+      shortPass = $shortPass
+      longPass = $longPass
+      save = $save
+      intercept = $intercept
+      reorientation = $reorientation
+      keyPass = $keyPass
+      sQ = $sQ''';
   }
 
   PlayerStat.create({
@@ -289,15 +289,29 @@ sQ = $sQ''';
   int? sQ;
 
   int get attOverall {
-    if (dribble == null || shoot == null || shootAccuracy == null || keyPass == null || longPass == null || speed == null || shortPass == null || shootPower == null) {
+    if (dribble == null ||
+        shoot == null ||
+        shootAccuracy == null ||
+        keyPass == null ||
+        longPass == null ||
+        speed == null ||
+        shortPass == null ||
+        shootPower == null) {
       return 0;
     } else {
-      return ((dribble! + shoot! + shootAccuracy! + shootPower! + keyPass! + speed! + longPass! + shortPass!) / 8 + (sQ ?? 0) / 10).round();
+      return ((dribble! + shoot! + shootAccuracy! + shootPower! + keyPass! + speed! + longPass! + shortPass!) / 8 +
+              (sQ ?? 0) / 10)
+          .round();
     }
   }
 
   int get midOverall {
-    if (intercept == null || dribble == null || keyPass == null || longPass == null || shortPass == null || shootPower == null) {
+    if (intercept == null ||
+        dribble == null ||
+        keyPass == null ||
+        longPass == null ||
+        shortPass == null ||
+        shootPower == null) {
       return 0;
     } else {
       return ((dribble! + intercept! + shootPower! + keyPass! + longPass! + shortPass!) / 6 + (sQ ?? 0) / 10).round();
@@ -305,7 +319,12 @@ sQ = $sQ''';
   }
 
   int get defOverall {
-    if (tackle == null || intercept == null || longPass == null || stamina == null || physical == null || shortPass == null) {
+    if (tackle == null ||
+        intercept == null ||
+        longPass == null ||
+        stamina == null ||
+        physical == null ||
+        shortPass == null) {
       return 0;
     } else {
       return ((tackle! + intercept! + longPass! + stamina! + physical! + shortPass!) / 6 + (sQ ?? 0) / 10).round();
