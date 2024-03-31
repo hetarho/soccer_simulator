@@ -1,4 +1,3 @@
-
 //선수 고유 속성
 enum PlayerHiddenType {
   normal,
@@ -12,3 +11,5 @@ enum PlayerHiddenType {
   ///리더 - 같이 뛰는 동료들의 능력을 향상시킨다.
   leader,
 }
+
+enum BodyType { slim, normal, robust }

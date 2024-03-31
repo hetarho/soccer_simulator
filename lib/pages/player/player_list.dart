@@ -24,9 +24,6 @@ class PlayerListPage extends ConsumerWidget {
               padding: const EdgeInsets.all(8),
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text(playerList[index].name),
-                Text(playerList[index].stat.attOverall.toString()),
-                Text(playerList[index].stat.midOverall.toString()),
-                Text(playerList[index].stat.defOverall.toString()),
                 Text(playerList[index].potential.toString()),
               ]),
             ),

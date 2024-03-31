@@ -70,16 +70,17 @@ class Club {
     lost = 0;
   }
 
+  //TODO
   int get attOverall {
-    return (startPlayers.fold(0, (pre, curr) => pre + curr.stat.attOverall) / 11).round();
+    return (startPlayers.where((player) => false).fold(0, (pre, curr) => pre + curr.overall) / 11).round();
   }
 
   int get midOverall {
-    return (startPlayers.fold(0, (pre, curr) => pre + curr.stat.midOverall) / 11).round();
+    return (startPlayers.fold(0, (pre, curr) => pre + curr.overall) / 11).round();
   }
 
   int get defOverall {
-    return (startPlayers.fold(0, (pre, curr) => pre + curr.stat.defOverall) / 11).round();
+    return (startPlayers.fold(0, (pre, curr) => pre + curr.overall) / 11).round();
   }
 
   int get overall {

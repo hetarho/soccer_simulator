@@ -2,9 +2,10 @@ import 'dart:math';
 
 import 'package:soccer_simulator/entities/member.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
-import 'package:soccer_simulator/enum/stat.dart';
+import 'package:soccer_simulator/enum/player.dart';
 import 'package:soccer_simulator/enum/training_type.dart';
 import 'package:soccer_simulator/enum/position.dart';
+import 'package:soccer_simulator/utils/random.dart';
 import 'package:uuid/uuid.dart';
 
 class Player extends Member {
@@ -12,23 +13,39 @@ class Player extends Member {
     required super.name,
     required super.birthDay,
     required super.national,
-    required this.tall,
     required PlayerStat stat,
-    this.personalTrainingTypes = const [
-      TrainingType.att,
-      TrainingType.def,
-      TrainingType.pass,
-      TrainingType.physical,
-    ],
+    this.personalTrainingTypes = const [],
     this.teamTrainingTypePercent = 0.5,
     this.position,
+    required this.height,
+    required this.bodyType,
+    required this.soccerIQ,
+    required this.reflex,
+    required this.flexibility,
     int? potential,
   }) {
     _stat = stat;
 
     //포텐셜을 지정해주지 않으면 랜덤으로 책정
-    _potential = potential ?? (Random().nextInt(120) + 30);
+    _potential = potential ?? R().getInt(min: 30, max: 120);
   }
+
+  Player.random({
+    required super.name,
+    required super.birthDay,
+    required super.national,
+    required PlayerStat stat,
+    this.personalTrainingTypes = const [],
+    this.teamTrainingTypePercent = 0.5,
+  }) {
+    height = R().getDouble(min: 165, max: 210);
+    bodyType = R().getBodyType();
+    soccerIQ = R().getInt(min: 30, max: 120);
+    reflex = R().getInt(min: 30, max: 120);
+    flexibility = R().getInt(min: 30, max: 120);
+    _potential = R().getInt(min: 30, max: 120);
+  }
+
   final String id = const Uuid().v4();
 
   PlayerStat get stat {
@@ -39,8 +56,20 @@ class Player extends Member {
     return _potential;
   }
 
-  ///선수의 키
-  final double tall;
+  ///키
+  late double height;
+
+  ///체형
+  late BodyType bodyType;
+
+  ///축구 지능
+  late int soccerIQ;
+
+  ///반응 속도
+  late int reflex;
+
+  ///유연성
+  late int flexibility;
 
   //선수의 스텟
   late PlayerStat _stat;
@@ -72,15 +101,19 @@ class Player extends Member {
   /// 선방
   int saveSuccess = 0;
 
+  int get overall {
+    return 1;
+  }
+
   List<List<int>> seasonRecord = [];
 
   Position get wantPosition {
-    List<int> statList = [stat.attOverall, stat.midOverall, stat.defOverall];
+    List<int> statList = [stat.attSkill, stat.passSkill, stat.defSkill];
     statList.sort((a, b) => b - a);
 
-    if (statList[0] == stat.attOverall) {
+    if (statList[0] == stat.attSkill) {
       return Position.forward;
-    } else if (statList[0] == stat.midOverall) {
+    } else if (statList[0] == stat.passSkill) {
       return Position.midfielder;
     } else {
       return Position.defender;
@@ -124,12 +157,7 @@ class Player extends Member {
   /// ~ 0.8 엘리트 코치
   void growAfterTraining({
     required double coachAbility,
-    List<TrainingType> teamTrainingTypes = const [
-      TrainingType.att,
-      TrainingType.def,
-      TrainingType.pass,
-      TrainingType.physical,
-    ],
+    required List<TrainingType> teamTrainingTypes,
   }) {
     //남은 포텐셜이 0보다 커야 성장 가능
     if (_potential > 0) {
@@ -146,7 +174,7 @@ class Player extends Member {
           point: teamGrowPoint,
         );
         _stat.add(newStat);
-        _stat.add(PlayerStat(organization: 1));
+        _stat.add(PlayerStat(teamwork: 1));
       }
       if (personalGrowPoint > 0 && _potential / 20 > Random().nextDouble()) {
         _potential -= 1;
@@ -160,29 +188,9 @@ class Player extends Member {
   }
 
   ///선수의 특정 능력치를 향상시켜주는 메소드
-  void addStat(Stat stat, int point) {
-    int newPoint = min(_extraStat, point);
-    PlayerStat newStat = switch (stat) {
-      Stat.dribble => PlayerStat(dribble: newPoint),
-      Stat.intercept => PlayerStat(intercept: newPoint),
-      Stat.jump => PlayerStat(jump: newPoint),
-      Stat.keyPass => PlayerStat(keyPass: newPoint),
-      Stat.longPass => PlayerStat(longPass: newPoint),
-      Stat.organization => PlayerStat(organization: newPoint),
-      Stat.physical => PlayerStat(physical: newPoint),
-      Stat.reorientation => PlayerStat(reorientation: newPoint),
-      Stat.sQ => PlayerStat(sQ: newPoint),
-      Stat.save => PlayerStat(save: newPoint),
-      Stat.shoot => PlayerStat(shoot: newPoint),
-      Stat.shootAccuracy => PlayerStat(shootAccuracy: newPoint),
-      Stat.shootPower => PlayerStat(shootPower: newPoint),
-      Stat.shortPass => PlayerStat(shortPass: newPoint),
-      Stat.speed => PlayerStat(speed: newPoint),
-      Stat.stamina => PlayerStat(stamina: newPoint),
-      Stat.tackle => PlayerStat(tackle: newPoint),
-    };
-    _stat.add(newStat);
-    _extraStat -= newPoint;
+  void addStat(PlayerStat stat, int point) {
+    _stat.add(stat);
+    _extraStat -= point;
   }
 
   ///실제 경기를 뛰면서 발생하는 스텟 성장 - 출전 포지션에 따라 다르게 성장
@@ -195,3 +203,57 @@ class Player extends Member {
     }
   }
 }
+
+//---타고난거
+
+///키
+///체형 - 마름 / 보통 / 건장
+///축구지능
+///반응속도
+///유연성
+
+//---훈련으로 바뀌는거
+
+///체력
+///근력
+///기술
+
+//---경기 경험으로 바뀌는 것
+
+///침착함
+
+//--경기 경험 + 훈련으로 바뀌는 것
+
+///조직력
+
+//온더볼
+
+/// 슛 - 축구지능 + 기술 + 근력 + 침착함 + 체력
+/// 중거리 슛 - 축구지능 + 기술 + 근력 + 침착함 + 체력
+/// 키패스 - 축구지능 +  기술 + 근력 + 체력 + 조직력 + 침착함
+/// 짧은패스 - 축구지능 + 기술 + 조직력 + 침착함
+/// 롱패스 - 축구지능 + 체력 + 기술 + 근력 + 조직력 + 침착함
+/// 헤딩 - 키 + 체형 + 기술 + 체력
+/// 드리블 - 키 + 체형 + 축구지능 + 반응속도 + 치력 + 기술 + 유연성
+/// 탈압박 - 축구지능 + 반응속도 + 유연성 + 체력 + 기술 + 침착함
+
+//오프더볼
+
+///태클 - 축구지능 + 반응속도 + 체형 + 체력 + 기술 + 침착함
+///인터셉트 - 축구지능 + 반응속도  + 체력
+///압박 - 축구지능 + 체력 + 조직력 + 침착함
+///침투 - 축구지능 + 반응속도 + 체력 + 근력 + 조직력
+
+//일반
+
+///판단력 - 축구지능 + 반응속도 + 체력 + 조직력 + 침착함
+
+//특수능력
+
+///방향전환 - 판단력 + 축구 지능
+///빌드업 - 짧은패스 + 롱패스
+///반박자 빠른 슈팅 - 슛 + 반응속도
+///아크로바틱 - 슛 + 유연성
+
+///태클 마스터 - 태클 + 기술
+///패스 마스터 - 짧은패스 + 롱패스 + 키패스 + 기술

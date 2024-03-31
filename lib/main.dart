@@ -93,27 +93,25 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             ))
           ..startPlayers = List.generate(
               11,
-              (index) => Player(
+              (index) => Player.random(
                     name: RandomNames(Zone.us).manFullName(),
                     birthDay: DateTime(2002, 03, 01),
                     national: National.england,
-                    tall: 177,
-                    stat: PlayerStat.create(
-                      seed: Random().nextInt(50) + 10,
-                      potential: Random().nextInt(60) + 30,
+                    stat: PlayerStat.random(
+                      min: Random().nextInt(50) + 10,
+                      max: Random().nextInt(60) + 30,
                     ),
                   )))
       ..add(Club(name: 'Arsenal', color: Colors.red)
         ..startPlayers = List.generate(
             11,
-            (index) => Player(
+            (index) => Player.random(
                   name: RandomNames(Zone.us).manFullName(),
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,
-                  tall: 177,
-                  stat: PlayerStat.create(
-                    seed: 70,
-                    potential: 90,
+                  stat: PlayerStat.random(
+                    min: Random().nextInt(50) + 10,
+                    max: Random().nextInt(60) + 30,
                   ),
                 )));
     _league = League(clubs: clubs);
@@ -124,8 +122,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   _initFixture() {
     _fixtures = _league.getNextFixtures();
-    _roundStream =
-        StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
+    _roundStream = StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
 
     _roundSubscription?.cancel();
     _roundSubscription = _roundStream.listen((event) {
@@ -151,18 +148,13 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
           if (ref.read(selectedClubProvider) != null) {
             if (fixture.home.goal == fixture.away.goal) {
-              ref.read(moneyProvider.notifier).state =
-                  (1.1 * ref.read(moneyProvider.notifier).state).round();
+              ref.read(moneyProvider.notifier).state = (1.1 * ref.read(moneyProvider.notifier).state).round();
             } else if (fixture.home.goal > fixture.away.goal ||
-                ref.read(selectedClubProvider)!.id ==
-                    fixture.home.club.id) {
-              ref.read(moneyProvider.notifier).state =
-                  (1.5 * ref.read(moneyProvider.notifier).state).round();
+                ref.read(selectedClubProvider)!.id == fixture.home.club.id) {
+              ref.read(moneyProvider.notifier).state = (1.5 * ref.read(moneyProvider.notifier).state).round();
             } else if (fixture.away.goal > fixture.home.goal ||
-                ref.read(selectedClubProvider)!.id ==
-                    fixture.away.club.id) {
-              ref.read(moneyProvider.notifier).state =
-                  (1.5 * ref.read(moneyProvider.notifier).state).round();
+                ref.read(selectedClubProvider)!.id == fixture.away.club.id) {
+              ref.read(moneyProvider.notifier).state = (1.5 * ref.read(moneyProvider.notifier).state).round();
             }
           }
         }
@@ -265,9 +257,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         Padding(
                           padding: const EdgeInsets.all(20),
                           child: Column(
-                            children: [
-                              ..._league.clubs..sort((a, b) => b.pts - a.pts)
-                            ]
+                            children: [..._league.clubs..sort((a, b) => b.pts - a.pts)]
                                 .map((club) => Row(
                                       children: [
                                         GestureDetector(
@@ -286,15 +276,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         ),
                       const SizedBox(height: 8),
                       // if (_selectedClubId != null)
-                      ...[
-                        ..._league.seasons[0].rounds
-                          ..sort((a, b) => a.number - b.number)
-                      ]
+                      ...[..._league.seasons[0].rounds..sort((a, b) => a.number - b.number)]
                           .map((round) => round.fixtures)
                           .expand((list) => list)
-                          .where((fixture) =>
-                              fixture.away.club.name == 'Arsenal' ||
-                              fixture.home.club.name == 'Arsenal')
+                          .where(
+                              (fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
                           .map((fixture) => FixtureInfo(
                                 fixture: fixture,
                                 // targetId: _selectedClubId,
@@ -366,20 +352,15 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
 
         if (ref.read(selectedClubProvider) != null) {
           if (widget.fixture.home.goal == widget.fixture.away.goal) {
-            ref.read(moneyProvider.notifier).state =
-                (1.05 * ref.read(moneyProvider)).round();
+            ref.read(moneyProvider.notifier).state = (1.05 * ref.read(moneyProvider)).round();
             _bgColor = Colors.blue;
           } else if (widget.fixture.home.goal > widget.fixture.away.goal &&
-              ref.read(selectedClubProvider)!.id ==
-                  widget.fixture.home.club.id) {
-            ref.read(moneyProvider.notifier).state =
-                (1.1 * ref.read(moneyProvider)).round();
+              ref.read(selectedClubProvider)!.id == widget.fixture.home.club.id) {
+            ref.read(moneyProvider.notifier).state = (1.1 * ref.read(moneyProvider)).round();
             _bgColor = Colors.green;
           } else if (widget.fixture.away.goal > widget.fixture.home.goal &&
-              ref.read(selectedClubProvider)!.id ==
-                  widget.fixture.away.club.id) {
-            ref.read(moneyProvider.notifier).state =
-                (1.1 * ref.read(moneyProvider)).round();
+              ref.read(selectedClubProvider)!.id == widget.fixture.away.club.id) {
+            ref.read(moneyProvider.notifier).state = (1.1 * ref.read(moneyProvider)).round();
             _bgColor = Colors.green;
           }
         }
@@ -409,21 +390,15 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
                           duration: const Duration(milliseconds: 200),
                           width: constraints.maxWidth *
                               ((widget.fixture.home.goal + 1) /
-                                  (widget.fixture.home.goal +
-                                      widget.fixture.away.goal +
-                                      2)),
-                          color: widget.fixture.home.club.color
-                              .withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
+                                  (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          color: widget.fixture.home.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
                         ),
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           width: constraints.maxWidth *
                               ((widget.fixture.away.goal + 1) /
-                                  (widget.fixture.home.goal +
-                                      widget.fixture.away.goal +
-                                      2)),
-                          color: widget.fixture.away.club.color
-                              .withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
+                                  (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          color: widget.fixture.away.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
                         ),
                       ],
                     );

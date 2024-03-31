@@ -1,7 +1,7 @@
 enum TrainingType {
-  att,
-  def,
-  pass,
-  physical,
-  save,
+  attSkill,
+  passSkill,
+  defSkill,
+  strength,
+  stamina,
 }
