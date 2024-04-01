@@ -98,7 +98,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                     birthDay: DateTime(2002, 03, 01),
                     national: National.england,
                     stat: PlayerStat.random(
-                      min: Random().nextInt(50) + 10,
+                      min: Random().nextInt(20) + 10,
                       max: Random().nextInt(60) + 30,
                     ),
                   )))
@@ -111,7 +111,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   national: National.england,
                   stat: PlayerStat.random(
                     min: Random().nextInt(50) + 10,
-                    max: Random().nextInt(60) + 30,
+                    max: Random().nextInt(60) + 60,
                   ),
                 )));
     _league = League(clubs: clubs);

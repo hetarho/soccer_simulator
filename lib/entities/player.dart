@@ -44,6 +44,7 @@ class Player extends Member {
     reflex = R().getInt(min: 30, max: 120);
     flexibility = R().getInt(min: 30, max: 120);
     _potential = R().getInt(min: 30, max: 120);
+    _stat = stat;
   }
 
   final String id = const Uuid().v4();
