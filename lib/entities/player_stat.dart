@@ -63,10 +63,55 @@ class PlayerStat {
   PlayerStat.training({
     required List<TrainingType> type,
     required int point,
-  }) {}
+    bool isTeamTraining = false,
+  }) {
+    type.shuffle();
+    TrainingType targetType = type[0];
+
+    switch (targetType) {
+      case TrainingType.attSkill:
+        attSkill = R().getInt(max: 2, min: 1);
+        break;
+      case TrainingType.defSkill:
+        defSkill = R().getInt(max: 2, min: 1);
+        break;
+      case TrainingType.passSkill:
+        passSkill = R().getInt(max: 2, min: 1);
+        break;
+      case TrainingType.stamina:
+        stamina = R().getInt(max: 2, min: 1);
+        break;
+      case TrainingType.strength:
+        strength = R().getInt(max: 2, min: 1);
+        break;
+    }
+
+    if (isTeamTraining) teamwork = R().getInt(max: 2, min: 1);
+  }
 
   ///게임 투입시 상승시킬 능력치
-  PlayerStat.playGame({required Position position, required int point}) {}
+  PlayerStat.playGame({
+    required Position position,
+    required int point,
+  }) {
+    switch (position) {
+      case Position.forward:
+        attSkill = R().getInt(max: 2, min: 1);
+        passSkill = R().getInt(max: 2, min: 1);
+        break;
+      case Position.midfielder:
+        attSkill = R().getInt(max: 2, min: 1);
+        passSkill = R().getInt(max: 2, min: 1);
+        defSkill = R().getInt(max: 2, min: 1);
+        break;
+      case Position.defender:
+        passSkill = R().getInt(max: 2, min: 1);
+        defSkill = R().getInt(max: 2, min: 1);
+        break;
+      default:
+    }
+    teamwork = R().getInt(max: 2, min: 1);
+  }
 
   ///체력
   late final int stamina;
