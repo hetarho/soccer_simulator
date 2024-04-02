@@ -173,6 +173,7 @@ class Player extends Member {
         PlayerStat newStat = PlayerStat.training(
           type: teamTrainingTypes,
           point: teamGrowPoint,
+          isTeamTraining: true,
         );
         _stat.add(newStat);
         _stat.add(PlayerStat(teamwork: 1));
