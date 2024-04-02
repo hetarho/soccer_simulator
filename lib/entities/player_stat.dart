@@ -134,6 +134,10 @@ class PlayerStat {
   ///조직력
   late final int teamwork;
 
-  ///새로운 스탯을 더하면 스텟이 올라가는 함수
+  ///새로운 스탯을 더하면 스텟이 올라가는 함수 : TODO
   add(PlayerStat newStat) {}
+
+  int get average {
+    return ((stamina + strength + attSkill + passSkill + passSkill + defSkill + composure + teamwork) / 8).round();
+  }
 }

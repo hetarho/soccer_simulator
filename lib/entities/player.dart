@@ -103,7 +103,7 @@ class Player extends Member {
   int saveSuccess = 0;
 
   int get overall {
-    return 1;
+    return _stat.average;
   }
 
   List<List<int>> seasonRecord = [];

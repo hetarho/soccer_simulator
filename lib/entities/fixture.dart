@@ -26,7 +26,7 @@ class Fixture {
   }
 
   ///0.01초 = 실제 1초
-  Duration _playSpeed = const Duration(milliseconds: 10);
+  Duration _playSpeed = const Duration(milliseconds: 5);
   final _playTimeAmount = 10;
 
   gameStart() async {

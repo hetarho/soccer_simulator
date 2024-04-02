@@ -17,7 +17,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
   void initState() {
     super.initState();
     ref.read(fixtureProvider)?.gameStream.listen((event) {
-      setState(() {});
+      if (mounted) setState(() {});
     });
   }
 
@@ -53,9 +53,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
             ),
             ElevatedButton(
                 onPressed: () {
-                  fixture?.updateTimeSpeed(isFastMode
-                      ? Duration(milliseconds: 100)
-                      : Duration(milliseconds: 10));
+                  fixture?.updateTimeSpeed(isFastMode ? Duration(milliseconds: 100) : Duration(milliseconds: 10));
                   isFastMode = !isFastMode;
                 },
                 child: Text('스피드 빠르게 / 느리게'))

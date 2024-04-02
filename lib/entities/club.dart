@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:soccer_simulator/enum/position.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/entities/player.dart';
@@ -72,15 +73,27 @@ class Club {
 
   //TODO
   int get attOverall {
-    return (startPlayers.where((player) => false).fold(0, (pre, curr) => pre + curr.overall) / 11).round();
+    return (startPlayers
+                .where((player) => player.wantPosition == Position.forward)
+                .fold(0, (pre, curr) => pre + curr.overall) /
+            11)
+        .round();
   }
 
   int get midOverall {
-    return (startPlayers.fold(0, (pre, curr) => pre + curr.overall) / 11).round();
+    return (startPlayers
+                .where((player) => player.wantPosition == Position.midfielder)
+                .fold(0, (pre, curr) => pre + curr.overall) /
+            11)
+        .round();
   }
 
   int get defOverall {
-    return (startPlayers.fold(0, (pre, curr) => pre + curr.overall) / 11).round();
+    return (startPlayers
+                .where((player) => player.wantPosition == Position.defender)
+                .fold(0, (pre, curr) => pre + curr.overall) /
+            11)
+        .round();
   }
 
   int get overall {

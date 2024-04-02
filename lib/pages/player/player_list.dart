@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soccer_simulator/entities/player.dart';
+import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/main.dart';
 
 class PlayerListPage extends ConsumerWidget {
@@ -22,6 +23,11 @@ class PlayerListPage extends ConsumerWidget {
             },
             child: Container(
               padding: const EdgeInsets.all(8),
+              color: playerList[index].wantPosition == Position.forward
+                  ? Colors.red
+                  : playerList[index].wantPosition == Position.midfielder
+                      ? Colors.yellow
+                      : Colors.green,
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text(playerList[index].name),
                 Text(playerList[index].potential.toString()),
