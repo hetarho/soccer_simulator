@@ -61,6 +61,9 @@ class Season {
   }
 
   Season.create({required List<Club> clubs}) {
+    for (var club in clubs) {
+      club.startNewSeason();
+    }
     List<Round> newRounds = [];
     int n = clubs.length;
     // 각 클럽의 마지막 홈 경기 여부를 추적하는 맵

@@ -15,6 +15,7 @@ import 'package:soccer_simulator/entities/league.dart';
 import 'package:soccer_simulator/entities/player.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
 import 'package:soccer_simulator/enum/national.dart';
+import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';
 import 'package:soccer_simulator/router/routes.dart';
 
@@ -80,6 +81,34 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 
   init() {
+    List<PosXY> poss = [
+      PosXY(90, 25),
+      PosXY(90, 50),
+      PosXY(90, 75),
+      PosXY(60, 25),
+      PosXY(60, 50),
+      PosXY(60, 75),
+      PosXY(30, 15),
+      PosXY(30, 40),
+      PosXY(30, 60),
+      PosXY(30, 85),
+      PosXY(0, 50),
+    ];
+
+    List<Position> positions = [
+      Position.forward,
+      Position.forward,
+      Position.forward,
+      Position.midfielder,
+      Position.midfielder,
+      Position.midfielder,
+      Position.defender,
+      Position.defender,
+      Position.defender,
+      Position.defender,
+      Position.goalKeeper,
+    ];
+
     List<Club> clubs = List.generate(
         19,
         (index) => Club(
@@ -90,29 +119,31 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               Random().nextInt(180) + 75,
               1,
             ))
-          ..startPlayers = List.generate(
+          ..players = List.generate(
               11,
               (index) => Player.random(
                     name: RandomNames(Zone.us).manFullName(),
+                    position: positions[index],
                     birthDay: DateTime(2002, 03, 01),
                     national: National.england,
-                    stat: PlayerStat.random(
-                      min: Random().nextInt(20) + 10,
-                      max: Random().nextInt(60) + 30,
-                    ),
-                  )))
+                    stat: PlayerStat.random(position: positions[index], min: 100, max: 200),
+                  )
+                    ..isStartingPlayer = true
+                    ..position = positions[index]
+                    ..posXY = poss[index]))
       ..add(Club(name: 'Arsenal', color: Colors.red)
-        ..startPlayers = List.generate(
+        ..players = List.generate(
             11,
             (index) => Player.random(
                   name: RandomNames(Zone.us).manFullName(),
+                  position: positions[index],
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,
-                  stat: PlayerStat.random(
-                    min: Random().nextInt(50) + 10,
-                    max: Random().nextInt(60) + 60,
-                  ),
-                )));
+                  stat: PlayerStat.random(position: positions[index], min: 100, max: 200),
+                )
+                  ..isStartingPlayer = true
+                  ..position = positions[index]
+                  ..posXY = poss[index]));
     _league = League(clubs: clubs);
     _league.startNewSeason();
     _isAutoPlay = false;
@@ -205,6 +236,13 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   if (mounted) setState(() {});
                 },
                 child: const Text('다음경기로'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  _league.startNewSeason();
+                  if (mounted) setState(() {});
+                },
+                child: const Text('다음시즌'),
               ),
             ],
           ),

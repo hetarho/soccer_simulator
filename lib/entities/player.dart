@@ -1,12 +1,14 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
+
+import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/entities/member.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
 import 'package:soccer_simulator/enum/player.dart';
-import 'package:soccer_simulator/enum/training_type.dart';
 import 'package:soccer_simulator/enum/position.dart';
+import 'package:soccer_simulator/enum/training_type.dart';
 import 'package:soccer_simulator/utils/random.dart';
-import 'package:uuid/uuid.dart';
 
 class Player extends Member {
   Player({
@@ -34,21 +36,48 @@ class Player extends Member {
     required super.name,
     required super.birthDay,
     required super.national,
-    required PlayerStat stat,
+    required Position position,
+    PlayerStat? stat,
+    int? potential,
+    double? height,
+    BodyType? bodyType,
+    int? soccerIQ,
+    int? reflex,
+    int? flexibility,
     this.personalTrainingTypes = const [],
     this.teamTrainingTypePercent = 0.5,
   }) {
-    height = R().getDouble(min: 165, max: 210);
-    bodyType = R().getBodyType();
-    soccerIQ = R().getInt(min: 30, max: 120);
-    reflex = R().getInt(min: 30, max: 120);
-    flexibility = R().getInt(min: 30, max: 120);
-    _potential = R().getInt(min: 30, max: 120);
-    _stat = stat;
+    height = height ?? R().getDouble(min: 165, max: 210);
+    bodyType = bodyType ?? R().getBodyType();
+    soccerIQ = soccerIQ ?? R().getInt(min: 30, max: 120);
+    reflex = reflex ?? R().getInt(min: 30, max: 120);
+    flexibility = flexibility ?? R().getInt(min: 30, max: 120);
+    _potential = potential ?? R().getInt(min: 30, max: 120);
+    _stat = stat ?? PlayerStat.random(position: position);
   }
 
   final String id = const Uuid().v4();
 
+  ///스타팅 멤버인지 여부
+  bool _isStartingPlayer = false;
+
+  set isStartingPlayer(bool newValue) {
+    _isStartingPlayer = newValue;
+    if (newValue) {
+      posXY = PosXY(0, 0);
+    } else {
+      posXY = null;
+    }
+  }
+
+  bool get isStartingPlayer {
+    return _isStartingPlayer;
+  }
+
+  ///경기에서 현재 포지션
+  PosXY? posXY;
+
+  ///선수 스텟
   PlayerStat get stat {
     return _stat;
   }
@@ -204,6 +233,12 @@ class Player extends Member {
       _stat.add(newStat);
     }
   }
+}
+
+class PosXY {
+  double x = 0;
+  double y = 0;
+  PosXY(this.x, this.y);
 }
 
 //---타고난거

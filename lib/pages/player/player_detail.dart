@@ -33,35 +33,31 @@ class PlayerDetail extends ConsumerWidget {
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('추가스텟'),
-                Text('조직력'),
-                Text('스피드'),
-                Text('점프'),
-                Text('피지컬'),
-                Text('체력'),
+                Text('overall'),
+                Text('att'),
+                Text('pass'),
+                Text('def'),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text((_player.extraStat).toString()),
+                Text((_player.overall).toString()),
                 Text((_player.stat.attSkill).toString()),
-                Text((_player.stat.composure).toString()),
-                Text((_player.stat.defSkill).toString()),
                 Text((_player.stat.passSkill).toString()),
-                Text((_player.stat.stamina).toString()),
+                Text((_player.stat.defSkill).toString()),
               ],
             ),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('선호포지션'),
+                Text('position'),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text((_player.wantPosition).toString()),
+                Text((_player.position).toString()),
               ],
             ),
           ],

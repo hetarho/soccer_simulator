@@ -41,6 +41,14 @@ class Club {
     return won * 3 + drawn;
   }
 
+  startNewSeason() {
+    won = 0;
+    drawn = 0;
+    lost = 0;
+    gf = 0;
+    ga = 0;
+  }
+
   win() {
     won++;
     winStack++;
@@ -71,10 +79,9 @@ class Club {
     lost = 0;
   }
 
-  //TODO
   int get attOverall {
     return (startPlayers
-                .where((player) => player.wantPosition == Position.forward)
+                .where((player) => player.position == Position.forward)
                 .fold(0, (pre, curr) => pre + curr.overall) /
             11)
         .round();
@@ -82,7 +89,7 @@ class Club {
 
   int get midOverall {
     return (startPlayers
-                .where((player) => player.wantPosition == Position.midfielder)
+                .where((player) => player.position == Position.midfielder)
                 .fold(0, (pre, curr) => pre + curr.overall) /
             11)
         .round();
@@ -90,7 +97,7 @@ class Club {
 
   int get defOverall {
     return (startPlayers
-                .where((player) => player.wantPosition == Position.defender)
+                .where((player) => player.position == Position.defender)
                 .fold(0, (pre, curr) => pre + curr.overall) /
             11)
         .round();
@@ -101,5 +108,15 @@ class Club {
   }
 
   List<Player> players = [];
-  List<Player> startPlayers = [];
+  List<Player> get startPlayers {
+    return players.where((player) => player.isStartingPlayer).toList();
+  }
+}
+
+class StartingPlayer {
+  final Player player;
+  final double startingPosX;
+  final double startingPosY;
+
+  StartingPlayer({required this.player, required this.startingPosX, required this.startingPosY});
 }

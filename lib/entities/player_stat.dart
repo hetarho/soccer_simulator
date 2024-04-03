@@ -42,6 +42,7 @@ class PlayerStat {
   PlayerStat.random({
     int min = 15,
     int max = 40,
+    required Position position,
     int? stamina,
     int? strength,
     int? attSkill,
@@ -57,6 +58,20 @@ class PlayerStat {
     this.defSkill = defSkill ?? R().getInt(max: max, min: min);
     this.composure = composure ?? R().getInt(max: max, min: min);
     this.teamwork = teamwork ?? R().getInt(max: max, min: min);
+
+    switch (position) {
+      case Position.forward:
+        this.attSkill = attSkill ?? R().getInt(max: max + 30, min: min + 30);
+        break;
+      case Position.midfielder:
+        this.passSkill = passSkill ?? R().getInt(max: max + 30, min: min + 30);
+        break;
+      case Position.defender:
+        this.defSkill = defSkill ?? R().getInt(max: max + 30, min: min + 30);
+        break;
+      default:
+        break;
+    }
   }
 
   ///훈련시 상승시킬 능력치
@@ -114,28 +129,36 @@ class PlayerStat {
   }
 
   ///체력
-  late final int stamina;
+  int stamina = 0;
 
   ///근력
-  late final int strength;
+  int strength = 0;
 
   ///공격기술
-  late final int attSkill;
+  int attSkill = 0;
 
   ///패스기술
-  late final int passSkill;
+  int passSkill = 0;
 
   ///수비기술
-  late final int defSkill;
+  int defSkill = 0;
 
   ///침착함
-  late final int composure;
+  int composure = 0;
 
   ///조직력
-  late final int teamwork;
+  int teamwork = 0;
 
   ///새로운 스탯을 더하면 스텟이 올라가는 함수 : TODO
-  add(PlayerStat newStat) {}
+  add(PlayerStat newStat) {
+    stamina = stamina + newStat.stamina;
+    strength = strength + newStat.strength;
+    attSkill = attSkill + newStat.attSkill;
+    passSkill = passSkill + newStat.passSkill;
+    defSkill = defSkill + newStat.defSkill;
+    composure = composure + newStat.composure;
+    teamwork = teamwork + newStat.teamwork;
+  }
 
   int get average {
     return ((stamina + strength + attSkill + passSkill + passSkill + defSkill + composure + teamwork) / 8).round();
