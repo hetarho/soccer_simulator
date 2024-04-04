@@ -39,6 +39,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
               child: LayoutBuilder(builder: (context, constraints) {
                 final stadiumWidth = constraints.maxWidth;
                 final stadiumHeight = constraints.maxHeight;
+                const double playerSize = 30;
 
                 return Stack(
                   children: [
@@ -46,33 +47,51 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       color: Colors.green,
                     ),
                     ...fixture.home.club.startPlayers.map((player) {
-                      return Positioned(
-                        top: stadiumHeight * (player.posXY?.y ?? 0) / 100 - 15,
-                        left: stadiumWidth * (player.posXY?.x ?? 0) / 200 - 15,
+                      return AnimatedPositioned(
+                        duration: fixture.playSpeed,
+                        curve: Curves.easeIn,
+                        top: stadiumHeight * (player.posXY.x) / 100 - (playerSize / 2),
+                        left: stadiumWidth * (player.posXY.y) / 200 - (playerSize / 2),
                         child: Container(
-                          width: 30,
-                          height: 30,
+                          width: playerSize,
+                          height: playerSize,
                           decoration: BoxDecoration(
                             color: fixture.home.club.color,
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(playerSize),
                           ),
                         ),
                       );
                     }),
                     ...fixture.away.club.startPlayers.map((player) {
-                      return Positioned(
-                        top: stadiumHeight - (stadiumHeight * (player.posXY?.y ?? 0) / 100 + 15),
-                        left: stadiumWidth - (stadiumWidth * (player.posXY?.x ?? 0) / 200 + 15),
+                      return AnimatedPositioned(
+                        duration: fixture.playSpeed,
+                        curve: Curves.easeIn,
+                        top: stadiumHeight - (stadiumHeight * (player.posXY.x) / 100 + (playerSize / 2)),
+                        left: stadiumWidth - (stadiumWidth * (player.posXY.y) / 200 + (playerSize / 2)),
                         child: Container(
-                          width: 30,
-                          height: 30,
+                          width: playerSize,
+                          height: playerSize,
                           decoration: BoxDecoration(
                             color: fixture.away.club.color,
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
                       );
-                    })
+                    }),
+                    AnimatedPositioned(
+                      duration: fixture.playSpeed,
+                      curve: Curves.decelerate,
+                      top: stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (playerSize / 2)),
+                      left: stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (playerSize / 2)),
+                      child: Container(
+                        width: playerSize,
+                        height: playerSize,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                    ),
                   ],
                 );
               }),
@@ -97,12 +116,10 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                 ],
               ],
             ),
-            ...fixture.recoreds.map((record) => Text(
-                '${record.time.inMinutes} - ${record.scoredClub.name} /${record.scoredPlayer.name}/${record.assistPlayer.name}')),
+            ...fixture.records.map((record) => Text('${record.time.inMinutes} - ${record.scoredClub.name} /${record.scoredPlayer.name}/${record.assistPlayer.name}')),
             ElevatedButton(
                 onPressed: () {
-                  fixture.updateTimeSpeed(
-                      isFastMode ? const Duration(milliseconds: 100) : const Duration(milliseconds: 10));
+                  fixture.updateTimeSpeed(isFastMode ? const Duration(milliseconds: 100) : const Duration(milliseconds: 10));
                   isFastMode = !isFastMode;
                 },
                 child: const Text('스피드 빠르게 / 느리게'))

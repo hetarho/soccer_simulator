@@ -59,23 +59,25 @@ class Player extends Member {
   final String id = const Uuid().v4();
 
   ///스타팅 멤버인지 여부
-  bool _isStartingPlayer = false;
+  bool isStartingPlayer = false;
 
-  set isStartingPlayer(bool newValue) {
-    _isStartingPlayer = newValue;
-    if (newValue) {
-      posXY = PosXY(0, 0);
-    } else {
-      posXY = null;
-    }
-  }
-
-  bool get isStartingPlayer {
-    return _isStartingPlayer;
-  }
+  ///현재 공을 가지고있는지 여부
+  bool hasBall = false;
 
   ///경기에서 현재 포지션
-  PosXY? posXY;
+  PosXY posXY = PosXY(0, 0);
+
+  ///스타팅 포지션
+  PosXY _startingPoxXY = PosXY(0, 0);
+
+  set startingPoxXY(PosXY newValue) {
+    _startingPoxXY = newValue;
+    posXY = newValue;
+  }
+
+  PosXY get startingPoxXY {
+    return _startingPoxXY;
+  }
 
   ///선수 스텟
   PlayerStat get stat {
@@ -225,13 +227,18 @@ class Player extends Member {
   }
 
   ///실제 경기를 뛰면서 발생하는 스텟 성장 - 출전 포지션에 따라 다르게 성장
-  void growAfterPlay() {
+  void _growAfterPlay() {
     //남은 포텐셜이 0보다 커야 성장 가능, 30이상이면 경기시마다 항상 성장
     if (_potential / 30 > Random().nextDouble()) {
       if (Random().nextDouble() > 0.7) _potential -= 1;
       PlayerStat newStat = PlayerStat.playGame(position: position ?? wantPosition, point: Random().nextInt(3));
       _stat.add(newStat);
     }
+  }
+
+  void gamePlayed() {
+    posXY = startingPoxXY;
+    _growAfterPlay();
   }
 }
 

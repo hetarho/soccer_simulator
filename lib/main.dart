@@ -82,17 +82,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   init() {
     List<PosXY> poss = [
-      PosXY(90, 25),
-      PosXY(90, 50),
-      PosXY(90, 75),
-      PosXY(60, 25),
-      PosXY(60, 50),
-      PosXY(60, 75),
-      PosXY(30, 15),
-      PosXY(30, 40),
-      PosXY(30, 60),
-      PosXY(30, 85),
-      PosXY(0, 50),
+      PosXY(25, 90),
+      PosXY(50, 90),
+      PosXY(75, 90),
+      PosXY(25, 60),
+      PosXY(50, 60),
+      PosXY(75, 60),
+      PosXY(15, 30),
+      PosXY(40, 30),
+      PosXY(60, 30),
+      PosXY(85, 30),
+      PosXY(50, 0),
     ];
 
     List<Position> positions = [
@@ -130,7 +130,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   )
                     ..isStartingPlayer = true
                     ..position = positions[index]
-                    ..posXY = poss[index]))
+                    ..startingPoxXY = poss[index]))
       ..add(Club(name: 'Arsenal', color: Colors.red)
         ..players = List.generate(
             11,
@@ -143,7 +143,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 )
                   ..isStartingPlayer = true
                   ..position = positions[index]
-                  ..posXY = poss[index]));
+                  ..startingPoxXY = poss[index]));
     _league = League(clubs: clubs);
     _league.startNewSeason();
     _isAutoPlay = false;
@@ -170,20 +170,18 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       fixture.gameStream.listen((event) {
         if (event && mounted) {
           for (var players in fixture.home.club.startPlayers) {
-            players.growAfterPlay();
+            players.gamePlayed();
           }
           for (var players in fixture.away.club.startPlayers) {
-            players.growAfterPlay();
+            players.gamePlayed();
           }
 
           if (ref.read(selectedClubProvider) != null) {
             if (fixture.home.goal == fixture.away.goal) {
               ref.read(moneyProvider.notifier).state = (1.1 * ref.read(moneyProvider.notifier).state).round();
-            } else if (fixture.home.goal > fixture.away.goal ||
-                ref.read(selectedClubProvider)!.id == fixture.home.club.id) {
+            } else if (fixture.home.goal > fixture.away.goal || ref.read(selectedClubProvider)!.id == fixture.home.club.id) {
               ref.read(moneyProvider.notifier).state = (1.5 * ref.read(moneyProvider.notifier).state).round();
-            } else if (fixture.away.goal > fixture.home.goal ||
-                ref.read(selectedClubProvider)!.id == fixture.away.club.id) {
+            } else if (fixture.away.goal > fixture.home.goal || ref.read(selectedClubProvider)!.id == fixture.away.club.id) {
               ref.read(moneyProvider.notifier).state = (1.5 * ref.read(moneyProvider.notifier).state).round();
             }
           }
@@ -304,8 +302,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                             ref.read(playerListProvider.notifier).state = club.startPlayers;
                                             context.push('/players');
                                           },
-                                          child: Text(
-                                              '${club.name}(${club.overall} ${club.attOverall}/${club.midOverall}/${club.defOverall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
+                                          child: Text('${club.name}(${club.overall} ${club.attOverall}/${club.midOverall}/${club.defOverall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
                                         )
                                       ],
                                     ))
@@ -316,8 +313,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       ...[..._league.seasons[0].rounds..sort((a, b) => a.number - b.number)]
                           .map((round) => round.fixtures)
                           .expand((list) => list)
-                          .where(
-                              (fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
+                          .where((fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
                           .map((fixture) => FixtureInfo(
                                 fixture: fixture,
                                 showWDL: false,
@@ -373,22 +369,20 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
     _streamSubscription = widget.fixture.gameStream.listen((event) {
       if (event && mounted) {
         for (var players in widget.fixture.home.club.startPlayers) {
-          players.growAfterPlay();
+          players.gamePlayed();
         }
         for (var players in widget.fixture.away.club.startPlayers) {
-          players.growAfterPlay();
+          players.gamePlayed();
         }
 
         if (ref.read(selectedClubProvider) != null) {
           if (widget.fixture.home.goal == widget.fixture.away.goal) {
             ref.read(moneyProvider.notifier).state = (1.05 * ref.read(moneyProvider)).round();
             _bgColor = Colors.blue;
-          } else if (widget.fixture.home.goal > widget.fixture.away.goal &&
-              ref.read(selectedClubProvider)!.id == widget.fixture.home.club.id) {
+          } else if (widget.fixture.home.goal > widget.fixture.away.goal && ref.read(selectedClubProvider)!.id == widget.fixture.home.club.id) {
             ref.read(moneyProvider.notifier).state = (1.1 * ref.read(moneyProvider)).round();
             _bgColor = Colors.green;
-          } else if (widget.fixture.away.goal > widget.fixture.home.goal &&
-              ref.read(selectedClubProvider)!.id == widget.fixture.away.club.id) {
+          } else if (widget.fixture.away.goal > widget.fixture.home.goal && ref.read(selectedClubProvider)!.id == widget.fixture.away.club.id) {
             ref.read(moneyProvider.notifier).state = (1.1 * ref.read(moneyProvider)).round();
             _bgColor = Colors.green;
           }
@@ -417,16 +411,12 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
                       children: [
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          width: constraints.maxWidth *
-                              ((widget.fixture.home.goal + 1) /
-                                  (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          width: constraints.maxWidth * ((widget.fixture.home.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
                           color: widget.fixture.home.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
                         ),
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          width: constraints.maxWidth *
-                              ((widget.fixture.away.goal + 1) /
-                                  (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          width: constraints.maxWidth * ((widget.fixture.away.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
                           color: widget.fixture.away.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
                         ),
                       ],

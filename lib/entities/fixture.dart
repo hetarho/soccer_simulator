@@ -13,7 +13,7 @@ class Fixture {
 
   final ClubInFixture home;
   final ClubInFixture away;
-  List<FixtureRecord> recoreds = [];
+  List<FixtureRecord> records = [];
 
   Timer? _timer; // Timer 인스턴스를 저장할 변수
   late StreamController<bool> _streamController;
@@ -28,9 +28,18 @@ class Fixture {
     return playTime.compareTo(const Duration(minutes: 90)) >= 0;
   }
 
+  Duration get playSpeed {
+    return _playSpeed;
+  }
+
   ///0.01초 = 실제 1초
-  Duration _playSpeed = const Duration(milliseconds: 30);
+  Duration _playSpeed = const Duration(milliseconds: 10);
   final _playTimeAmount = 10;
+
+  ///현재 볼의 위치
+  PosXY _ballPosXY = PosXY(50, 100);
+
+  get ballPosXY => _ballPosXY;
 
   gameStart() async {
     if (!_streamController.isClosed) {
@@ -40,25 +49,28 @@ class Fixture {
           gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
         } else {
           //TODO
-          [...home.club.startPlayers, ...away.club.startPlayers].forEach((player) {
+          const double testDistance = 10;
+          for (var player in [...home.club.startPlayers, ...away.club.startPlayers]) {
             player.posXY = PosXY(
-              max(15, min(85, player.posXY!.x + R().getDouble(min: -3, max: 3))),
-              max(15, min(85, player.posXY!.y + R().getDouble(min: -3, max: 3))),
+              max(0, min(100, player.posXY.x + R().getDouble(min: -1 * testDistance, max: testDistance))),
+              max(0, min(200, player.posXY.y + R().getDouble(min: -1 * testDistance, max: testDistance))),
             );
-          });
+          }
+          _ballPosXY = PosXY(
+            max(0, min(100, _ballPosXY.x + R().getDouble(min: -10 * testDistance, max: 10 * testDistance))),
+            max(0, min(200, _ballPosXY.y + R().getDouble(min: -10 * testDistance, max: 10 * testDistance))),
+          );
 
           playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
-          bool homeScored =
-              Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
-          bool awayScored =
-              Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
+          bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
+          bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
           if (homeScored) {
             home.score();
             away.concede();
 
-            recoreds.add(FixtureRecord(
+            records.add(FixtureRecord(
               time: playTime,
               scoredClub: home.club,
               scoredPlayer: home.club.startPlayers[0],
@@ -69,7 +81,7 @@ class Fixture {
             home.concede();
             away.score();
 
-            recoreds.add(FixtureRecord(
+            records.add(FixtureRecord(
               time: playTime,
               scoredClub: away.club,
               scoredPlayer: away.club.startPlayers[0],
