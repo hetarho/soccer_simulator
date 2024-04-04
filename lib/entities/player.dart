@@ -61,9 +61,6 @@ class Player extends Member {
   ///스타팅 멤버인지 여부
   bool isStartingPlayer = false;
 
-  ///현재 공을 가지고있는지 여부
-  bool hasBall = false;
-
   ///경기에서 현재 포지션
   PosXY posXY = PosXY(0, 0);
 

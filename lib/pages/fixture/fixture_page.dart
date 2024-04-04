@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
-import 'package:soccer_simulator/entities/player.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';
 
 class FixturePage extends ConsumerStatefulWidget {
@@ -40,52 +38,58 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                 final stadiumWidth = constraints.maxWidth;
                 final stadiumHeight = constraints.maxHeight;
                 const double playerSize = 30;
-
+                const double ballSize = 20;
                 return Stack(
                   children: [
                     Container(
                       color: Colors.green,
                     ),
                     ...fixture.home.club.startPlayers.map((player) {
+                      bool hasBall = player.id == fixture.hassBallPlayer?.id;
                       return AnimatedPositioned(
-                        duration: fixture.playSpeed,
-                        curve: Curves.easeIn,
+                        duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round()),
+                        curve: Curves.linear,
                         top: stadiumHeight * (player.posXY.x) / 100 - (playerSize / 2),
                         left: stadiumWidth * (player.posXY.y) / 200 - (playerSize / 2),
                         child: Container(
-                          width: playerSize,
-                          height: playerSize,
+                          width: playerSize * (hasBall ? 1.1 : 1),
+                          height: playerSize * (hasBall ? 1.1 : 1),
                           decoration: BoxDecoration(
-                            color: fixture.home.club.color,
+                            color: hasBall ? Colors.black : fixture.home.club.color,
                             borderRadius: BorderRadius.circular(playerSize),
                           ),
                         ),
                       );
                     }),
                     ...fixture.away.club.startPlayers.map((player) {
+                      bool hasBall = player.id == fixture.hassBallPlayer?.id;
                       return AnimatedPositioned(
-                        duration: fixture.playSpeed,
+                        duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round()),
                         curve: Curves.easeIn,
                         top: stadiumHeight - (stadiumHeight * (player.posXY.x) / 100 + (playerSize / 2)),
                         left: stadiumWidth - (stadiumWidth * (player.posXY.y) / 200 + (playerSize / 2)),
                         child: Container(
-                          width: playerSize,
-                          height: playerSize,
+                          width: playerSize * (hasBall ? 1.1 : 1),
+                          height: playerSize * (hasBall ? 1.1 : 1),
                           decoration: BoxDecoration(
-                            color: fixture.away.club.color,
+                            color: hasBall ? Colors.black : fixture.away.club.color,
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
                       );
                     }),
                     AnimatedPositioned(
-                      duration: fixture.playSpeed,
+                      duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round()),
                       curve: Curves.decelerate,
-                      top: stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (playerSize / 2)),
-                      left: stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (playerSize / 2)),
+                      top: !fixture.isHomeTeamBall
+                          ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)
+                          : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
+                      left: !fixture.isHomeTeamBall
+                          ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2)
+                          : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)),
                       child: Container(
-                        width: playerSize,
-                        height: playerSize,
+                        width: ballSize,
+                        height: ballSize,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(30),
@@ -105,21 +109,21 @@ class _FixturePageState extends ConsumerState<FixturePage> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (fixture != null) ...[
-                  Text(fixture.home.club.name),
-                  Text(fixture.home.goal.toString()),
-                  const SizedBox(width: 16),
-                  const Text('vs'),
-                  const SizedBox(width: 16),
-                  Text(fixture.away.goal.toString()),
-                  Text(fixture.away.club.name),
-                ],
+                Text(fixture.home.club.name),
+                Text(fixture.home.goal.toString()),
+                const SizedBox(width: 16),
+                const Text('vs'),
+                const SizedBox(width: 16),
+                Text(fixture.away.goal.toString()),
+                Text(fixture.away.club.name),
               ],
             ),
-            ...fixture.records.map((record) => Text('${record.time.inMinutes} - ${record.scoredClub.name} /${record.scoredPlayer.name}/${record.assistPlayer.name}')),
+            ...fixture.records.map((record) => Text(
+                '${record.time.inMinutes} - ${record.scoredClub.name} /${record.scoredPlayer.name}/${record.assistPlayer.name}')),
             ElevatedButton(
                 onPressed: () {
-                  fixture.updateTimeSpeed(isFastMode ? const Duration(milliseconds: 100) : const Duration(milliseconds: 10));
+                  fixture.updateTimeSpeed(
+                      isFastMode ? const Duration(milliseconds: 100) : const Duration(milliseconds: 10));
                   isFastMode = !isFastMode;
                 },
                 child: const Text('스피드 빠르게 / 느리게'))
