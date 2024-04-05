@@ -45,7 +45,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       color: Colors.green,
                     ),
                     ...fixture.home.club.startPlayers.map((player) {
-                      bool hasBall = player.id == fixture.hassBallPlayer?.id;
+                      bool hasBall = player.id == fixture.hasBallPlayer?.id;
                       return AnimatedPositioned(
                         duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round()),
                         curve: Curves.linear,
@@ -62,7 +62,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       );
                     }),
                     ...fixture.away.club.startPlayers.map((player) {
-                      bool hasBall = player.id == fixture.hassBallPlayer?.id;
+                      bool hasBall = player.id == fixture.hasBallPlayer?.id;
                       return AnimatedPositioned(
                         duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round()),
                         curve: Curves.easeIn,

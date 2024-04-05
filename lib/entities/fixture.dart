@@ -47,17 +47,17 @@ class Fixture {
 
   get ballPosXY => _ballPosXY;
 
-  Player? hassBallPlayer;
+  Player? hasBallPlayer;
 
   bool get isHomeTeamBall {
-    return home.club.startPlayers.where((player) => player.id == hassBallPlayer?.id).isEmpty;
+    return home.club.startPlayers.where((player) => player.id == hasBallPlayer?.id).isEmpty;
   }
 
   updateGame() {
     const double testDistance = 10;
     bool catchBall = false;
     List<Player> allPlayer = [...home.club.startPlayers, ...away.club.startPlayers];
-    hassBallPlayer ??= allPlayer.first;
+    hasBallPlayer ??= allPlayer.first;
     for (var player in allPlayer) {
       player.posXY = PosXY(
         max(0, min(100, player.posXY.x + R().getDouble(min: -1 * testDistance, max: testDistance))),
@@ -65,11 +65,11 @@ class Fixture {
       );
       if (R().getInt(max: 100) > 95 && !catchBall) {
         catchBall = true;
-        hassBallPlayer = player;
+        hasBallPlayer = player;
       }
     }
 
-    _ballPosXY = hassBallPlayer!.posXY;
+    _ballPosXY = hasBallPlayer!.posXY;
 
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
