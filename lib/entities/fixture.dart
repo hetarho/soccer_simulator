@@ -67,7 +67,7 @@ class Fixture {
         max(0, min(100, player.posXY.x + R().getDouble(min: -1 * testDistance, max: testDistance))),
         max(0, min(200, player.posXY.y + R().getDouble(min: -1 * testDistance, max: testDistance))),
       );
-      if (R().getInt(max: 100) > 95 && !catchBall) {
+      if (R().getInt(max: 1000) > 998 && !catchBall) {
         catchBall = true;
         hasBallPlayer = player;
       }
@@ -88,9 +88,6 @@ class Fixture {
         assistPlayer: home.club.startPlayers[1],
       );
 
-      _timer?.cancel();
-      await Future.delayed(const Duration(seconds: 1));
-      gameStart();
     }
     if (awayScored) {
       _scored(
@@ -99,9 +96,6 @@ class Fixture {
         scoredPlayer: away.club.startPlayers[0],
         assistPlayer: away.club.startPlayers[1],
       );
-      _timer?.cancel();
-      await Future.delayed(const Duration(seconds: 1));
-      gameStart();
     }
   }
 
