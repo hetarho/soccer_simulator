@@ -105,6 +105,11 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                   fixture.gameStart();
                 },
                 child: const Text('play')),
+            ElevatedButton(
+                onPressed: () {
+                  fixture.pause();
+                },
+                child: const Text('pause')),
             Text('play time : ${fixture.playTime}'),
             Row(
               mainAxisSize: MainAxisSize.min,

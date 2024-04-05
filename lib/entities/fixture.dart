@@ -57,7 +57,7 @@ class Fixture {
     return home.club.startPlayers.where((player) => player.id == hasBallPlayer?.id).isEmpty;
   }
 
-  updateGame() {
+  updateGame() async {
     const double testDistance = 10;
     bool catchBall = false;
     List<Player> allPlayer = [...home.club.startPlayers, ...away.club.startPlayers];
@@ -87,6 +87,10 @@ class Fixture {
         scoredPlayer: home.club.startPlayers[0],
         assistPlayer: home.club.startPlayers[1],
       );
+
+      _timer?.cancel();
+      await Future.delayed(const Duration(seconds: 1));
+      gameStart();
     }
     if (awayScored) {
       _scored(
@@ -95,6 +99,9 @@ class Fixture {
         scoredPlayer: away.club.startPlayers[0],
         assistPlayer: away.club.startPlayers[1],
       );
+      _timer?.cancel();
+      await Future.delayed(const Duration(seconds: 1));
+      gameStart();
     }
   }
 
@@ -117,14 +124,14 @@ class Fixture {
   }
 
   pause() {
-    _isPause = true;
+    _timer?.cancel();
   }
 
   startFirstHalf([Function? callback]) {}
 
   gameStart() async {
     if (!_streamController.isClosed) {
-      _timer?.cancel(); // 이전 타이머가 있다면 취소
+      _timer?.cancel();
       _timer = Timer.periodic(_playSpeed, (timer) async {
         if (isGameEnd) {
           _ballPosXY = PosXY(50, 100);
