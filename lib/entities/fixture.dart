@@ -8,20 +8,24 @@ import 'package:soccer_simulator/utils/random.dart';
 
 class Fixture {
   Fixture({required this.home, required this.away}) {
-    _streamController = StreamController<bool>.broadcast();
+    _streamController = StreamController<FixtureState>.broadcast();
   }
 
   final ClubInFixture home;
   final ClubInFixture away;
   List<FixtureRecord> records = [];
+  FixtureState state = FixtureState();
 
   Timer? _timer; // Timer 인스턴스를 저장할 변수
-  late StreamController<bool> _streamController;
+  late StreamController<FixtureState> _streamController;
 
-  Stream<bool> get gameStream => _streamController.stream;
+  Stream<FixtureState> get gameStream => _streamController.stream;
 
   ///현재 경기 시간
   Duration playTime = const Duration(seconds: 0);
+
+  ///경기가 일시중지 되었는지를 나타내는 변수;
+  bool _isPause = true;
 
   ///경기가 종료 되었는지 안되었는지
   bool get isGameEnd {
@@ -29,7 +33,7 @@ class Fixture {
   }
 
   ///경기가 종료 되었는지 안되었는지
-  bool get isFisrtHalfEnd {
+  bool get isFirstHalfEnd {
     return playTime.compareTo(const Duration(minutes: 45)) >= 0;
   }
 
@@ -73,49 +77,50 @@ class Fixture {
 
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
-    bool homeScored =
-        Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
-    bool awayScored =
-        Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
+    bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
+    bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
     if (homeScored) {
-      home.score();
-      away.concede();
-
-      records.add(FixtureRecord(
-        time: playTime,
-        scoredClub: home.club,
+      _scored(
+        scoredClub: home,
+        concedeClub: away,
         scoredPlayer: home.club.startPlayers[0],
         assistPlayer: home.club.startPlayers[1],
-      ));
+      );
     }
     if (awayScored) {
-      home.concede();
-      away.score();
-
-      records.add(FixtureRecord(
-        time: playTime,
-        scoredClub: away.club,
+      _scored(
+        scoredClub: away,
+        concedeClub: home,
         scoredPlayer: away.club.startPlayers[0],
         assistPlayer: away.club.startPlayers[1],
-      ));
+      );
     }
   }
 
-  startFirstHalf([Function? callback]) {
-    if (!_streamController.isClosed) {
-      _timer?.cancel(); // 이전 타이머가 있다면 취소
-      _timer = Timer.periodic(_playSpeed, (timer) async {
-        if (isFisrtHalfEnd) {
-          _ballPosXY = PosXY(50, 100);
-          if (callback != null) await callback();
-        } else {
-          updateGame();
-          _streamController.add(isGameEnd);
-        }
-      });
-    }
+  ///점수가 났을 떄 기록하는 함수
+  _scored({
+    required ClubInFixture scoredClub,
+    required ClubInFixture concedeClub,
+    required Player scoredPlayer,
+    required Player assistPlayer,
+  }) {
+    scoredClub.score();
+    concedeClub.concede();
+
+    records.add(FixtureRecord(
+      time: playTime,
+      scoredClub: scoredClub.club,
+      scoredPlayer: scoredPlayer,
+      assistPlayer: assistPlayer,
+    ));
   }
+
+  pause() {
+    _isPause = true;
+  }
+
+  startFirstHalf([Function? callback]) {}
 
   gameStart() async {
     if (!_streamController.isClosed) {
@@ -126,7 +131,11 @@ class Fixture {
           gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
         } else {
           updateGame();
-          _streamController.add(isGameEnd);
+          state.time = playTime;
+          state.homeScore = home.goal;
+          state.awayScore = away.goal;
+          state.isEnd = isGameEnd;
+          _streamController.add(state);
         }
       });
     }
@@ -190,4 +199,13 @@ class FixtureRecord {
     required this.scoredPlayer,
     required this.assistPlayer,
   });
+}
+
+class FixtureState {
+  Duration time = const Duration(seconds: 0);
+  int homeScore = 0;
+  int awayScore = 0;
+  bool isEnd = false;
+
+  FixtureState();
 }
