@@ -83,35 +83,42 @@ class Fixture {
     }
   }
 
-  updateGame() async {
+  playWithBallTeam(List<Player> players) {
     const double testDistance = 10;
     bool catchBall = false;
-    List<Player> homeplayers = home.club.startPlayers;
+    for (var player in players) {
+      player.posXY = PosXY(
+        max(0, min(100, player.posXY.x + R().getDouble(min: -1 * testDistance, max: testDistance))),
+        max(0, min(200, player.posXY.y + R().getDouble(min: -1 * testDistance, max: testDistance))),
+      );
+      if ((R().getInt(max: 100) > 98 && !catchBall)) {
+        catchBall = true;
+        playerWithBall = player;
+      }
+    }
+  }
+
+  playWithOutBallTeam(List<Player> players) {
+    const double testDistance = 10;
+    for (var player in players) {
+      player.posXY = PosXY(
+        max(0, min(100, player.posXY.x + R().getDouble(min: -1 * testDistance, max: testDistance))),
+        max(0, min(200, player.posXY.y + R().getDouble(min: -1 * testDistance, max: testDistance))),
+      );
+    }
+  }
+
+  updateGame() async {
+    List<Player> homePlayers = home.club.startPlayers;
     List<Player> awayPlayers = away.club.startPlayers;
 
-    playerWithBall ??= homeplayers.first;
+    playerWithBall ??= homePlayers.first;
 
-    for (var player in homeplayers) {
-      player.posXY = PosXY(
-        max(0, min(100, player.posXY.x + R().getDouble(min: -1 * testDistance, max: testDistance))),
-        max(0, min(200, player.posXY.y + R().getDouble(min: -1 * testDistance, max: testDistance))),
-      );
-      if ((R().getInt(max: 100) > 98 && !catchBall) && isHomeTeamBall) {
-        catchBall = true;
-        playerWithBall = player;
-      }
-    }
+    List<Player> withBallTeamPlayers = isHomeTeamBall ? homePlayers : awayPlayers;
+    List<Player> withOutBallTeamPlayers = !isHomeTeamBall ? homePlayers : awayPlayers;
 
-    for (var player in awayPlayers) {
-      player.posXY = PosXY(
-        max(0, min(100, player.posXY.x + R().getDouble(min: -1 * testDistance, max: testDistance))),
-        max(0, min(200, player.posXY.y + R().getDouble(min: -1 * testDistance, max: testDistance))),
-      );
-      if ((R().getInt(max: 100) > 98 && !catchBall) && !isHomeTeamBall) {
-        catchBall = true;
-        playerWithBall = player;
-      }
-    }
+    playWithBallTeam(withBallTeamPlayers);
+    playWithOutBallTeam(withOutBallTeamPlayers);
 
     _ballPosXY = playerWithBall!.posXY;
 
@@ -161,8 +168,6 @@ class Fixture {
   pause() {
     _timer?.cancel();
   }
-
-  startFirstHalf([Function? callback]) {}
 
   gameStart() async {
     if (!_streamController.isClosed) {

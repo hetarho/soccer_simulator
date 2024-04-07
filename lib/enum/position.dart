@@ -3,8 +3,4 @@ enum Position {
   midfielder,
   defender,
   goalKeeper,
-  subForward,
-  subMidfielder,
-  subDefender,
-  subGoalKeeper,
 }

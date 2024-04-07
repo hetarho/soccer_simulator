@@ -237,6 +237,18 @@ class Player extends Member {
     posXY = startingPoxXY;
     _growAfterPlay();
   }
+
+  action() {}
+
+  stay() {}
+
+  drible() {}
+
+  shortPass() {}
+
+  longPass() {}
+
+  buildUpPass() {}
 }
 
 class PosXY {
