@@ -19,6 +19,8 @@ class _FixturePageState extends ConsumerState<FixturePage> {
     ref.read(fixtureProvider)?.gameStream.listen((event) {
       if (mounted) setState(() {});
     });
+
+    ref.read(fixtureProvider)?.isSimulation = false;
   }
 
   @override

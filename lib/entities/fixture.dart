@@ -24,8 +24,8 @@ class Fixture {
   ///현재 경기 시간
   Duration playTime = const Duration(seconds: 0);
 
-  ///경기가 일시중지 되었는지를 나타내는 변수;
-  bool _isPause = true;
+  ///해당 경기를 시뮬레이션으로 구동할지 나타내는 변수
+  bool isSimulation = true;
 
   ///경기가 종료 되었는지 안되었는지
   bool get isGameEnd {
@@ -57,6 +57,32 @@ class Fixture {
     return home.club.startPlayers.where((player) => player.id == playerWithBall?.id).isNotEmpty;
   }
 
+  updateGameInSumulate() {
+    playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
+
+    bool homeScored =
+        Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
+    bool awayScored =
+        Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
+
+    if (homeScored) {
+      _scored(
+        scoredClub: home,
+        concedeClub: away,
+        scoredPlayer: home.club.startPlayers[0],
+        assistPlayer: home.club.startPlayers[1],
+      );
+    }
+    if (awayScored) {
+      _scored(
+        scoredClub: away,
+        concedeClub: home,
+        scoredPlayer: away.club.startPlayers[0],
+        assistPlayer: away.club.startPlayers[1],
+      );
+    }
+  }
+
   updateGame() async {
     const double testDistance = 10;
     bool catchBall = false;
@@ -81,7 +107,7 @@ class Fixture {
         max(0, min(100, player.posXY.x + R().getDouble(min: -1 * testDistance, max: testDistance))),
         max(0, min(200, player.posXY.y + R().getDouble(min: -1 * testDistance, max: testDistance))),
       );
-      if ((R().getInt(max: 100) > 98 && !catchBall) &&!isHomeTeamBall) {
+      if ((R().getInt(max: 100) > 98 && !catchBall) && !isHomeTeamBall) {
         catchBall = true;
         playerWithBall = player;
       }
@@ -146,7 +172,7 @@ class Fixture {
           _ballPosXY = PosXY(50, 100);
           gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
         } else {
-          updateGame();
+          isSimulation ? updateGameInSumulate() : updateGame();
           state.time = playTime;
           state.homeScore = home.goal;
           state.awayScore = away.goal;
