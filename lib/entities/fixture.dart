@@ -51,34 +51,50 @@ class Fixture {
 
   get ballPosXY => _ballPosXY;
 
-  Player? hasBallPlayer;
+  Player? playerWithBall;
 
   bool get isHomeTeamBall {
-    return home.club.startPlayers.where((player) => player.id == hasBallPlayer?.id).isEmpty;
+    return home.club.startPlayers.where((player) => player.id == playerWithBall?.id).isNotEmpty;
   }
 
   updateGame() async {
     const double testDistance = 10;
     bool catchBall = false;
-    List<Player> allPlayer = [...home.club.startPlayers, ...away.club.startPlayers];
-    hasBallPlayer ??= allPlayer.first;
-    for (var player in allPlayer) {
+    List<Player> homeplayers = home.club.startPlayers;
+    List<Player> awayPlayers = away.club.startPlayers;
+
+    playerWithBall ??= homeplayers.first;
+
+    for (var player in homeplayers) {
       player.posXY = PosXY(
         max(0, min(100, player.posXY.x + R().getDouble(min: -1 * testDistance, max: testDistance))),
         max(0, min(200, player.posXY.y + R().getDouble(min: -1 * testDistance, max: testDistance))),
       );
-      if (R().getInt(max: 1000) > 998 && !catchBall) {
+      if ((R().getInt(max: 100) > 98 && !catchBall) && isHomeTeamBall) {
         catchBall = true;
-        hasBallPlayer = player;
+        playerWithBall = player;
       }
     }
 
-    _ballPosXY = hasBallPlayer!.posXY;
+    for (var player in awayPlayers) {
+      player.posXY = PosXY(
+        max(0, min(100, player.posXY.x + R().getDouble(min: -1 * testDistance, max: testDistance))),
+        max(0, min(200, player.posXY.y + R().getDouble(min: -1 * testDistance, max: testDistance))),
+      );
+      if ((R().getInt(max: 100) > 98 && !catchBall) &&!isHomeTeamBall) {
+        catchBall = true;
+        playerWithBall = player;
+      }
+    }
+
+    _ballPosXY = playerWithBall!.posXY;
 
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
-    bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
-    bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
+    bool homeScored =
+        Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
+    bool awayScored =
+        Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
     if (homeScored) {
       _scored(
@@ -87,7 +103,6 @@ class Fixture {
         scoredPlayer: home.club.startPlayers[0],
         assistPlayer: home.club.startPlayers[1],
       );
-
     }
     if (awayScored) {
       _scored(
