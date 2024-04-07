@@ -7,7 +7,7 @@ class R {
     int min = 0,
     int max = 0,
   }) {
-    return m.Random().nextInt(m.max(max - min, 0)) + min;
+    return m.Random().nextInt(m.max(max - min + 1, 0)) + min;
   }
 
   double getDouble({

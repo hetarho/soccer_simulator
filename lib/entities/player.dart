@@ -238,11 +238,27 @@ class Player extends Member {
     _growAfterPlay();
   }
 
-  action() {}
+  action() {
+    int ranNum = R().getInt(min: 0, max: 10);
+    switch (ranNum) {
+      case < 1:
+        stay();
+        break;
+      case < 5:
+        dribble();
+        break;
+      case < 8:
+        shortPass();
+        break;
+      default:
+        longPass();
+        break;
+    }
+  }
 
   stay() {}
 
-  drible() {}
+  dribble() {}
 
   shortPass() {}
 
