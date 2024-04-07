@@ -84,13 +84,9 @@ class Fixture {
   }
 
   playWithBallTeam(List<Player> players) {
-    const double testDistance = 10;
     bool catchBall = false;
     for (var player in players) {
-      player.posXY = PosXY(
-        max(0, min(100, player.posXY.x + R().getDouble(min: -1 * testDistance, max: testDistance))),
-        max(0, min(200, player.posXY.y + R().getDouble(min: -1 * testDistance, max: testDistance))),
-      );
+      player.action();
       if ((R().getInt(max: 100) > 98 && !catchBall)) {
         catchBall = true;
         playerWithBall = player;
@@ -99,12 +95,8 @@ class Fixture {
   }
 
   playWithOutBallTeam(List<Player> players) {
-    const double testDistance = 10;
     for (var player in players) {
-      player.posXY = PosXY(
-        max(0, min(100, player.posXY.x + R().getDouble(min: -1 * testDistance, max: testDistance))),
-        max(0, min(200, player.posXY.y + R().getDouble(min: -1 * testDistance, max: testDistance))),
-      );
+      player.action();
     }
   }
 

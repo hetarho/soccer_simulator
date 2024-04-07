@@ -233,13 +233,17 @@ class Player extends Member {
     }
   }
 
-  void gamePlayed() {
+  void resetPosXY() {
     posXY = startingPoxXY;
+  }
+
+  void gamePlayed() {
+    resetPosXY();
     _growAfterPlay();
   }
 
   action() {
-    int ranNum = R().getInt(min: 0, max: 10);
+    int ranNum = R().getInt(min: 0, max: 5);
     switch (ranNum) {
       case < 1:
         stay();
@@ -256,9 +260,25 @@ class Player extends Member {
     }
   }
 
-  stay() {}
+  stay() {
+    move(1);
+  }
 
-  dribble() {}
+  dribble() {
+    move(10);
+  }
+
+  move(double distance) {
+    double minX = max(0, startingPoxXY.x - 10);
+    double maxX = min(100, startingPoxXY.x + 10);
+    double minY = max(0, startingPoxXY.y - 10);
+    double maxY = min(200, startingPoxXY.y + 100);
+
+    posXY = PosXY(
+      max(minX, min(maxX, posXY.x + R().getDouble(min: -1 * distance, max: distance))),
+      max(minY, min(maxY, posXY.y + R().getDouble(min: -1 * distance, max: distance) + 1)),
+    );
+  }
 
   shortPass() {}
 
