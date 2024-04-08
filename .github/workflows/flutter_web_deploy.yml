@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.1.2
+      uses: actions/checkout@v4
 
     - name: Setup Flutter
-      uses: subosito/flutter-action@v2.12.0
+      uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.19.5' # 사용하는 Flutter 버전으로 변경
 
@@ -21,7 +21,7 @@ jobs:
       run: flutter build web --release
 
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3.9.3
+      uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GH_PAGE_DEPLOY}} # repository에서 사용할 시크릿 키 이름
         publish_dir: ./build/web
