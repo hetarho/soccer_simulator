@@ -2,13 +2,14 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:soccer_simulator/entities/ball.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player.dart';
-import 'package:soccer_simulator/utils/random.dart';
 
 class Fixture {
   Fixture({required this.home, required this.away}) {
     _streamController = StreamController<FixtureState>.broadcast();
+    home.club.players.first.hasBall = true;
   }
 
   final ClubInFixture home;
@@ -46,24 +47,23 @@ class Fixture {
   Duration _playSpeed = const Duration(milliseconds: 10);
   final _playTimeAmount = 10;
 
-  ///현재 볼의 위치
-  PosXY _ballPosXY = PosXY(50, 100);
+  Ball _ball = Ball();
 
-  get ballPosXY => _ballPosXY;
-
-  Player? playerWithBall;
+  get ballPosXY => _ball.posXY;
 
   bool get isHomeTeamBall {
-    return home.club.startPlayers.where((player) => player.id == playerWithBall?.id).isNotEmpty;
+    return home.club.startPlayers.where((player) => player.hasBall).isNotEmpty;
   }
 
-  updateGameInSumulate() {
+  Player get playerWithBall {
+    return [...home.club.players, ...away.club.players].firstWhere((player) => player.hasBall);
+  }
+
+  updateGameInSimulate() {
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
-    bool homeScored =
-        Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
-    bool awayScored =
-        Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
+    bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
+    bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
     if (homeScored) {
       _scored(
@@ -83,20 +83,15 @@ class Fixture {
     }
   }
 
-  playWithBallTeam(List<Player> players) {
-    bool catchBall = false;
-    for (var player in players) {
-      player.action();
-      if ((R().getInt(max: 100) > 98 && !catchBall)) {
-        catchBall = true;
-        playerWithBall = player;
-      }
+  playWithBallTeam(List<Player> team, List<Player> opposite) {
+    for (var player in team) {
+      player.actionWidthBall(team: team.where((teamPlayer) => teamPlayer.id != player.id).toList(), opposite: opposite, ball: _ball);
     }
   }
 
-  playWithOutBallTeam(List<Player> players) {
-    for (var player in players) {
-      player.action();
+  playWithOutBallTeam(List<Player> team, List<Player> opposite) {
+    for (var player in team) {
+      player.actionWithOutBall(team: team.where((teamPlayer) => teamPlayer.id != player.id).toList(), opposite: opposite, ball: _ball);
     }
   }
 
@@ -104,22 +99,18 @@ class Fixture {
     List<Player> homePlayers = home.club.startPlayers;
     List<Player> awayPlayers = away.club.startPlayers;
 
-    playerWithBall ??= homePlayers.first;
-
     List<Player> withBallTeamPlayers = isHomeTeamBall ? homePlayers : awayPlayers;
     List<Player> withOutBallTeamPlayers = !isHomeTeamBall ? homePlayers : awayPlayers;
 
-    playWithBallTeam(withBallTeamPlayers);
-    playWithOutBallTeam(withOutBallTeamPlayers);
+    playWithBallTeam(withBallTeamPlayers, withOutBallTeamPlayers);
+    playWithOutBallTeam(withOutBallTeamPlayers, withBallTeamPlayers);
 
-    _ballPosXY = playerWithBall!.posXY;
+    _ball.posXY = playerWithBall.posXY;
 
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
-    bool homeScored =
-        Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
-    bool awayScored =
-        Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
+    bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
+    bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
     if (homeScored) {
       _scored(
@@ -145,9 +136,22 @@ class Fixture {
     required ClubInFixture concedeClub,
     required Player scoredPlayer,
     required Player assistPlayer,
-  }) {
+  }) async {
     scoredClub.score();
     concedeClub.concede();
+
+    for (var player in scoredClub.club.players) {
+      player.hasBall = false;
+      player.resetPosXY();
+    }
+
+    for (var player in concedeClub.club.players) {
+      player.hasBall = false;
+      player.resetPosXY();
+    }
+
+    concedeClub.club.players.first.hasBall = true;
+    _ball.posXY = PosXY(50, 100);
 
     records.add(FixtureRecord(
       time: playTime,
@@ -155,6 +159,9 @@ class Fixture {
       scoredPlayer: scoredPlayer,
       assistPlayer: assistPlayer,
     ));
+    pause();
+    await Future.delayed(const Duration(seconds: 2));
+    gameStart();
   }
 
   pause() {
@@ -166,10 +173,9 @@ class Fixture {
       _timer?.cancel();
       _timer = Timer.periodic(_playSpeed, (timer) async {
         if (isGameEnd) {
-          _ballPosXY = PosXY(50, 100);
           gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
         } else {
-          isSimulation ? updateGameInSumulate() : updateGame();
+          isSimulation ? updateGameInSimulate() : updateGame();
           state.time = playTime;
           state.homeScore = home.goal;
           state.awayScore = away.goal;

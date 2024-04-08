@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
+import 'package:soccer_simulator/entities/ball.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/entities/member.dart';
@@ -86,22 +87,22 @@ class Player extends Member {
   }
 
   ///키
-  late double height;
+  late final double height;
 
   ///체형
-  late BodyType bodyType;
+  late final BodyType bodyType;
 
   ///축구 지능
-  late int soccerIQ;
+  late final int soccerIQ;
 
   ///반응 속도
-  late int reflex;
+  late final int reflex;
 
   ///유연성
-  late int flexibility;
+  late final int flexibility;
 
   //선수의 스텟
-  late PlayerStat _stat;
+  late final PlayerStat _stat;
 
   ///개인 트레이닝 시 훈련 종류
   List<TrainingType> personalTrainingTypes;
@@ -242,55 +243,100 @@ class Player extends Member {
     _growAfterPlay();
   }
 
-  action() {
-    int ranNum = R().getInt(min: 0, max: 5);
-    switch (ranNum) {
-      case < 1:
-        stay();
-        break;
-      case < 5:
-        dribble();
-        break;
-      case < 8:
-        shortPass();
-        break;
-      default:
-        longPass();
-        break;
+  ///현재 공을 가지고 있는지 여부
+  bool hasBall = false;
+
+  actionWidthBall({
+    required List<Player> team,
+    required List<Player> opposite,
+    required Ball ball,
+  }) {
+    int ranNum = R().getInt(min: 0, max: 100);
+    if (hasBall) {
+      team.sort((a, b) => a.posXY.distance(posXY) - b.posXY.distance(posXY) > 0 ? 1 : -1);
+      switch (ranNum) {
+        case < 10:
+          stayFront();
+          break;
+        case < 50:
+          dribble();
+          break;
+        case < 90:
+          pass(team.first);
+          break;
+        default:
+          pass(team.last);
+          break;
+      }
+    } else {
+      switch (ranNum) {
+        case < 100:
+          stayFront();
+          break;
+        case < 5:
+          break;
+        case < 7:
+          break;
+        default:
+          break;
+      }
     }
   }
 
-  stay() {
-    move(1);
+  actionWithOutBall({
+    required List<Player> team,
+    required List<Player> opposite,
+    required Ball ball,
+  }) {
+    stayBack();
+  }
+
+  stayFront() {
+    move(7, 2);
+  }
+
+  stayBack() {
+    move(7, -2);
   }
 
   dribble() {
-    move(10);
+    move(10, 10);
   }
 
-  move(double distance) {
-    double minX = max(0, startingPoxXY.x - 10);
-    double maxX = min(100, startingPoxXY.x + 10);
-    double minY = max(0, startingPoxXY.y - 10);
+  pass(Player target) {
+    hasBall = false;
+    target.hasBall = true;
+  }
+
+  shoot() {}
+
+  buildUpPass() {}
+
+  tackle() {}
+
+  press() {}
+
+  move(double distance, [double frontAdditional = 0]) {
+    double minX = max(0, startingPoxXY.x - 50);
+    double maxX = min(100, startingPoxXY.x + 50);
+    double minY = max(0, startingPoxXY.y - 40);
     double maxY = min(200, startingPoxXY.y + 100);
 
     posXY = PosXY(
-      max(minX, min(maxX, posXY.x + R().getDouble(min: -1 * distance, max: distance))),
-      max(minY, min(maxY, posXY.y + R().getDouble(min: -1 * distance, max: distance) + 1)),
+      (posXY.x + R().getDouble(min: -1 * distance, max: distance)).clamp(minX, maxX),
+      (posXY.y + R().getDouble(min: -1 * distance, max: distance) + frontAdditional).clamp(minY, maxY),
     );
   }
-
-  shortPass() {}
-
-  longPass() {}
-
-  buildUpPass() {}
 }
 
 class PosXY {
   double x = 0;
   double y = 0;
   PosXY(this.x, this.y);
+
+  distance(PosXY target) {
+    return sqrt(pow(x - target.x, 2) + pow(y - target.y, 2));
+  }
 }
 
 //---타고난거
@@ -346,3 +392,4 @@ class PosXY {
 
 ///태클 마스터 - 태클 + 기술
 ///패스 마스터 - 짧은패스 + 롱패스 + 키패스 + 기술
+
