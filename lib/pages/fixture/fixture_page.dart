@@ -66,7 +66,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       color: Colors.green,
                     ),
                     ...fixture.home.club.startPlayers.map((player) {
-                      bool hasBall = player.id == fixture.playerWithBall?.id;
+                      bool hasBall = player.id == fixture.playerWithBall.id;
                       return AnimatedPositioned(
                         duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round()),
                         curve: Curves.linear,
@@ -79,11 +79,17 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                             color: fixture.home.club.color,
                             borderRadius: BorderRadius.circular(playerSize),
                           ),
+                          child: Center(
+                            child: Text(
+                              '${player.backNumber}',
+                              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ),
                         ),
                       );
                     }),
                     ...fixture.away.club.startPlayers.map((player) {
-                      bool hasBall = player.id == fixture.playerWithBall?.id;
+                      bool hasBall = player.id == fixture.playerWithBall.id;
                       return AnimatedPositioned(
                         duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round()),
                         curve: Curves.easeIn,
@@ -95,6 +101,12 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                           decoration: BoxDecoration(
                             color: fixture.away.club.color,
                             borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${player.backNumber}',
+                              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
                           ),
                         ),
                       );

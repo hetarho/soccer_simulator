@@ -16,6 +16,7 @@ class PlayerDetail extends ConsumerWidget {
           name: '',
           bodyType: BodyType.normal,
           flexibility: 0,
+          backNumber: 0,
           reflex: 0,
           soccerIQ: 0,
           birthDay: DateTime.now(),

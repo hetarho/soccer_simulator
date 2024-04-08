@@ -2,6 +2,8 @@
 import 'dart:math';
 
 import 'package:soccer_simulator/entities/ball.dart';
+import 'package:soccer_simulator/entities/fixture.dart';
+import 'package:soccer_simulator/main.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/entities/member.dart';
@@ -16,6 +18,7 @@ class Player extends Member {
     required super.name,
     required super.birthDay,
     required super.national,
+    required this.backNumber,
     required PlayerStat stat,
     this.personalTrainingTypes = const [],
     this.teamTrainingTypePercent = 0.5,
@@ -37,6 +40,7 @@ class Player extends Member {
     required super.name,
     required super.birthDay,
     required super.national,
+    required this.backNumber,
     required Position position,
     PlayerStat? stat,
     int? potential,
@@ -85,6 +89,9 @@ class Player extends Member {
   int get potential {
     return _potential;
   }
+
+  ///등번호
+  final int backNumber;
 
   ///키
   late final double height;
@@ -247,28 +254,38 @@ class Player extends Member {
   bool hasBall = false;
 
   actionWidthBall({
-    required List<Player> team,
-    required List<Player> opposite,
+    required ClubInFixture team,
+    required ClubInFixture opposite,
     required Ball ball,
+    required Fixture fixture,
   }) {
-    int ranNum = R().getInt(min: 0, max: 100);
+    List<Player> teamPlayers = [...team.club.players.where((p) => p.id != id)];
+    List<Player> oppositePlayers = opposite.club.players;
+
+    ///슛으로 소유권을 상실했을 경우
+    if (teamPlayers.where((player) => player.hasBall).isEmpty && !hasBall) {
+      actionWithOutBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
+      return;
+    }
+
     if (hasBall) {
-      team.sort((a, b) => a.posXY.distance(posXY) - b.posXY.distance(posXY) > 0 ? 1 : -1);
-      switch (ranNum) {
-        case < 10:
-          stayFront();
-          break;
-        case < 50:
-          dribble();
-          break;
-        case < 90:
-          pass(team.first);
-          break;
-        default:
-          pass(team.last);
-          break;
+      teamPlayers.sort((a, b) => a.posXY.distance(posXY) - b.posXY.distance(posXY) > 0 ? 1 : -1);
+      int shootPercent = (200 / max(2, PosXY(50, 200).distance(posXY))).round();
+      int passPercent = 50;
+      int dribblePercent = 50;
+      int ranNum = R().getInt(min: 0, max: shootPercent + passPercent + dribblePercent);
+
+      if (ranNum < shootPercent) {
+        shoot(fixture: fixture, team: team, opposite: opposite, goalKeeper: oppositePlayers.firstWhere((player) => player.position == Position.goalKeeper));
+      } else if (ranNum < shootPercent + passPercent) {
+        pass(R().getInt(max: 10, min: 0) > 8 ? teamPlayers.last : teamPlayers.first);
+      } else if (ranNum < shootPercent + passPercent + dribblePercent) {
+        dribble();
+      } else {
+        stayFront();
       }
     } else {
+      int ranNum = R().getInt(min: 0, max: 100);
       switch (ranNum) {
         case < 100:
           stayFront();
@@ -284,21 +301,23 @@ class Player extends Member {
   }
 
   actionWithOutBall({
-    required List<Player> team,
-    required List<Player> opposite,
+    required ClubInFixture team,
+    required ClubInFixture opposite,
     required Ball ball,
+    required Fixture fixture,
   }) {
+    List<Player> oppositePlayers = opposite.club.players;
+
+    ///상대방의 공을 이미 배았았을 경우
+    if (oppositePlayers.where((player) => player.hasBall).isEmpty) {
+      actionWidthBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
+      return;
+    }
     int ranNum = R().getInt(min: 0, max: 100);
     PosXY reversePos = PosXY(100 - posXY.x, 200 - posXY.y);
     bool canTackle = ball.posXY.distance(reversePos) < 10;
 
-    ///상대방의 공을 이미 배았았을 경우
-    if (opposite.where((player) => player.hasBall).isEmpty) {
-      actionWidthBall(team: team, opposite: opposite, ball: ball);
-      return;
-    }
-
-    Player playerWidthBall = opposite.firstWhere((player) => player.hasBall);
+    Player playerWidthBall = oppositePlayers.firstWhere((player) => player.hasBall);
 
     if (canTackle) {
       switch (ranNum) {
@@ -345,13 +364,31 @@ class Player extends Member {
     target.hasBall = true;
   }
 
-  shoot() {}
+  shoot({
+    required Player goalKeeper,
+    required Fixture fixture,
+    required ClubInFixture team,
+    required ClubInFixture opposite,
+  }) {
+    int ranNum = R().getInt(min: 0, max: 100);
+    hasBall = false;
+    goalKeeper.hasBall = true;
+
+    if (ranNum < 10) {
+      fixture.scored(
+        scoredClub: team,
+        concedeClub: opposite,
+        scoredPlayer: this,
+        assistPlayer: team.club.startPlayers[1],
+      );
+    }
+  }
 
   buildUpPass() {}
 
   tackle(Player targetPlayer) {
     int ranNum = R().getInt(min: 0, max: 100);
-    if (ranNum < 80) {
+    if (ranNum < 20) {
       targetPlayer.hasBall = false;
       hasBall = true;
     } else {}
@@ -360,10 +397,18 @@ class Player extends Member {
   press() {}
 
   move(double distance, [double frontAdditional = 0]) {
-    double minX = max(0, startingPoxXY.x - 50);
-    double maxX = min(100, startingPoxXY.x + 50);
-    double minY = max(0, startingPoxXY.y - 40);
-    double maxY = min(200, startingPoxXY.y + 100);
+    double moveDistance = switch (position) {
+      Position.forward => 10,
+      Position.midfielder => 6,
+      Position.defender => 3,
+      Position.goalKeeper => 1,
+      _ => 0,
+    };
+
+    double minX = max(0, startingPoxXY.x - 5 * moveDistance);
+    double maxX = min(100, startingPoxXY.x + 5 * moveDistance);
+    double minY = max(0, startingPoxXY.y - 4 * moveDistance);
+    double maxY = min(200, startingPoxXY.y + 10 * moveDistance);
 
     posXY = PosXY(
       (posXY.x + R().getDouble(min: -1 * distance, max: distance)).clamp(minX, maxX),
@@ -377,8 +422,13 @@ class PosXY {
   double y = 0;
   PosXY(this.x, this.y);
 
-  distance(PosXY target) {
+  double distance(PosXY target) {
     return sqrt(pow(x - target.x, 2) + pow(y - target.y, 2));
+  }
+
+  @override
+  String toString() {
+    return 'x:$x y:$y';
   }
 }
 

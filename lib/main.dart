@@ -124,6 +124,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               (index) => Player.random(
                     name: RandomNames(Zone.us).manFullName(),
                     position: positions[index],
+                    backNumber: index,
                     birthDay: DateTime(2002, 03, 01),
                     national: National.england,
                     stat: PlayerStat.random(position: positions[index], min: 100, max: 200),
@@ -136,6 +137,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             11,
             (index) => Player.random(
                   name: RandomNames(Zone.us).manFullName(),
+                  backNumber: index,
                   position: positions[index],
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,

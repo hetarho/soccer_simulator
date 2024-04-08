@@ -74,7 +74,7 @@ class Fixture {
     bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
     if (homeScored) {
-      _scored(
+      scored(
         scoredClub: home,
         concedeClub: away,
         scoredPlayer: home.club.startPlayers[0],
@@ -82,7 +82,7 @@ class Fixture {
       );
     }
     if (awayScored) {
-      _scored(
+      scored(
         scoredClub: away,
         concedeClub: home,
         scoredPlayer: away.club.startPlayers[0],
@@ -91,27 +91,24 @@ class Fixture {
     }
   }
 
-  playWithBallTeam(List<Player> team, List<Player> opposite) {
-    for (var player in team) {
-      player.actionWidthBall(team: team.where((teamPlayer) => teamPlayer.id != player.id).toList(), opposite: opposite, ball: _ball);
+  playWithBallTeam(ClubInFixture team, ClubInFixture opposite) {
+    for (var player in team.club.players) {
+      player.actionWidthBall(team: team, opposite: opposite, ball: _ball, fixture: this);
     }
   }
 
-  playWithOutBallTeam(List<Player> team, List<Player> opposite) {
-    for (var player in team) {
-      player.actionWithOutBall(team: team.where((teamPlayer) => teamPlayer.id != player.id).toList(), opposite: opposite, ball: _ball);
+  playWithOutBallTeam(ClubInFixture team, ClubInFixture opposite) {
+    for (var player in team.club.players) {
+      player.actionWithOutBall(team: team, opposite: opposite, ball: _ball, fixture: this);
     }
   }
 
   updateGame() async {
-    List<Player> homePlayers = home.club.startPlayers;
-    List<Player> awayPlayers = away.club.startPlayers;
+    ClubInFixture withBallTeam = isHomeTeamBall ? home : away;
+    ClubInFixture withOutBallTeam = !isHomeTeamBall ? home : away;
 
-    List<Player> withBallTeamPlayers = isHomeTeamBall ? homePlayers : awayPlayers;
-    List<Player> withOutBallTeamPlayers = !isHomeTeamBall ? homePlayers : awayPlayers;
-
-    playWithBallTeam(withBallTeamPlayers, withOutBallTeamPlayers);
-    playWithOutBallTeam(withOutBallTeamPlayers, withBallTeamPlayers);
+    playWithBallTeam(withBallTeam, withOutBallTeam);
+    playWithOutBallTeam(withOutBallTeam, withBallTeam);
 
     _ball.posXY = playerWithBall.posXY;
 
@@ -122,30 +119,10 @@ class Fixture {
     } else {
       away.hasBallTime += _playTimeAmount;
     }
-
-    bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
-    bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
-
-    if (homeScored) {
-      _scored(
-        scoredClub: home,
-        concedeClub: away,
-        scoredPlayer: home.club.startPlayers[0],
-        assistPlayer: home.club.startPlayers[1],
-      );
-    }
-    if (awayScored) {
-      _scored(
-        scoredClub: away,
-        concedeClub: home,
-        scoredPlayer: away.club.startPlayers[0],
-        assistPlayer: away.club.startPlayers[1],
-      );
-    }
   }
 
   ///점수가 났을 떄 기록하는 함수
-  _scored({
+  scored({
     required ClubInFixture scoredClub,
     required ClubInFixture concedeClub,
     required Player scoredPlayer,
@@ -173,9 +150,9 @@ class Fixture {
       scoredPlayer: scoredPlayer,
       assistPlayer: assistPlayer,
     ));
-    // pause();
-    // await Future.delayed(const Duration(seconds: 2));
-    // gameStart();
+    pause();
+    await Future.delayed(const Duration(seconds: 2));
+    gameStart();
   }
 
   pause() {

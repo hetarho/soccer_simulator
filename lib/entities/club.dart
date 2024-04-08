@@ -80,27 +80,15 @@ class Club {
   }
 
   int get attOverall {
-    return (startPlayers
-                .where((player) => player.position == Position.forward)
-                .fold(0, (pre, curr) => pre + curr.overall) /
-            11)
-        .round();
+    return (startPlayers.where((player) => player.position == Position.forward).fold(0, (pre, curr) => pre + curr.overall) / 11).round();
   }
 
   int get midOverall {
-    return (startPlayers
-                .where((player) => player.position == Position.midfielder)
-                .fold(0, (pre, curr) => pre + curr.overall) /
-            11)
-        .round();
+    return (startPlayers.where((player) => player.position == Position.midfielder).fold(0, (pre, curr) => pre + curr.overall) / 11).round();
   }
 
   int get defOverall {
-    return (startPlayers
-                .where((player) => player.position == Position.defender)
-                .fold(0, (pre, curr) => pre + curr.overall) /
-            11)
-        .round();
+    return (startPlayers.where((player) => player.position == Position.defender).fold(0, (pre, curr) => pre + curr.overall) / 11).round();
   }
 
   int get overall {
