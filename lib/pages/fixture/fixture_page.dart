@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
+import 'package:soccer_simulator/entities/player.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';
 
 class FixturePage extends ConsumerStatefulWidget {
@@ -62,57 +63,35 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                 const double ballSize = 20;
                 return Stack(
                   children: [
-                    Container(
-                      color: Colors.green,
-                    ),
+                    Container(color: Colors.green),
                     ...fixture.home.club.startPlayers.map((player) {
-                      bool hasBall = player.id == fixture.playerWithBall.id;
                       return AnimatedPositioned(
-                        duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round()),
-                        curve: Curves.linear,
+                        duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
+                        curve: Curves.decelerate,
                         top: stadiumHeight * (player.posXY.x) / 100 - (playerSize / 2),
                         left: stadiumWidth * (player.posXY.y) / 200 - (playerSize / 2),
-                        child: Container(
-                          width: playerSize * (hasBall ? 1.1 : 1),
-                          height: playerSize * (hasBall ? 1.1 : 1),
-                          decoration: BoxDecoration(
-                            color: fixture.home.club.color,
-                            borderRadius: BorderRadius.circular(playerSize),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${player.backNumber}',
-                              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                          ),
+                        child: PlayerWidget(
+                          player: player,
+                          playerSize: playerSize,
+                          color: fixture.home.club.color,
                         ),
                       );
                     }),
                     ...fixture.away.club.startPlayers.map((player) {
-                      bool hasBall = player.id == fixture.playerWithBall.id;
                       return AnimatedPositioned(
-                        duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round()),
-                        curve: Curves.easeIn,
+                        duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
+                        curve: Curves.decelerate,
                         top: stadiumHeight - (stadiumHeight * (player.posXY.x) / 100 + (playerSize / 2)),
                         left: stadiumWidth - (stadiumWidth * (player.posXY.y) / 200 + (playerSize / 2)),
-                        child: Container(
-                          width: playerSize * (hasBall ? 1.1 : 1),
-                          height: playerSize * (hasBall ? 1.1 : 1),
-                          decoration: BoxDecoration(
-                            color: fixture.away.club.color,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${player.backNumber}',
-                              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                          ),
+                        child: PlayerWidget(
+                          player: player,
+                          playerSize: playerSize,
+                          color: fixture.away.club.color,
                         ),
                       );
                     }),
                     AnimatedPositioned(
-                      duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round()),
+                      duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
                       curve: Curves.decelerate,
                       top: fixture.isHomeTeamBall ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2) : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
                       left: fixture.isHomeTeamBall ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10 : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
@@ -161,6 +140,31 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                 child: const Text('스피드 빠르게 / 느리게')),
             Expanded(child: Container()),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class PlayerWidget extends StatelessWidget {
+  const PlayerWidget({Key? key, required this.player, required this.playerSize, required this.color}) : super(key: key);
+  final Player player;
+  final double playerSize;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: playerSize,
+      height: playerSize,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Center(
+        child: Text(
+          '${player.backNumber}',
+          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ),
     );
