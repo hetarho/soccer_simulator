@@ -34,6 +34,25 @@ class _FixturePageState extends ConsumerState<FixturePage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Expanded(child: Container()),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('${fixture.home.goal}'),
+                const SizedBox(width: 4),
+                Text(fixture.home.club.name),
+                const SizedBox(width: 4),
+                Text('${fixture.homeBallPercent}%'),
+                const SizedBox(width: 16),
+                const Text('vs'),
+                const SizedBox(width: 16),
+                Text('${fixture.awayBallPercent}%'),
+                const SizedBox(width: 4),
+                Text(fixture.away.club.name),
+                const SizedBox(width: 4),
+                Text('${fixture.away.goal}'),
+              ],
+            ),
             AspectRatio(
               aspectRatio: 1.6,
               child: LayoutBuilder(builder: (context, constraints) {
@@ -83,12 +102,8 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                     AnimatedPositioned(
                       duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round()),
                       curve: Curves.decelerate,
-                      top: fixture.isHomeTeamBall
-                          ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)
-                          : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
-                      left: fixture.isHomeTeamBall
-                          ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10
-                          : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
+                      top: fixture.isHomeTeamBall ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2) : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
+                      left: fixture.isHomeTeamBall ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10 : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
                       child: Container(
                         width: ballSize,
                         height: ballSize,
@@ -125,15 +140,14 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                 Text(fixture.away.club.name),
               ],
             ),
-            ...fixture.records.map((record) => Text(
-                '${record.time.inMinutes} - ${record.scoredClub.name} /${record.scoredPlayer.name}/${record.assistPlayer.name}')),
+            ...fixture.records.map((record) => Text('${record.time.inMinutes} - ${record.scoredClub.name} /${record.scoredPlayer.name}/${record.assistPlayer.name}')),
             ElevatedButton(
                 onPressed: () {
-                  fixture.updateTimeSpeed(
-                      isFastMode ? const Duration(milliseconds: 100) : const Duration(milliseconds: 10));
+                  fixture.updateTimeSpeed(isFastMode ? const Duration(milliseconds: 100) : const Duration(milliseconds: 10));
                   isFastMode = !isFastMode;
                 },
-                child: const Text('스피드 빠르게 / 느리게'))
+                child: const Text('스피드 빠르게 / 느리게')),
+            Expanded(child: Container()),
           ],
         ),
       ),

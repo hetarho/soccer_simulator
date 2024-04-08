@@ -47,9 +47,17 @@ class Fixture {
   Duration _playSpeed = const Duration(milliseconds: 10);
   final _playTimeAmount = 10;
 
-  Ball _ball = Ball();
+  final Ball _ball = Ball();
 
   get ballPosXY => _ball.posXY;
+
+  int get homeBallPercent {
+    return (max(1, home.hasBallTime) * 100 / max(1, home.hasBallTime + away.hasBallTime)).round();
+  }
+
+  int get awayBallPercent {
+    return 100 - homeBallPercent;
+  }
 
   bool get isHomeTeamBall {
     return home.club.startPlayers.where((player) => player.hasBall).isNotEmpty;
@@ -109,6 +117,12 @@ class Fixture {
 
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
+    if (isHomeTeamBall) {
+      home.hasBallTime += _playTimeAmount;
+    } else {
+      away.hasBallTime += _playTimeAmount;
+    }
+
     bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
     bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
@@ -159,9 +173,9 @@ class Fixture {
       scoredPlayer: scoredPlayer,
       assistPlayer: assistPlayer,
     ));
-    pause();
-    await Future.delayed(const Duration(seconds: 2));
-    gameStart();
+    // pause();
+    // await Future.delayed(const Duration(seconds: 2));
+    // gameStart();
   }
 
   pause() {

@@ -288,7 +288,44 @@ class Player extends Member {
     required List<Player> opposite,
     required Ball ball,
   }) {
-    stayBack();
+    int ranNum = R().getInt(min: 0, max: 100);
+    PosXY reversePos = PosXY(100 - posXY.x, 200 - posXY.y);
+    bool canTackle = ball.posXY.distance(reversePos) < 10;
+
+    ///상대방의 공을 이미 배았았을 경우
+    if (opposite.where((player) => player.hasBall).isEmpty) {
+      actionWidthBall(team: team, opposite: opposite, ball: ball);
+      return;
+    }
+
+    Player playerWidthBall = opposite.firstWhere((player) => player.hasBall);
+
+    if (canTackle) {
+      switch (ranNum) {
+        case < 30:
+          stayBack();
+          break;
+        case < 100:
+          tackle(playerWidthBall);
+          break;
+        case < 7:
+          break;
+        default:
+          break;
+      }
+    } else {
+      switch (ranNum) {
+        case < 100:
+          stayBack();
+          break;
+        case < 5:
+          break;
+        case < 7:
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   stayFront() {
@@ -312,7 +349,13 @@ class Player extends Member {
 
   buildUpPass() {}
 
-  tackle() {}
+  tackle(Player targetPlayer) {
+    int ranNum = R().getInt(min: 0, max: 100);
+    if (ranNum < 80) {
+      targetPlayer.hasBall = false;
+      hasBall = true;
+    } else {}
+  }
 
   press() {}
 
