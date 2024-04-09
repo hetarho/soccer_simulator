@@ -150,6 +150,8 @@ class Fixture {
       scoredPlayer: scoredPlayer,
       assistPlayer: assistPlayer,
     ));
+
+    assistPlayer.assist += 1;
     // pause();
     // await Future.delayed(const Duration(seconds: 1));
     // gameStart();
@@ -249,4 +251,10 @@ class FixtureState {
   bool isEnd = false;
 
   FixtureState();
+}
+
+class FixtureEvent {
+  final FixtureState state;
+
+  FixtureEvent({required this.state});
 }

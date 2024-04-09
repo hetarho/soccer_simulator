@@ -126,11 +126,20 @@ class Player extends Member {
   ///선수의 컨디션
   double condition = 1;
 
+  ///슛 횟수
+  int shooting = 0;
+
   ///골
   int goal = 0;
 
   /// 어시스트
   int assist = 0;
+
+  ///성공한 패스
+  int passSuccess = 0;
+
+  ///성공한 드리블
+  int dribbleSuccess = 0;
 
   /// 수비 성공
   int defSuccess = 0;
@@ -141,6 +150,8 @@ class Player extends Member {
   int get overall {
     return _stat.average;
   }
+
+  List<Map<String, int>> gameRecord = [];
 
   List<List<int>> seasonRecord = [];
 
@@ -166,16 +177,10 @@ class Player extends Member {
   }
 
   //시즌 데이터 저장
-  _saveSeason() {
-    seasonRecord.add([goal, assist, defSuccess, saveSuccess]);
-  }
+  _saveSeason() {}
 
   newSeason() {
     _saveSeason();
-    goal = 0;
-    assist = 0;
-    defSuccess = 0;
-    saveSuccess = 0;
   }
 
   /// 트레이팅, 게임시 성장할 수 있는 스텟
@@ -246,6 +251,22 @@ class Player extends Member {
   }
 
   void gamePlayed() {
+    gameRecord.add({
+      'goal': goal,
+      'assist': assist,
+      'passSuccess': passSuccess,
+      'shooting': shooting,
+      'defSuccess': defSuccess,
+      'saveSuccess': saveSuccess,
+      'dribbleSuccess': dribbleSuccess,
+    });
+    goal = 0;
+    assist = 0;
+    passSuccess = 0;
+    shooting = 0;
+    defSuccess = 0;
+    saveSuccess = 0;
+    dribbleSuccess = 0;
     resetPosXY();
     _growAfterPlay();
   }
@@ -350,7 +371,7 @@ class Player extends Member {
   }
 
   stayFront() {
-    move(5, 2);
+    move(5, 3);
   }
 
   moveFront() {
@@ -362,15 +383,13 @@ class Player extends Member {
   }
 
   dribble(ClubInFixture team) {
-    move(10, 10);
+    move(9, 12);
+    dribbleSuccess++;
     team.dribble++;
   }
 
   pass(Player target, ClubInFixture team) {
-    if (target.posXY.distance(posXY) > 100)
-      print('longPass!!');
-    else
-      print('short pass!!!');
+    passSuccess++;
     hasBall = false;
     target.hasBall = true;
     team.pass += 1;
@@ -386,8 +405,10 @@ class Player extends Member {
     hasBall = false;
     goalKeeper.hasBall = true;
     team.shoot += 1;
+    shooting++;
 
     if (ranNum < 10) {
+      goal++;
       fixture.scored(
         scoredClub: team,
         concedeClub: opposite,
@@ -402,6 +423,7 @@ class Player extends Member {
   tackle(Player targetPlayer, ClubInFixture team) {
     int ranNum = R().getInt(min: 0, max: 100);
     if (ranNum < 50) {
+      defSuccess++;
       targetPlayer.hasBall = false;
       hasBall = true;
       team.tackle += 1;

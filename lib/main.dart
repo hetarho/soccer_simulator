@@ -183,9 +183,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       return Club(
           name: RandomNames(Zone.germany).manName(),
           color: Color.fromRGBO(
-            Random().nextInt(180) + 75,
-            Random().nextInt(180) + 75,
-            Random().nextInt(180) + 75,
+            Random().nextInt(200) + 55,
+            Random().nextInt(200) + 55,
+            Random().nextInt(200) + 55,
             1,
           ))
         ..players = List.generate(
