@@ -411,18 +411,34 @@ class Player extends Member {
   press() {}
 
   move(double distance, [double frontAdditional = 0]) {
-    double moveDistance = switch (position) {
+    double frontDistance = switch (position) {
       Position.forward => 10,
       Position.midfielder => 6,
+      Position.defender => (startingPoxXY.x - 50).abs() > 25 ? 15 : 3,
+      Position.goalKeeper => 1,
+      _ => 0,
+    };
+
+    double backDistance = switch (position) {
+      Position.forward => 3,
+      Position.midfielder => 6,
+      Position.defender => 10,
+      Position.goalKeeper => 1,
+      _ => 0,
+    };
+
+    double horizontalDistance = switch (position) {
+      Position.forward => 4,
+      Position.midfielder => 4,
       Position.defender => 3,
       Position.goalKeeper => 1,
       _ => 0,
     };
 
-    double minX = max(0, startingPoxXY.x - 3 * moveDistance);
-    double maxX = min(100, startingPoxXY.x + 3 * moveDistance);
-    double minY = max(0, startingPoxXY.y - 5 * moveDistance);
-    double maxY = min(200, startingPoxXY.y + 8 * moveDistance);
+    double minX = max(5, startingPoxXY.x - 4 * horizontalDistance);
+    double maxX = min(95, startingPoxXY.x + 4 * horizontalDistance);
+    double minY = max(0, startingPoxXY.y - 5 * backDistance);
+    double maxY = min(200, startingPoxXY.y + 7 * frontDistance);
 
     posXY = PosXY(
       (posXY.x + R().getDouble(min: -1 * distance, max: distance)).clamp(minX, maxX),
