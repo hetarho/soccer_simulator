@@ -435,10 +435,12 @@ class Player extends Member {
       _ => 0,
     };
 
-    double minX = max(5, startingPoxXY.x - 4 * horizontalDistance);
-    double maxX = min(95, startingPoxXY.x + 4 * horizontalDistance);
-    double minY = max(0, startingPoxXY.y - 5 * backDistance);
-    double maxY = min(200, startingPoxXY.y + 7 * frontDistance);
+    double ranNum = R().getDouble(min: -3, max: 3);
+
+    double minX = max(5, startingPoxXY.x - 4 * horizontalDistance + ranNum);
+    double maxX = min(95, startingPoxXY.x + 4 * horizontalDistance + ranNum);
+    double minY = max(0, startingPoxXY.y - 5 * backDistance + ranNum);
+    double maxY = min(200, startingPoxXY.y + 9 * frontDistance + ranNum);
 
     posXY = PosXY(
       (posXY.x + R().getDouble(min: -1 * distance, max: distance)).clamp(minX, maxX),

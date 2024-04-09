@@ -135,9 +135,47 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       PositionInFormation(pos: PosXY(85, 30), position: Position.defender),
       PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
     ]);
+    Formation formation4141 = Formation(positions: [
+      PositionInFormation(pos: PosXY(50, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(15, 70), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(40, 70), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(60, 70), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(85, 70), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(50, 50), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(15, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(40, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(60, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(85, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
+    ]);
+    Formation formation352 = Formation(positions: [
+      PositionInFormation(pos: PosXY(40, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(60, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(10, 65), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(30, 65), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(50, 65), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(70, 65), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(90, 65), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(30, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(50, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(70, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
+    ]);
+    Formation formation532 = Formation(positions: [
+      PositionInFormation(pos: PosXY(40, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(60, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(30, 65), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(50, 65), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(70, 65), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(10, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(30, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(50, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(70, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(90, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
+    ]);
 
-    // List<Formation> formations = [formation433, formation442,formation41212,formation4222];
-    List<Formation> formations = [formation4222];
+    List<Formation> formations = [formation433, formation442,formation41212,formation4222,formation4141,formation352];
 
     List<Club> clubs = List.generate(19, (index) {
       formations.shuffle();
