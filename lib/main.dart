@@ -81,71 +81,103 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 
   init() {
-    List<PosXY> poss = [
-      PosXY(25, 90),
-      PosXY(50, 90),
-      PosXY(75, 90),
-      PosXY(25, 60),
-      PosXY(50, 60),
-      PosXY(75, 60),
-      PosXY(15, 30),
-      PosXY(40, 30),
-      PosXY(60, 30),
-      PosXY(85, 30),
-      PosXY(50, 0),
-    ];
+    Formation formation433 = Formation(positions: [
+      PositionInFormation(pos: PosXY(25, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(50, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(75, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(25, 60), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(50, 60), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(75, 60), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(15, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(40, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(60, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(85, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
+    ]);
 
-    List<Position> positions = [
-      Position.forward,
-      Position.forward,
-      Position.forward,
-      Position.midfielder,
-      Position.midfielder,
-      Position.midfielder,
-      Position.defender,
-      Position.defender,
-      Position.defender,
-      Position.defender,
-      Position.goalKeeper,
-    ];
+    Formation formation442 = Formation(positions: [
+      PositionInFormation(pos: PosXY(35, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(65, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(15, 60), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(40, 60), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(60, 60), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(85, 60), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(15, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(40, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(60, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(85, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
+    ]);
 
-    List<Club> clubs = List.generate(
-        19,
-        (index) => Club(
-            name: RandomNames(Zone.germany).manName(),
-            color: Color.fromRGBO(
-              Random().nextInt(180) + 75,
-              Random().nextInt(180) + 75,
-              Random().nextInt(180) + 75,
-              1,
-            ))
-          ..players = List.generate(
-              11,
-              (index) => Player.random(
-                    name: RandomNames(Zone.us).manFullName(),
-                    position: positions[index],
-                    backNumber: index,
-                    birthDay: DateTime(2002, 03, 01),
-                    national: National.england,
-                    stat: PlayerStat.random(position: positions[index], min: 100, max: 200),
-                  )
-                    ..isStartingPlayer = true
-                    ..position = positions[index]
-                    ..startingPoxXY = poss[index]))
+    Formation formation41212 = Formation(positions: [
+      PositionInFormation(pos: PosXY(35, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(65, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(50, 75), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(35, 60), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(65, 60), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(50, 45), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(15, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(40, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(60, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(85, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
+    ]);
+    Formation formation4222 = Formation(positions: [
+      PositionInFormation(pos: PosXY(40, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(60, 90), position: Position.forward),
+      PositionInFormation(pos: PosXY(15, 70), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(85, 70), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(40, 50), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(60, 50), position: Position.midfielder),
+      PositionInFormation(pos: PosXY(15, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(40, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(60, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(85, 30), position: Position.defender),
+      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
+    ]);
+
+    // List<Formation> formations = [formation433, formation442,formation41212,formation4222];
+    List<Formation> formations = [formation4222];
+
+    List<Club> clubs = List.generate(19, (index) {
+      formations.shuffle();
+      Formation formation = formations.first;
+      return Club(
+          name: RandomNames(Zone.germany).manName(),
+          color: Color.fromRGBO(
+            Random().nextInt(180) + 75,
+            Random().nextInt(180) + 75,
+            Random().nextInt(180) + 75,
+            1,
+          ))
+        ..players = List.generate(
+            11,
+            (index) => Player.random(
+                  name: RandomNames(Zone.us).manFullName(),
+                  position: formation.positions[index].position,
+                  backNumber: index,
+                  birthDay: DateTime(2002, 03, 01),
+                  national: National.england,
+                  stat: PlayerStat.random(position: formation.positions[index].position, min: 100, max: 200),
+                )
+                  ..isStartingPlayer = true
+                  ..position = formation.positions[index].position
+                  ..startingPoxXY = formation.positions[index].pos);
+    })
       ..add(Club(name: 'Arsenal', color: Colors.red)
         ..players = List.generate(
             11,
             (index) => Player.random(
                   name: RandomNames(Zone.us).manFullName(),
                   backNumber: index,
-                  position: positions[index],
+                  position: formation433.positions[index].position,
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,
-                  stat: PlayerStat.random(position: positions[index], min: 100, max: 200),
+                  stat: PlayerStat.random(position: formation433.positions[index].position, min: 100, max: 200),
                 )
                   ..isStartingPlayer = true
-                  ..position = positions[index]
-                  ..startingPoxXY = poss[index]));
+                  ..position = formation433.positions[index].position
+                  ..startingPoxXY = formation433.positions[index].pos));
     _league = League(clubs: clubs);
     _league.startNewSeason();
     _isAutoPlay = false;
@@ -461,4 +493,17 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
       ],
     );
   }
+}
+
+class Formation {
+  final List<PositionInFormation> positions;
+
+  Formation({required this.positions});
+}
+
+class PositionInFormation {
+  final PosXY pos;
+  final Position position;
+
+  PositionInFormation({required this.pos, required this.position});
 }

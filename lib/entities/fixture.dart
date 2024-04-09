@@ -44,7 +44,7 @@ class Fixture {
   }
 
   ///0.01초 = 실제 1초
-  Duration _playSpeed = const Duration(milliseconds: 10);
+  Duration _playSpeed = const Duration(milliseconds: 0);
   final _playTimeAmount = 10;
 
   final Ball _ball = Ball();
@@ -150,9 +150,9 @@ class Fixture {
       scoredPlayer: scoredPlayer,
       assistPlayer: assistPlayer,
     ));
-    pause();
-    await Future.delayed(const Duration(seconds: 1));
-    gameStart();
+    // pause();
+    // await Future.delayed(const Duration(seconds: 1));
+    // gameStart();
   }
 
   pause() {
@@ -205,6 +205,11 @@ class ClubInFixture {
   final Club club;
   int _scoredGoal = 0;
   int hasBallTime = 0;
+  int shoot = 0;
+  int pass = 0;
+  int tackle = 0;
+  int dribble = 0;
+
   score() {
     _scoredGoal += 1;
     club.gf++;

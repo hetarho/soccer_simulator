@@ -271,26 +271,28 @@ class Player extends Member {
     if (hasBall) {
       teamPlayers.sort((a, b) => a.posXY.distance(posXY) - b.posXY.distance(posXY) > 0 ? 1 : -1);
       int shootPercent = (200 / max(2, PosXY(50, 200).distance(posXY))).round();
-      int passPercent = 50;
-      int dribblePercent = 50;
+      int passPercent = 100;
+      int dribblePercent = 30;
       int ranNum = R().getInt(min: 0, max: shootPercent + passPercent + dribblePercent);
 
       if (ranNum < shootPercent) {
         shoot(fixture: fixture, team: team, opposite: opposite, goalKeeper: oppositePlayers.firstWhere((player) => player.position == Position.goalKeeper));
       } else if (ranNum < shootPercent + passPercent) {
-        pass(R().getInt(max: 10, min: 0) > 8 ? teamPlayers.last : teamPlayers.first);
+        Player target = R().getInt(max: 100, min: 0) > 98 ? teamPlayers[R().getInt(min: 0, max: 2)] : teamPlayers[R().getInt(min: 7, max: 9)];
+        pass(target, team);
       } else if (ranNum < shootPercent + passPercent + dribblePercent) {
-        dribble();
+        dribble(team);
       } else {
         stayFront();
       }
     } else {
       int ranNum = R().getInt(min: 0, max: 100);
       switch (ranNum) {
-        case < 100:
+        case < 40:
           stayFront();
           break;
-        case < 5:
+        case < 100:
+          moveFront();
           break;
         case < 7:
           break;
@@ -325,7 +327,7 @@ class Player extends Member {
           stayBack();
           break;
         case < 100:
-          tackle(playerWidthBall);
+          tackle(playerWidthBall, team);
           break;
         case < 7:
           break;
@@ -348,20 +350,30 @@ class Player extends Member {
   }
 
   stayFront() {
-    move(7, 2);
+    move(5, 2);
+  }
+
+  moveFront() {
+    move(12, 15);
   }
 
   stayBack() {
-    move(7, -2);
+    move(5, -4);
   }
 
-  dribble() {
+  dribble(ClubInFixture team) {
     move(10, 10);
+    team.dribble++;
   }
 
-  pass(Player target) {
+  pass(Player target, ClubInFixture team) {
+    if (target.posXY.distance(posXY) > 100)
+      print('longPass!!');
+    else
+      print('short pass!!!');
     hasBall = false;
     target.hasBall = true;
+    team.pass += 1;
   }
 
   shoot({
@@ -373,6 +385,7 @@ class Player extends Member {
     int ranNum = R().getInt(min: 0, max: 100);
     hasBall = false;
     goalKeeper.hasBall = true;
+    team.shoot += 1;
 
     if (ranNum < 10) {
       fixture.scored(
@@ -386,11 +399,12 @@ class Player extends Member {
 
   buildUpPass() {}
 
-  tackle(Player targetPlayer) {
+  tackle(Player targetPlayer, ClubInFixture team) {
     int ranNum = R().getInt(min: 0, max: 100);
-    if (ranNum < 20) {
+    if (ranNum < 50) {
       targetPlayer.hasBall = false;
       hasBall = true;
+      team.tackle += 1;
     } else {}
   }
 
@@ -405,10 +419,10 @@ class Player extends Member {
       _ => 0,
     };
 
-    double minX = max(0, startingPoxXY.x - 5 * moveDistance);
-    double maxX = min(100, startingPoxXY.x + 5 * moveDistance);
-    double minY = max(0, startingPoxXY.y - 4 * moveDistance);
-    double maxY = min(200, startingPoxXY.y + 10 * moveDistance);
+    double minX = max(0, startingPoxXY.x - 3 * moveDistance);
+    double maxX = min(100, startingPoxXY.x + 3 * moveDistance);
+    double minY = max(0, startingPoxXY.y - 5 * moveDistance);
+    double maxY = min(200, startingPoxXY.y + 8 * moveDistance);
 
     posXY = PosXY(
       (posXY.x + R().getDouble(min: -1 * distance, max: distance)).clamp(minX, maxX),
