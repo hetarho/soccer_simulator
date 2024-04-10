@@ -25,7 +25,6 @@ class _FixturePageState extends ConsumerState<FixturePage> {
 
     ref.read(fixtureProvider)?.isSimulation = false;
   }
-
   @override
   Widget build(BuildContext context) {
     if (ref.read(fixtureProvider) == null) return Container();
@@ -108,7 +107,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                                 child: PlayerWidget(
                                   player: player,
                                   playerSize: playerSize,
-                                  color: fixture.home.club.color,
+                                  color: player.hasBall ? Colors.black : fixture.home.club.color,
                                 ),
                               ),
                             );
@@ -129,7 +128,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                                 child: PlayerWidget(
                                   player: player,
                                   playerSize: playerSize,
-                                  color: fixture.away.club.color,
+                                  color: player.hasBall ? Colors.black : fixture.away.club.color,
                                 ),
                               ),
                             );
@@ -137,7 +136,9 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                           AnimatedPositioned(
                             duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
                             curve: Curves.decelerate,
-                            top: fixture.isHomeTeamBall ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2) : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
+                            top: fixture.isHomeTeamBall
+                                ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)
+                                : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
                             left: fixture.isHomeTeamBall
                                 ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10
                                 : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
@@ -159,30 +160,31 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                         fixture.gameStart();
                       },
                       child: const Text('play')),
-                  ElevatedButton(
-                      onPressed: () {
-                        fixture.pause();
-                      },
-                      child: const Text('pause')),
+                  ...fixture.records.map((record) => Text(
+                      '${record.time.inMinutes} - ${record.scoredClub.name} /${record.scoredPlayer.backNumber} ${record.scoredPlayer.name}/${record.assistPlayer.backNumber} ${record.assistPlayer.name}')),
                   Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(fixture.home.club.name),
-                      Text(fixture.home.goal.toString()),
-                      const SizedBox(width: 16),
-                      const Text('vs'),
-                      const SizedBox(width: 16),
-                      Text(fixture.away.goal.toString()),
-                      Text(fixture.away.club.name),
-                    ],
+                    children: [0, 10, 100, 200, 500, 1000]
+                        .map((speed) => ElevatedButton(
+                              style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(0)),
+                              onPressed: () {
+                                fixture.updateTimeSpeed(Duration(milliseconds: speed));
+                              },
+                              child: Text('${speed}'),
+                            ))
+                        .toList(),
                   ),
-                  ...fixture.records.map((record) => Text('${record.time.inMinutes} - ${record.scoredClub.name} /${record.scoredPlayer.backNumber} ${record.scoredPlayer.name}/${record.assistPlayer.name}')),
-                  ElevatedButton(
-                      onPressed: () {
-                        fixture.updateTimeSpeed(isFastMode ? const Duration(milliseconds: 100) : const Duration(milliseconds: 10));
-                        isFastMode = !isFastMode;
-                      },
-                      child: const Text('스피드 빠르게 / 느리게')),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [true, false]
+                        .map((e) => ElevatedButton(
+                              onPressed: () {
+                                fixture.stopWhenGoal = e;
+                              },
+                              child: Text('$e'),
+                            ))
+                        .toList(),
+                  ),
                 ],
               ),
             ),
@@ -211,37 +213,37 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                   Row(
                     children: [
                       const SizedBox(width: 120, child: Text('goal')),
-                      Text(_selectedPlayer?.gameRecord.first['goal'].toString() ?? ''),
+                      Text(_selectedPlayer?.gameRecord.last['goal'].toString() ?? ''),
                     ],
                   ),
                   Row(
                     children: [
                       const SizedBox(width: 120, child: Text('assist')),
-                      Text(_selectedPlayer?.gameRecord.first['assist'].toString() ?? ''),
+                      Text(_selectedPlayer?.gameRecord.last['assist'].toString() ?? ''),
                     ],
                   ),
                   Row(
                     children: [
                       const SizedBox(width: 120, child: Text('pass')),
-                      Text(_selectedPlayer?.gameRecord.first['passSuccess'].toString() ?? ''),
+                      Text(_selectedPlayer?.gameRecord.last['passSuccess'].toString() ?? ''),
                     ],
                   ),
                   Row(
                     children: [
                       const SizedBox(width: 120, child: Text('shoot')),
-                      Text(_selectedPlayer?.gameRecord.first['shooting'].toString() ?? ''),
+                      Text(_selectedPlayer?.gameRecord.last['shooting'].toString() ?? ''),
                     ],
                   ),
                   Row(
                     children: [
                       const SizedBox(width: 120, child: Text('dribbleSuccess')),
-                      Text(_selectedPlayer?.gameRecord.first['dribbleSuccess'].toString() ?? ''),
+                      Text(_selectedPlayer?.gameRecord.last['dribbleSuccess'].toString() ?? ''),
                     ],
                   ),
                   Row(
                     children: [
                       const SizedBox(width: 120, child: Text('defSuccess')),
-                      Text(_selectedPlayer?.gameRecord.first['defSuccess'].toString() ?? ''),
+                      Text(_selectedPlayer?.gameRecord.last['defSuccess'].toString() ?? ''),
                     ],
                   ),
                 ]

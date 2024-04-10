@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:async/async.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -61,7 +59,6 @@ class MyHomePage extends ConsumerStatefulWidget {
 
 final playerListProvider = StateProvider<List<Player>>((_) => []);
 final playerProvider = StateProvider<Player?>((_) => null);
-final moneyProvider = StateProvider<int>((_) => 10000);
 final selectedClubProvider = StateProvider<Club?>((_) => null);
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
@@ -175,7 +172,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
     ]);
 
-    List<Formation> formations = [formation433, formation442,formation41212,formation4222,formation4141,formation352];
+    List<Formation> formations = [
+      formation433,
+      formation442,
+      formation41212,
+      formation4222,
+      formation4141,
+      formation352
+    ];
 
     List<Club> clubs = List.generate(19, (index) {
       formations.shuffle();
@@ -238,29 +242,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       }
     });
 
-    for (var fixture in _fixtures) {
-      fixture.gameStream.listen((event) {
-        if (event.isEnd && mounted) {
-          for (var players in fixture.home.club.startPlayers) {
-            players.gamePlayed();
-          }
-          for (var players in fixture.away.club.startPlayers) {
-            players.gamePlayed();
-          }
-
-          if (ref.read(selectedClubProvider) != null) {
-            if (fixture.home.goal == fixture.away.goal) {
-              ref.read(moneyProvider.notifier).state = (1.1 * ref.read(moneyProvider.notifier).state).round();
-            } else if (fixture.home.goal > fixture.away.goal || ref.read(selectedClubProvider)!.id == fixture.home.club.id) {
-              ref.read(moneyProvider.notifier).state = (1.5 * ref.read(moneyProvider.notifier).state).round();
-            } else if (fixture.away.goal > fixture.home.goal || ref.read(selectedClubProvider)!.id == fixture.away.club.id) {
-              ref.read(moneyProvider.notifier).state = (1.5 * ref.read(moneyProvider.notifier).state).round();
-            }
-          }
-        }
-        if (mounted) setState(() {});
-      });
-    }
     if (mounted) setState(() {});
   }
 
@@ -343,8 +324,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             ],
           ),
           Text('round : ${_league.round}'),
-          const SizedBox(height: 20),
-          Text('MONEY : ${ref.watch(moneyProvider)}'),
           Expanded(
             child: CustomScrollView(
               slivers: [
@@ -374,7 +353,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                             ref.read(playerListProvider.notifier).state = club.startPlayers;
                                             context.push('/players');
                                           },
-                                          child: Text('${club.name}(${club.overall} ${club.attOverall}/${club.midOverall}/${club.defOverall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
+                                          child: Text(
+                                              '${club.name}(${club.overall} ${club.attOverall}/${club.midOverall}/${club.defOverall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
                                         )
                                       ],
                                     ))
@@ -382,10 +362,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           ),
                         ),
                       const SizedBox(height: 8),
-                      ...[..._league.seasons[0].rounds..sort((a, b) => a.number - b.number)]
+                      ...[..._league.seasons.last.rounds..sort((a, b) => a.number - b.number)]
                           .map((round) => round.fixtures)
                           .expand((list) => list)
-                          .where((fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
+                          .where(
+                              (fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
                           .map((fixture) => FixtureInfo(
                                 fixture: fixture,
                                 showWDL: false,
@@ -446,19 +427,6 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
         for (var players in widget.fixture.away.club.startPlayers) {
           players.gamePlayed();
         }
-
-        if (ref.read(selectedClubProvider) != null) {
-          if (widget.fixture.home.goal == widget.fixture.away.goal) {
-            ref.read(moneyProvider.notifier).state = (1.05 * ref.read(moneyProvider)).round();
-            _bgColor = Colors.blue;
-          } else if (widget.fixture.home.goal > widget.fixture.away.goal && ref.read(selectedClubProvider)!.id == widget.fixture.home.club.id) {
-            ref.read(moneyProvider.notifier).state = (1.1 * ref.read(moneyProvider)).round();
-            _bgColor = Colors.green;
-          } else if (widget.fixture.away.goal > widget.fixture.home.goal && ref.read(selectedClubProvider)!.id == widget.fixture.away.club.id) {
-            ref.read(moneyProvider.notifier).state = (1.1 * ref.read(moneyProvider)).round();
-            _bgColor = Colors.green;
-          }
-        }
       }
       if (mounted) setState(() {});
     });
@@ -483,12 +451,16 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
                       children: [
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          width: constraints.maxWidth * ((widget.fixture.home.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          width: constraints.maxWidth *
+                              ((widget.fixture.home.goal + 1) /
+                                  (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
                           color: widget.fixture.home.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
                         ),
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          width: constraints.maxWidth * ((widget.fixture.away.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          width: constraints.maxWidth *
+                              ((widget.fixture.away.goal + 1) /
+                                  (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
                           color: widget.fixture.away.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
                         ),
                       ],

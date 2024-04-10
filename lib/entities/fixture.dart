@@ -9,9 +9,9 @@ import 'package:soccer_simulator/entities/player.dart';
 class Fixture {
   Fixture({required this.home, required this.away}) {
     _streamController = StreamController<FixtureState>.broadcast();
-    home.club.players.first.hasBall = true;
   }
-
+  ////테스트용
+  bool stopWhenGoal = false;
   final ClubInFixture home;
   final ClubInFixture away;
   List<FixtureRecord> records = [];
@@ -63,15 +63,17 @@ class Fixture {
     return home.club.startPlayers.where((player) => player.hasBall).isNotEmpty;
   }
 
-  Player get playerWithBall {
-    return [...home.club.players, ...away.club.players].firstWhere((player) => player.hasBall);
+  Player? get playerWithBall {
+    return [...home.club.players, ...away.club.players, null].firstWhere((player) => player?.hasBall ?? true);
   }
 
   updateGameInSimulate() {
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
-    bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
-    bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
+    bool homeScored =
+        Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
+    bool awayScored =
+        Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
     if (homeScored) {
       scored(
@@ -110,7 +112,7 @@ class Fixture {
     playWithBallTeam(withBallTeam, withOutBallTeam);
     playWithOutBallTeam(withOutBallTeam, withBallTeam);
 
-    _ball.posXY = playerWithBall.posXY;
+    _ball.posXY = playerWithBall!.posXY;
 
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
@@ -130,6 +132,11 @@ class Fixture {
   }) async {
     scoredClub.score();
     concedeClub.concede();
+    if (!isSimulation && stopWhenGoal) {
+      pause();
+      await Future.delayed(const Duration(seconds: 2));
+      gameStart();
+    }
 
     for (var player in scoredClub.club.players) {
       player.hasBall = false;
@@ -152,9 +159,6 @@ class Fixture {
     ));
 
     assistPlayer.assist += 1;
-    // pause();
-    // await Future.delayed(const Duration(seconds: 1));
-    // gameStart();
   }
 
   pause() {
@@ -162,6 +166,8 @@ class Fixture {
   }
 
   gameStart() async {
+    if (playerWithBall == null) home.club.players.first.hasBall = true;
+
     if (!_streamController.isClosed) {
       _timer?.cancel();
       _timer = Timer.periodic(_playSpeed, (timer) async {
@@ -173,6 +179,10 @@ class Fixture {
           state.homeScore = home.goal;
           state.awayScore = away.goal;
           state.isEnd = isGameEnd;
+          if (isGameEnd) {
+            playerWithBall?.hasBall = false;
+            _ball.posXY = PosXY(50, 100);
+          }
           _streamController.add(state);
         }
       });
