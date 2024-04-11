@@ -1,4 +1,4 @@
-import 'package:soccer_simulator/entities/player.dart';
+import 'package:soccer_simulator/entities/pos/pos.dart';
 
 class Ball {
   PosXY posXY = PosXY(50, 100);

@@ -1,4 +1,4 @@
-import 'package:soccer_simulator/entities/player.dart';
+import 'package:soccer_simulator/entities/player/player.dart';
 
 class Ground {
   Ground({required this.homePlayers, required this.awayPlayers});

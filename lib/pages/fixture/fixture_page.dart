@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
-import 'package:soccer_simulator/entities/player.dart';
+import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';
 
 class FixturePage extends ConsumerStatefulWidget {

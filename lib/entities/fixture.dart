@@ -4,7 +4,8 @@ import 'dart:math';
 
 import 'package:soccer_simulator/entities/ball.dart';
 import 'package:soccer_simulator/entities/club.dart';
-import 'package:soccer_simulator/entities/player.dart';
+import 'package:soccer_simulator/entities/player/player.dart';
+import 'package:soccer_simulator/entities/pos/pos.dart';
 
 class Fixture {
   Fixture({required this.home, required this.away}) {
@@ -70,10 +71,8 @@ class Fixture {
   updateGameInSimulate() {
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
-    bool homeScored =
-        Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
-    bool awayScored =
-        Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
+    bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
+    bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
     if (homeScored) {
       scored(

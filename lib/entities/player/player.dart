@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:soccer_simulator/entities/ball.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
-import 'package:soccer_simulator/main.dart';
+import 'package:soccer_simulator/entities/pos/pos.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/entities/member.dart';
@@ -12,6 +12,9 @@ import 'package:soccer_simulator/enum/player.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/enum/training_type.dart';
 import 'package:soccer_simulator/utils/random.dart';
+
+part '_player.action.dart';
+part '_player.grow.dart';
 
 class Player extends Member {
   Player({
@@ -147,30 +150,18 @@ class Player extends Member {
   /// 선방
   int saveSuccess = 0;
 
-  int get overall {
-    return _stat.average;
-  }
+  /// 트레이팅, 게임시 성장할 수 있는 스텟
+  late int _potential;
+
+  int get overall => _stat.average;
 
   List<Map<String, int>> gameRecord = [];
 
   List<List<int>> seasonRecord = [];
 
-  Position get wantPosition {
-    List<int> statList = [stat.attSkill, stat.passSkill, stat.defSkill];
-    statList.sort((a, b) => b - a);
+  Position get wantPosition => _getWantedPositionFromStat(stat);
 
-    if (statList[0] == stat.attSkill) {
-      return Position.forward;
-    } else if (statList[0] == stat.passSkill) {
-      return Position.midfielder;
-    } else {
-      return Position.defender;
-    }
-  }
-
-  get extraStat {
-    return _extraStat;
-  }
+  get extraStat => _extraStat;
 
   addExtraStat(int point) {
     _extraStat += point;
@@ -183,8 +174,39 @@ class Player extends Member {
     _saveSeason();
   }
 
-  /// 트레이팅, 게임시 성장할 수 있는 스텟
-  late int _potential;
+  ///선수의 특정 능력치를 향상시켜주는 메소드
+  void addStat(PlayerStat stat, int point) {
+    _stat.add(stat);
+    _extraStat -= point;
+  }
+
+  void resetPosXY() {
+    posXY = startingPoxXY;
+  }
+
+  void gamePlayed() {
+    gameRecord.add({
+      'goal': goal,
+      'assist': assist,
+      'passSuccess': passSuccess,
+      'shooting': shooting,
+      'defSuccess': defSuccess,
+      'saveSuccess': saveSuccess,
+      'dribbleSuccess': dribbleSuccess,
+    });
+    goal = 0;
+    assist = 0;
+    passSuccess = 0;
+    shooting = 0;
+    defSuccess = 0;
+    saveSuccess = 0;
+    dribbleSuccess = 0;
+    resetPosXY();
+    _growAfterPlay();
+  }
+
+  ///현재 공을 가지고 있는지 여부
+  bool hasBall = false;
 
   ///선수를 트레이닝 시켜서 알고리즘에 따라 선수 능력치를 향상시키는 메소드
   ///
@@ -230,50 +252,6 @@ class Player extends Member {
     }
   }
 
-  ///선수의 특정 능력치를 향상시켜주는 메소드
-  void addStat(PlayerStat stat, int point) {
-    _stat.add(stat);
-    _extraStat -= point;
-  }
-
-  ///실제 경기를 뛰면서 발생하는 스텟 성장 - 출전 포지션에 따라 다르게 성장
-  void _growAfterPlay() {
-    //남은 포텐셜이 0보다 커야 성장 가능, 30이상이면 경기시마다 항상 성장
-    if (_potential / 30 > Random().nextDouble()) {
-      if (Random().nextDouble() > 0.7) _potential -= 1;
-      PlayerStat newStat = PlayerStat.playGame(position: position ?? wantPosition, point: Random().nextInt(3));
-      _stat.add(newStat);
-    }
-  }
-
-  void resetPosXY() {
-    posXY = startingPoxXY;
-  }
-
-  void gamePlayed() {
-    gameRecord.add({
-      'goal': goal,
-      'assist': assist,
-      'passSuccess': passSuccess,
-      'shooting': shooting,
-      'defSuccess': defSuccess,
-      'saveSuccess': saveSuccess,
-      'dribbleSuccess': dribbleSuccess,
-    });
-    goal = 0;
-    assist = 0;
-    passSuccess = 0;
-    shooting = 0;
-    defSuccess = 0;
-    saveSuccess = 0;
-    dribbleSuccess = 0;
-    resetPosXY();
-    _growAfterPlay();
-  }
-
-  ///현재 공을 가지고 있는지 여부
-  bool hasBall = false;
-
   actionWidthBall({
     required ClubInFixture team,
     required ClubInFixture opposite,
@@ -298,24 +276,16 @@ class Player extends Member {
       List<Player> frontPlayers = teamPlayers.where((p) => p.posXY.y > posXY.y - 20).toList();
 
       if (ranNum < shootPercent || frontPlayers.isEmpty) {
-        shoot(
-            fixture: fixture,
-            team: team,
-            opposite: opposite,
-            goalKeeper: oppositePlayers.firstWhere((player) => player.position == Position.goalKeeper));
+        shoot(fixture: fixture, team: team, opposite: opposite, goalKeeper: oppositePlayers.firstWhere((player) => player.position == Position.goalKeeper));
       } else if (ranNum < shootPercent + passPercent) {
         // Player target = R().getInt(max: 100, min: 0) > 98 ? teamPlayers[R().getInt(min: 0, max: 2)] : teamPlayers[R().getInt(min: 7, max: 9)];
         late Player target;
         if (ball.posXY.y >= 100) {
           target = frontPlayers[R().getInt(min: 0, max: frontPlayers.length - 1)];
         } else if (ball.posXY.y >= 50) {
-          target = R().getInt(max: 10, min: 0) > 1
-              ? teamPlayers[R().getInt(min: 0, max: 1)]
-              : teamPlayers[R().getInt(min: 7, max: 9)];
+          target = R().getInt(max: 10, min: 0) > 1 ? teamPlayers[R().getInt(min: 0, max: 1)] : teamPlayers[R().getInt(min: 7, max: 9)];
         } else {
-          target = R().getInt(max: 10, min: 0) > 3
-              ? teamPlayers[R().getInt(min: 0, max: 2)]
-              : teamPlayers[R().getInt(min: 5, max: 7)];
+          target = R().getInt(max: 10, min: 0) > 3 ? teamPlayers[R().getInt(min: 0, max: 2)] : teamPlayers[R().getInt(min: 5, max: 7)];
         }
 
         pass(target, team);
@@ -388,153 +358,6 @@ class Player extends Member {
       }
     }
   }
-
-  stayFront() {
-    double frontDistance = switch (position) {
-      Position.forward => 4,
-      Position.midfielder => 3,
-      Position.defender => 2,
-      _ => 0,
-    };
-    move(5, frontDistance);
-  }
-
-  moveFront() {
-    double frontDistance = switch (position) {
-      Position.forward => 16,
-      Position.midfielder => 12,
-      Position.defender => 8,
-      _ => 0,
-    };
-    move(12, frontDistance);
-  }
-
-  stayBack() {
-    double backDistance = switch (position) {
-      Position.forward => -1,
-      Position.midfielder => -3,
-      Position.defender => -6,
-      _ => 0,
-    };
-
-    move(5, backDistance);
-  }
-
-  dribble(ClubInFixture team) {
-    move(9, 12);
-    dribbleSuccess++;
-    team.dribble++;
-  }
-
-  pass(Player target, ClubInFixture team) {
-    passSuccess++;
-    hasBall = false;
-    target.hasBall = true;
-    team.pass += 1;
-  }
-
-  shoot({
-    required Player goalKeeper,
-    required Fixture fixture,
-    required ClubInFixture team,
-    required ClubInFixture opposite,
-  }) {
-    int ranNum = R().getInt(min: 0, max: 100);
-    hasBall = false;
-    goalKeeper.hasBall = true;
-    team.shoot += 1;
-    shooting++;
-
-    if (ranNum < 10) {
-      goal++;
-      fixture.scored(
-        scoredClub: team,
-        concedeClub: opposite,
-        scoredPlayer: this,
-        assistPlayer: team.club.startPlayers[1],
-      );
-    }
-  }
-
-  buildUpPass() {}
-
-  tackle(Player targetPlayer, ClubInFixture team) {
-    int ranNum = R().getInt(min: 0, max: 100);
-    if (ranNum < 50) {
-      defSuccess++;
-      targetPlayer.hasBall = false;
-      hasBall = true;
-      team.tackle += 1;
-    } else {}
-  }
-
-  press(PosXY target) {
-    double targetX = 100 - target.x;
-    double targetY = 200 - target.y;
-
-    double diffX = (targetX - posXY.x);
-    double diffY = (targetY - posXY.x);
-
-    double distance = 10;
-
-    double disX = distance * diffX / (diffY.abs() + diffX.abs());
-    double disY = distance * diffY / (diffY.abs() + diffX.abs());
-
-    posXY = PosXY((posXY.x + disX).clamp(0, 100), (posXY.y + disY).clamp(0, 200));
-  }
-
-  move(double distance, [double frontAdditional = 0]) {
-    double frontDistance = switch (position) {
-      Position.forward => 12,
-      Position.midfielder => 7,
-      Position.defender => (startingPoxXY.x - 50).abs() > 25 ? 15 : 3,
-      Position.goalKeeper => 1,
-      _ => 0,
-    };
-
-    double backDistance = switch (position) {
-      Position.forward => 3,
-      Position.midfielder => 6,
-      Position.defender => 10,
-      Position.goalKeeper => 1,
-      _ => 0,
-    };
-
-    double horizontalDistance = switch (position) {
-      Position.forward => 4,
-      Position.midfielder => 4,
-      Position.defender => 3,
-      Position.goalKeeper => 1,
-      _ => 0,
-    };
-
-    double ranNum = R().getDouble(min: -3, max: 3);
-
-    double minX = max(0, startingPoxXY.x - 2.5 * horizontalDistance + ranNum);
-    double maxX = min(100, startingPoxXY.x + 2.5 * horizontalDistance + ranNum);
-    double minY = max(0, startingPoxXY.y - 4 * backDistance + ranNum);
-    double maxY = min(200, startingPoxXY.y + 7 * frontDistance + ranNum);
-
-    posXY = PosXY(
-      (posXY.x + R().getDouble(min: -1 * distance, max: distance)).clamp(minX, maxX),
-      (posXY.y + R().getDouble(min: -1 * distance, max: distance) + frontAdditional).clamp(minY, maxY),
-    );
-  }
-}
-
-class PosXY {
-  double x = 0;
-  double y = 0;
-  PosXY(this.x, this.y);
-
-  double distance(PosXY target) {
-    return sqrt(pow(x - target.x, 2) + pow(y - target.y, 2));
-  }
-
-  @override
-  String toString() {
-    return 'x:$x y:$y';
-  }
 }
 
 //---타고난거
@@ -591,3 +414,4 @@ class PosXY {
 ///태클 마스터 - 태클 + 기술
 ///패스 마스터 - 짧은패스 + 롱패스 + 키패스 + 기술
 
+extension PlayerGrow on Player {}

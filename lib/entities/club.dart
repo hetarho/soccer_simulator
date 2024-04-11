@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:soccer_simulator/entities/player.dart';
+import 'package:soccer_simulator/entities/player/player.dart';
 
 class Club {
   Club({

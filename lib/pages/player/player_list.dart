@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:soccer_simulator/entities/player.dart';
+import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/main.dart';
 
