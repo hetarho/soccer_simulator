@@ -9,7 +9,7 @@ import 'package:soccer_simulator/entities/pos/pos.dart';
 
 class Fixture {
   Fixture({required this.home, required this.away}) {
-    _streamController = StreamController<FixtureState>.broadcast();
+    _streamController = StreamController<FixtureEvent>.broadcast();
   }
   ////테스트용
   bool stopWhenGoal = false;
@@ -19,9 +19,9 @@ class Fixture {
   FixtureState state = FixtureState();
 
   Timer? _timer; // Timer 인스턴스를 저장할 변수
-  late StreamController<FixtureState> _streamController;
+  late StreamController<FixtureEvent> _streamController;
 
-  Stream<FixtureState> get gameStream => _streamController.stream;
+  Stream<FixtureEvent> get gameStream => _streamController.stream;
 
   ///현재 경기 시간
   Duration playTime = const Duration(seconds: 0);
@@ -104,12 +104,19 @@ class Fixture {
     }
   }
 
+  List<Player> _actPlayers = [];
+
   updateGame() async {
     ClubInFixture withBallTeam = isHomeTeamBall ? home : away;
     ClubInFixture withOutBallTeam = !isHomeTeamBall ? home : away;
 
     playWithBallTeam(withBallTeam, withOutBallTeam);
     playWithOutBallTeam(withOutBallTeam, withBallTeam);
+
+    _actPlayers = [
+      ...withBallTeam.club.players.where((p) => p.lastAction != null),
+      ...withOutBallTeam.club.players.where((p) => p.lastAction != null),
+    ];
 
     _ball.posXY = playerWithBall!.posXY;
 
@@ -182,7 +189,7 @@ class Fixture {
             playerWithBall?.hasBall = false;
             _ball.posXY = PosXY(50, 100);
           }
-          _streamController.add(state);
+          _streamController.add(FixtureEvent(state: state, actPlayers: _actPlayers));
         }
       });
     }
@@ -264,6 +271,10 @@ class FixtureState {
 
 class FixtureEvent {
   final FixtureState state;
+  final List<Player> actPlayers;
 
-  FixtureEvent({required this.state});
+  FixtureEvent({
+    required this.state,
+    required this.actPlayers,
+  });
 }

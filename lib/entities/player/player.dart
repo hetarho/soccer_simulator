@@ -161,6 +161,8 @@ class Player extends Member {
 
   Position get wantPosition => _getWantedPositionFromStat(stat);
 
+  PlayerAction? lastAction;
+
   get extraStat => _extraStat;
 
   addExtraStat(int point) {
@@ -258,6 +260,7 @@ class Player extends Member {
     required Ball ball,
     required Fixture fixture,
   }) {
+    lastAction = null;
     List<Player> teamPlayers = [...team.club.players.where((p) => p.id != id)];
     List<Player> oppositePlayers = opposite.club.players;
 
@@ -276,9 +279,10 @@ class Player extends Member {
       List<Player> frontPlayers = teamPlayers.where((p) => p.posXY.y > posXY.y - 20).toList();
 
       if (ranNum < shootPercent || frontPlayers.isEmpty) {
+        lastAction = PlayerAction.shoot;
         shoot(fixture: fixture, team: team, opposite: opposite, goalKeeper: oppositePlayers.firstWhere((player) => player.position == Position.goalKeeper));
       } else if (ranNum < shootPercent + passPercent) {
-        // Player target = R().getInt(max: 100, min: 0) > 98 ? teamPlayers[R().getInt(min: 0, max: 2)] : teamPlayers[R().getInt(min: 7, max: 9)];
+        lastAction = PlayerAction.pass;
         late Player target;
         if (ball.posXY.y >= 100) {
           target = frontPlayers[R().getInt(min: 0, max: frontPlayers.length - 1)];
@@ -290,9 +294,8 @@ class Player extends Member {
 
         pass(target, team);
       } else if (ranNum < shootPercent + passPercent + dribblePercent) {
+        lastAction = PlayerAction.dribble;
         dribble(team);
-      } else {
-        stayFront();
       }
     } else {
       int ranNum = R().getInt(min: 0, max: 100);
@@ -317,6 +320,7 @@ class Player extends Member {
     required Ball ball,
     required Fixture fixture,
   }) {
+    lastAction = null;
     List<Player> oppositePlayers = opposite.club.players;
 
     ///상대방의 공을 이미 배았았을 경우
@@ -341,6 +345,7 @@ class Player extends Member {
           break;
         case < 100:
           tackle(fixture.playerWithBall!, team);
+          lastAction = PlayerAction.tackle;
           break;
         case < 7:
           break;
@@ -414,4 +419,9 @@ class Player extends Member {
 ///태클 마스터 - 태클 + 기술
 ///패스 마스터 - 짧은패스 + 롱패스 + 키패스 + 기술
 
-extension PlayerGrow on Player {}
+enum PlayerAction {
+  shoot,
+  tackle,
+  pass,
+  dribble,
+}

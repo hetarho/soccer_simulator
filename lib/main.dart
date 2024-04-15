@@ -66,8 +66,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   late List<Fixture> _fixtures;
   bool _isAutoPlay = false;
   late League _league;
-  late Stream<FixtureState> _roundStream;
-  StreamSubscription<FixtureState>? _roundSubscription;
+  late Stream<FixtureEvent> _roundStream;
+  StreamSubscription<FixtureEvent>? _roundSubscription;
   int _finishedFixtureNum = 0;
   bool _showFixtures = false;
   bool _showLeagueTable = false;
@@ -173,14 +173,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
     ]);
 
-    List<Formation> formations = [
-      formation433,
-      formation442,
-      formation41212,
-      formation4222,
-      formation4141,
-      formation352
-    ];
+    List<Formation> formations = [formation433, formation442, formation41212, formation4222, formation4141, formation352];
 
     List<Club> clubs = List.generate(19, (index) {
       formations.shuffle();
@@ -233,7 +226,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
     _roundSubscription?.cancel();
     _roundSubscription = _roundStream.listen((event) {
-      if (event.isEnd && _isAutoPlay) {
+      if (event.state.isEnd && _isAutoPlay) {
         _finishedFixtureNum++;
         if (_finishedFixtureNum == 10) {
           _finishedFixtureNum = 0;
@@ -354,8 +347,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                             ref.read(playerListProvider.notifier).state = club.startPlayers;
                                             context.push('/players');
                                           },
-                                          child: Text(
-                                              '${club.name}(${club.overall} ${club.attOverall}/${club.midOverall}/${club.defOverall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
+                                          child: Text('${club.name}(${club.overall} ${club.attOverall}/${club.midOverall}/${club.defOverall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
                                         )
                                       ],
                                     ))
@@ -366,8 +358,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       ...[..._league.seasons.last.rounds..sort((a, b) => a.number - b.number)]
                           .map((round) => round.fixtures)
                           .expand((list) => list)
-                          .where(
-                              (fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
+                          .where((fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
                           .map((fixture) => FixtureInfo(
                                 fixture: fixture,
                                 showWDL: false,
@@ -414,14 +405,14 @@ class FixtureInfo extends ConsumerStatefulWidget {
 }
 
 class _FixtureInfoState extends ConsumerState<FixtureInfo> {
-  StreamSubscription<FixtureState>? _streamSubscription;
+  StreamSubscription<FixtureEvent>? _streamSubscription;
   Color? _bgColor;
 
   @override
   Widget build(BuildContext context) {
     if (_streamSubscription != null) _streamSubscription!.cancel();
     _streamSubscription = widget.fixture.gameStream.listen((event) {
-      if (event.isEnd && mounted) {
+      if (event.state.isEnd && mounted) {
         for (var players in widget.fixture.home.club.startPlayers) {
           players.gamePlayed();
         }
@@ -452,16 +443,12 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
                       children: [
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          width: constraints.maxWidth *
-                              ((widget.fixture.home.goal + 1) /
-                                  (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          width: constraints.maxWidth * ((widget.fixture.home.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
                           color: widget.fixture.home.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
                         ),
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          width: constraints.maxWidth *
-                              ((widget.fixture.away.goal + 1) /
-                                  (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          width: constraints.maxWidth * ((widget.fixture.away.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
                           color: widget.fixture.away.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
                         ),
                       ],

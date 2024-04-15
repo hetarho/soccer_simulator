@@ -15,16 +15,19 @@ class _FixturePageState extends ConsumerState<FixturePage> {
   bool isFastMode = true;
   bool showModal = false;
   Player? _selectedPlayer;
+  List<Player> actingPlayer = [];
 
   @override
   void initState() {
     super.initState();
     ref.read(fixtureProvider)?.gameStream.listen((event) {
+      actingPlayer = event.actPlayers;
       if (mounted) setState(() {});
     });
 
     ref.read(fixtureProvider)?.isSimulation = false;
   }
+
   @override
   Widget build(BuildContext context) {
     if (ref.read(fixtureProvider) == null) return Container();
@@ -136,9 +139,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                           AnimatedPositioned(
                             duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
                             curve: Curves.decelerate,
-                            top: fixture.isHomeTeamBall
-                                ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)
-                                : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
+                            top: fixture.isHomeTeamBall ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2) : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
                             left: fixture.isHomeTeamBall
                                 ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10
                                 : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
@@ -164,7 +165,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       '${record.time.inMinutes} - ${record.scoredClub.name} /${record.scoredPlayer.backNumber} ${record.scoredPlayer.name}/${record.assistPlayer.backNumber} ${record.assistPlayer.name}')),
                   Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [0, 10, 100, 200, 500, 1000]
+                    children: [0, 10, 100, 200, 500, 1000, 3000]
                         .map((speed) => ElevatedButton(
                               style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(0)),
                               onPressed: () {
@@ -185,6 +186,17 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                             ))
                         .toList(),
                   ),
+                  SizedBox(
+                    height: 300,
+                    child: ListView.builder(
+                      itemCount: actingPlayer.length,
+                      itemBuilder: (context, index) => Row(children: [
+                        Text(actingPlayer[index].name),
+                        SizedBox(width: 4),
+                        Text(actingPlayer[index].lastAction.toString()),
+                      ]),
+                    ),
+                  )
                 ],
               ),
             ),
