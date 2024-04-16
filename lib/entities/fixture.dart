@@ -9,19 +9,18 @@ import 'package:soccer_simulator/entities/pos/pos.dart';
 
 class Fixture {
   Fixture({required this.home, required this.away}) {
-    _streamController = StreamController<FixtureEvent>.broadcast();
+    _streamController = StreamController<FixtureRecord>.broadcast();
   }
   ////테스트용
   bool stopWhenGoal = false;
   final ClubInFixture home;
   final ClubInFixture away;
   List<FixtureRecord> records = [];
-  FixtureState state = FixtureState();
 
   Timer? _timer; // Timer 인스턴스를 저장할 변수
-  late StreamController<FixtureEvent> _streamController;
+  late StreamController<FixtureRecord> _streamController;
 
-  Stream<FixtureEvent> get gameStream => _streamController.stream;
+  Stream<FixtureRecord> get gameStream => _streamController.stream;
 
   ///현재 경기 시간
   Duration playTime = const Duration(seconds: 0);
@@ -95,16 +94,42 @@ class Fixture {
   playWithBallTeam(ClubInFixture team, ClubInFixture opposite) {
     for (var player in team.club.players) {
       player.actionWidthBall(team: team, opposite: opposite, ball: _ball, fixture: this);
+      if (player.lastAction != null) {
+        records.add(FixtureRecord(
+          time: playTime,
+          club: team.club,
+          player: player,
+          action: player.lastAction,
+        ));
+        _streamController.add(FixtureRecord(
+          time: playTime,
+          club: team.club,
+          player: player,
+          action: player.lastAction,
+        ));
+      }
     }
   }
 
   playWithOutBallTeam(ClubInFixture team, ClubInFixture opposite) {
     for (var player in team.club.players) {
       player.actionWithOutBall(team: team, opposite: opposite, ball: _ball, fixture: this);
+      if (player.lastAction != null) {
+        records.add(FixtureRecord(
+          time: playTime,
+          club: team.club,
+          player: player,
+          action: player.lastAction,
+        ));
+        _streamController.add(FixtureRecord(
+          time: playTime,
+          club: team.club,
+          player: player,
+          action: player.lastAction,
+        ));
+      }
     }
   }
-
-  List<Player> _actPlayers = [];
 
   updateGame() async {
     ClubInFixture withBallTeam = isHomeTeamBall ? home : away;
@@ -112,11 +137,6 @@ class Fixture {
 
     playWithBallTeam(withBallTeam, withOutBallTeam);
     playWithOutBallTeam(withOutBallTeam, withBallTeam);
-
-    _actPlayers = [
-      ...withBallTeam.club.players.where((p) => p.lastAction != null),
-      ...withOutBallTeam.club.players.where((p) => p.lastAction != null),
-    ];
 
     _ball.posXY = playerWithBall!.posXY;
 
@@ -159,9 +179,16 @@ class Fixture {
 
     records.add(FixtureRecord(
       time: playTime,
-      scoredClub: scoredClub.club,
-      scoredPlayer: scoredPlayer,
-      assistPlayer: assistPlayer,
+      club: scoredClub.club,
+      player: scoredPlayer,
+      action: PlayerAction.goal,
+    ));
+
+    records.add(FixtureRecord(
+      time: playTime,
+      club: scoredClub.club,
+      player: assistPlayer,
+      action: PlayerAction.assist,
     ));
 
     assistPlayer.assist += 1;
@@ -181,15 +208,11 @@ class Fixture {
           gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
         } else {
           isSimulation ? updateGameInSimulate() : updateGame();
-          state.time = playTime;
-          state.homeScore = home.goal;
-          state.awayScore = away.goal;
-          state.isEnd = isGameEnd;
           if (isGameEnd) {
             playerWithBall?.hasBall = false;
             _ball.posXY = PosXY(50, 100);
           }
-          _streamController.add(FixtureEvent(state: state, actPlayers: _actPlayers));
+          _streamController.add(FixtureRecord(time: playTime));
         }
       });
     }
@@ -248,33 +271,19 @@ class ClubInFixture {
 
 class FixtureRecord {
   final Duration time;
-  final Club scoredClub;
-  final Player scoredPlayer;
-  final Player assistPlayer;
+  final Club? club;
+  final PlayerAction? action;
+  final Player? player;
 
   FixtureRecord({
     required this.time,
-    required this.scoredClub,
-    required this.scoredPlayer,
-    required this.assistPlayer,
+    this.club,
+    this.action,
+    this.player,
   });
-}
 
-class FixtureState {
-  Duration time = const Duration(seconds: 0);
-  int homeScore = 0;
-  int awayScore = 0;
-  bool isEnd = false;
-
-  FixtureState();
-}
-
-class FixtureEvent {
-  final FixtureState state;
-  final List<Player> actPlayers;
-
-  FixtureEvent({
-    required this.state,
-    required this.actPlayers,
-  });
+  @override
+  String toString() {
+    return 'FixtureRecord(time: $time, club: ${club?.name}, action: $action, player: ${player?.name})';
+  }
 }

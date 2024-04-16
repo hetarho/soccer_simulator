@@ -66,8 +66,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   late List<Fixture> _fixtures;
   bool _isAutoPlay = false;
   late League _league;
-  late Stream<FixtureEvent> _roundStream;
-  StreamSubscription<FixtureEvent>? _roundSubscription;
+  late Stream<FixtureRecord> _roundStream;
+  StreamSubscription<FixtureRecord>? _roundSubscription;
   int _finishedFixtureNum = 0;
   bool _showFixtures = false;
   bool _showLeagueTable = false;
@@ -226,7 +226,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
     _roundSubscription?.cancel();
     _roundSubscription = _roundStream.listen((event) {
-      if (event.state.isEnd && _isAutoPlay) {
+      if (event.time.inMinutes >= 90 && _isAutoPlay) {
         _finishedFixtureNum++;
         if (_finishedFixtureNum == 10) {
           _finishedFixtureNum = 0;
@@ -405,14 +405,14 @@ class FixtureInfo extends ConsumerStatefulWidget {
 }
 
 class _FixtureInfoState extends ConsumerState<FixtureInfo> {
-  StreamSubscription<FixtureEvent>? _streamSubscription;
+  StreamSubscription<FixtureRecord>? _streamSubscription;
   Color? _bgColor;
 
   @override
   Widget build(BuildContext context) {
     if (_streamSubscription != null) _streamSubscription!.cancel();
     _streamSubscription = widget.fixture.gameStream.listen((event) {
-      if (event.state.isEnd && mounted) {
+      if (widget.fixture.isGameEnd && mounted) {
         for (var players in widget.fixture.home.club.startPlayers) {
           players.gamePlayed();
         }

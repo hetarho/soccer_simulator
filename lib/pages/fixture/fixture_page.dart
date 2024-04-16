@@ -21,7 +21,6 @@ class _FixturePageState extends ConsumerState<FixturePage> {
   void initState() {
     super.initState();
     ref.read(fixtureProvider)?.gameStream.listen((event) {
-      actingPlayer = event.actPlayers;
       if (mounted) setState(() {});
     });
 
@@ -32,6 +31,8 @@ class _FixturePageState extends ConsumerState<FixturePage> {
   Widget build(BuildContext context) {
     if (ref.read(fixtureProvider) == null) return Container();
     Fixture fixture = ref.read(fixtureProvider)!;
+    List<FixtureRecord> sortedRecord = fixture.records;
+    sortedRecord.sort((a, b) => b.time.compareTo(a.time));
 
     return Scaffold(
       appBar: AppBar(),
@@ -161,8 +162,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                         fixture.gameStart();
                       },
                       child: const Text('play')),
-                  ...fixture.records.map((record) => Text(
-                      '${record.time.inMinutes} - ${record.scoredClub.name} /${record.scoredPlayer.backNumber} ${record.scoredPlayer.name}/${record.assistPlayer.backNumber} ${record.assistPlayer.name}')),
+                  ...fixture.records.map((record) => Text('${record.time.inMinutes} -${record.player?.backNumber} ${record.player?.name} /${record.action}')),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [0, 10, 100, 200, 500, 1000, 3000]

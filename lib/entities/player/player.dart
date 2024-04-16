@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:async';
 import 'dart:math';
 
 import 'package:soccer_simulator/entities/ball.dart';
@@ -17,6 +18,7 @@ part '_player.action.dart';
 part '_player.grow.dart';
 
 class Player extends Member {
+  late StreamController<PlayerAction> _streamController;
   Player({
     required super.name,
     required super.birthDay,
@@ -37,6 +39,7 @@ class Player extends Member {
 
     //포텐셜을 지정해주지 않으면 랜덤으로 책정
     _potential = potential ?? R().getInt(min: 30, max: 120);
+    _streamController = StreamController<PlayerAction>.broadcast();
   }
 
   Player.random({
@@ -62,6 +65,7 @@ class Player extends Member {
     flexibility = flexibility ?? R().getInt(min: 30, max: 120);
     _potential = potential ?? R().getInt(min: 30, max: 120);
     _stat = stat ?? PlayerStat.random(position: position);
+    _streamController = StreamController<PlayerAction>.broadcast();
   }
 
   final String id = const Uuid().v4();
@@ -297,6 +301,8 @@ class Player extends Member {
         lastAction = PlayerAction.dribble;
         dribble(team);
       }
+
+      if (lastAction != null) _streamController.add(lastAction!);
     } else {
       int ranNum = R().getInt(min: 0, max: 100);
       switch (ranNum) {
@@ -337,20 +343,7 @@ class Player extends Member {
 
       if (ranNum < tacklePercent) {
         tackle(fixture.playerWithBall!, team);
-      }
-
-      switch (ranNum) {
-        case < 30:
-          stayBack();
-          break;
-        case < 100:
-          tackle(fixture.playerWithBall!, team);
-          lastAction = PlayerAction.tackle;
-          break;
-        case < 7:
-          break;
-        default:
-          break;
+        lastAction = PlayerAction.tackle;
       }
     } else {
       int pressPercent = position == Position.goalKeeper ? 0 : 50;
@@ -362,6 +355,7 @@ class Player extends Member {
         stayBack();
       }
     }
+    if (lastAction != null) _streamController.add(lastAction!);
   }
 }
 
@@ -420,8 +414,17 @@ class Player extends Member {
 ///패스 마스터 - 짧은패스 + 롱패스 + 키패스 + 기술
 
 enum PlayerAction {
-  shoot,
-  tackle,
-  pass,
-  dribble,
+  shoot('shoot'),
+  tackle('tackle'),
+  pass('pass'),
+  dribble('dribble'),
+  goal('goal'),
+  assist('assist'),
+  keeping('keeping');
+
+  final String text;
+  const PlayerAction(this.text);
+
+  @override
+  String toString() => text;
 }
