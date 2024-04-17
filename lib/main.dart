@@ -13,6 +13,7 @@ import 'package:soccer_simulator/entities/league.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
+import 'package:soccer_simulator/entities/tactics.dart';
 import 'package:soccer_simulator/enum/national.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';

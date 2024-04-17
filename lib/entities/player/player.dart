@@ -276,21 +276,43 @@ class Player extends Member {
 
     if (hasBall) {
       teamPlayers.sort((a, b) => a.posXY.distance(posXY) - b.posXY.distance(posXY) > 0 ? 1 : -1);
-      int shootPercent = (200 / max(2, PosXY(50, 200).distance(posXY))).round() * 3;
+      int shootPercent = (200 / max(2, PosXY(50, 200).distance(posXY))).round();
       int passPercent = 100;
       int dribblePercent = 30;
       int ranNum = R().getInt(min: 0, max: shootPercent + passPercent + dribblePercent);
       List<Player> frontPlayers = teamPlayers.where((p) => p.posXY.y > posXY.y - 20).toList();
 
-      if (ranNum < shootPercent || frontPlayers.isEmpty) {
-      // if (false) {
+      List<Player> nearOpposite = oppositePlayers
+          .where((opposite) =>
+              opposite.posXY.distance(PosXY(
+                100 - posXY.x,
+                200 - posXY.y,
+              )) <
+              10)
+          .toList();
+
+      bool canShoot = true;
+
+      for (var opposite in nearOpposite) {
+        double distanceBonus = 3 -
+            opposite.posXY.distance(PosXY(
+                  100 - posXY.x,
+                  200 - posXY.y,
+                )) *
+                1.5;
+
+        if ((overall / (opposite.overall * distanceBonus + overall)) < R().getDouble(max: 1)) {
+          canShoot = false;
+        }
+      }
+
+      if (canShoot && (ranNum < shootPercent || frontPlayers.isEmpty)) {
         lastAction = PlayerAction.shoot;
         shoot(fixture: fixture, team: team, opposite: opposite, goalKeeper: oppositePlayers.firstWhere((player) => player.position == Position.goalKeeper));
       } else if (ranNum < shootPercent + passPercent) {
         lastAction = PlayerAction.pass;
         late Player target;
         if (ball.posXY.y >= 100 && frontPlayers.isNotEmpty) {
-        // if (false) {
           target = frontPlayers[R().getInt(min: 0, max: frontPlayers.length - 1)];
         } else if (ball.posXY.y >= 50) {
           target = R().getInt(max: 10, min: 0) > 1 ? teamPlayers[R().getInt(min: 0, max: 1)] : teamPlayers[R().getInt(min: 7, max: 9)];
@@ -336,27 +358,35 @@ class Player extends Member {
       actionWidthBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
       return;
     }
-    PosXY reversePos = PosXY(100 - posXY.x, 200 - posXY.y);
-    bool canTackle = ball.posXY.distance(reversePos) < 10;
-    bool canPress = team.club.tactics.pressDistance > ball.posXY.distance(posXY);
+    PosXY ballPos = PosXY(100 - ball.posXY.x, 200 - ball.posXY.y);
+    bool canTackle = ballPos.distance(posXY) < 5;
+
+    double personalPressBonus = switch (position) {
+      Position.forward when ballPos.y > posXY.y => 100,
+      Position.forward => 20,
+      Position.midfielder => 15,
+      Position.defender => 10,
+      _ => 0,
+    };
+    bool canPress = team.club.tactics.pressDistance + personalPressBonus > ballPos.distance(posXY);
 
     if (canTackle) {
       int tacklePercent = 50;
-      int ranNum = R().getInt(min: 0, max: tacklePercent);
+      int stayBackPercent = 100;
+      int ranNum = R().getInt(min: 0, max: tacklePercent + stayBackPercent);
 
       if (ranNum < tacklePercent) {
-      // if (false) {
         tackle(fixture.playerWithBall!, team);
         lastAction = PlayerAction.tackle;
-      }
-    } else if (canPress) {
-      press(ball.posXY);
-    } else {
-      int stayBackPercent = 100;
-      int ranNum = R().getInt(min: 0, max: stayBackPercent);
-      if (ranNum < stayBackPercent) {
+      } else if (ranNum < tacklePercent + stayBackPercent) {
         stayBack();
-      } else {}
+      }
+    } else {
+      if (canPress) {
+        press(ball.posXY);
+      } else {
+        stayBack();
+      }
     }
     if (lastAction != null) _streamController.add(lastAction!);
   }

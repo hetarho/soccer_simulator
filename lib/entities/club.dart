@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:soccer_simulator/entities/tactics.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:uuid/uuid.dart';
 
@@ -111,13 +112,4 @@ class StartingPlayer {
   final double startingPosY;
 
   StartingPlayer({required this.player, required this.startingPosX, required this.startingPosY});
-}
-
-class Tactics {
-  Tactics({required this.pressDistance});
-  Tactics.normal({
-    this.pressDistance = 30,
-  });
-
-  final double pressDistance;
 }

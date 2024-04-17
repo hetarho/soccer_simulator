@@ -3,16 +3,16 @@ part of 'player.dart';
 extension _PlayerMove on Player {
   move(double distance, [double frontAdditional = 0]) {
     double frontDistance = switch (position) {
-      Position.forward => 12,
-      Position.midfielder => 7,
-      Position.defender => (startingPoxXY.x - 50).abs() > 25 ? 15 : 3,
+      Position.forward => 14,
+      Position.midfielder => 13,
+      Position.defender => (startingPoxXY.x - 50).abs() > 25 ? 18 : 7,
       Position.goalKeeper => 1,
       _ => 0,
     };
 
     double backDistance = switch (position) {
-      Position.forward => 3,
-      Position.midfielder => 6,
+      Position.forward => 5,
+      Position.midfielder => 7,
       Position.defender => 10,
       Position.goalKeeper => 1,
       _ => 0,
@@ -125,18 +125,16 @@ extension _PlayerMove on Player {
     double diffX = (targetX - posXY.x);
     double diffY = (targetY - posXY.y);
 
-    double distanceToTarget = target.distance(posXY);
+    double distanceToTarget = PosXY(targetX, targetY).distance(posXY);
 
-    double distanceCanForward = switch (position) {
-      Position.forward => 7,
-      Position.midfielder => 9,
-      Position.defender => 12,
-      _ => 0,
-    };
+    double distanceCanForward = min(distanceToTarget, 10);
 
-    double disX = min(distanceCanForward, diffX) * min(1, distanceCanForward / distanceToTarget);
-    double disY = min(distanceCanForward, diffY) * min(1, distanceCanForward / distanceToTarget);
+    double sin = diffY / distanceToTarget;
+    double cos = diffX / distanceToTarget;
 
-    posXY = PosXY((posXY.x + disX).clamp(0, 100), (posXY.y + disY).clamp(0, 200));
+    double distanceCanForwardX = distanceCanForward * cos;
+    double distanceCanForwardY = distanceCanForward * sin;
+
+    posXY = PosXY((posXY.x + distanceCanForwardX).clamp(0, 100), (posXY.y + distanceCanForwardY).clamp(0, 200));
   }
 }
