@@ -123,17 +123,19 @@ extension _PlayerMove on Player {
     double targetY = 200 - target.y;
 
     double diffX = (targetX - posXY.x);
-    double diffY = (targetY - posXY.x);
+    double diffY = (targetY - posXY.y);
 
-    double distance = switch (position) {
-      Position.forward => 3,
-      Position.midfielder => 5,
-      Position.defender => 10,
+    double distanceToTarget = target.distance(posXY);
+
+    double distanceCanForward = switch (position) {
+      Position.forward => 7,
+      Position.midfielder => 9,
+      Position.defender => 12,
       _ => 0,
     };
 
-    double disX = distance * diffX / (diffY.abs() + diffX.abs());
-    double disY = distance * diffY / (diffY.abs() + diffX.abs());
+    double disX = min(distanceCanForward, diffX) * min(1, distanceCanForward / distanceToTarget);
+    double disY = min(distanceCanForward, diffY) * min(1, distanceCanForward / distanceToTarget);
 
     posXY = PosXY((posXY.x + disX).clamp(0, 100), (posXY.y + disY).clamp(0, 200));
   }

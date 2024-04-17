@@ -9,11 +9,15 @@ class Club {
   Club({
     required this.name,
     required this.color,
-  });
+    Tactics? tactics,
+  }) {
+    this.tactics = tactics ?? Tactics.normal();
+  }
 
   final String id = const Uuid().v4();
   final String name;
   final Color color;
+  late Tactics tactics;
 
   bool hasBall = false;
 
@@ -107,4 +111,13 @@ class StartingPlayer {
   final double startingPosY;
 
   StartingPlayer({required this.player, required this.startingPosX, required this.startingPosY});
+}
+
+class Tactics {
+  Tactics({required this.pressDistance});
+  Tactics.normal({
+    this.pressDistance = 30,
+  });
+
+  final double pressDistance;
 }

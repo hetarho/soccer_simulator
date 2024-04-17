@@ -90,8 +90,8 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                     child: LayoutBuilder(builder: (context, constraints) {
                       final stadiumWidth = constraints.maxWidth;
                       final stadiumHeight = constraints.maxHeight;
-                      const double playerSize = 30;
-                      const double ballSize = 20;
+                      double playerSize = stadiumWidth / 22;
+                      double ballSize = stadiumWidth / 30;
                       return Stack(
                         children: [
                           Container(color: Colors.green),
@@ -162,7 +162,6 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                         fixture.gameStart();
                       },
                       child: const Text('play')),
-                  ...fixture.records.map((record) => Text('${record.time.inMinutes} -${record.player?.backNumber} ${record.player?.name} /${record.action}')),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [0, 10, 100, 200, 500, 1000, 3000]
@@ -175,6 +174,13 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                             ))
                         .toList(),
                   ),
+                  SizedBox(
+                    height: 120,
+                    child: ListView.builder(
+                        itemCount: fixture.records.length,
+                        itemBuilder: (context, index) =>
+                            Text('${fixture.records[index].time.inMinutes} -${fixture.records[index].player?.backNumber} ${fixture.records[index].player?.name} /${fixture.records[index].action}')),
+                  ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [true, false]
@@ -186,17 +192,6 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                             ))
                         .toList(),
                   ),
-                  SizedBox(
-                    height: 300,
-                    child: ListView.builder(
-                      itemCount: actingPlayer.length,
-                      itemBuilder: (context, index) => Row(children: [
-                        Text(actingPlayer[index].name),
-                        SizedBox(width: 4),
-                        Text(actingPlayer[index].lastAction.toString()),
-                      ]),
-                    ),
-                  )
                 ],
               ),
             ),
@@ -280,7 +275,7 @@ class PlayerWidget extends StatelessWidget {
       height: playerSize,
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(playerSize),
       ),
       child: Center(
         child: Text(

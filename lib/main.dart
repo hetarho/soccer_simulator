@@ -200,7 +200,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   ..position = formation.positions[index].position
                   ..startingPoxXY = formation.positions[index].pos);
     })
-      ..add(Club(name: 'Arsenal', color: Colors.red)
+      ..add(Club(name: 'Arsenal', color: Colors.red, tactics: Tactics(pressDistance: 200))
         ..players = List.generate(
             11,
             (index) => Player.random(
