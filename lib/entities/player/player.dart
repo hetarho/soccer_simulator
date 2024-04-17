@@ -359,7 +359,7 @@ class Player extends Member {
       return;
     }
     PosXY ballPos = PosXY(100 - ball.posXY.x, 200 - ball.posXY.y);
-    bool canTackle = ballPos.distance(posXY) < 5;
+    bool canTackle = ballPos.distance(posXY) < 4;
 
     double personalPressBonus = switch (position) {
       Position.forward when ballPos.y > posXY.y => 100,

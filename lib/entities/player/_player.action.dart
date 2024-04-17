@@ -19,17 +19,17 @@ extension _PlayerMove on Player {
     };
 
     double horizontalDistance = switch (position) {
-      Position.forward => 4,
-      Position.midfielder => 4,
-      Position.defender => 3,
+      Position.forward => 5,
+      Position.midfielder => 4.5,
+      Position.defender => 2.5,
       Position.goalKeeper => 1,
       _ => 0,
     };
 
     double ranNum = R().getDouble(min: -3, max: 3);
 
-    double minX = max(0, startingPoxXY.x - 2.5 * horizontalDistance + ranNum);
-    double maxX = min(100, startingPoxXY.x + 2.5 * horizontalDistance + ranNum);
+    double minX = max(0, startingPoxXY.x - 2 * horizontalDistance + ranNum);
+    double maxX = min(100, startingPoxXY.x + 2 * horizontalDistance + ranNum);
     double minY = max(0, startingPoxXY.y - 4 * backDistance + ranNum);
     double maxY = min(200, startingPoxXY.y + 7 * frontDistance + ranNum);
 

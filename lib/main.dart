@@ -18,6 +18,7 @@ import 'package:soccer_simulator/enum/national.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';
 import 'package:soccer_simulator/router/routes.dart';
+import 'package:soccer_simulator/utils/random.dart';
 
 void main() {
   runApp(
@@ -181,6 +182,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       Formation formation = formations.first;
       return Club(
           name: RandomNames(Zone.germany).manName(),
+          tactics: Tactics(pressDistance: R().getDouble(min: 0, max: 70)),
           color: Color.fromRGBO(
             Random().nextInt(200) + 55,
             Random().nextInt(200) + 55,
@@ -201,7 +203,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   ..position = formation.positions[index].position
                   ..startingPoxXY = formation.positions[index].pos);
     })
-      ..add(Club(name: 'Arsenal', color: Colors.red, tactics: Tactics(pressDistance: 200))
+      ..add(Club(name: 'Arsenal', color: Colors.red, tactics: Tactics(pressDistance: 30))
         ..players = List.generate(
             11,
             (index) => Player.random(

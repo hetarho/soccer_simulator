@@ -49,7 +49,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                     children: [
                       Text('${fixture.home.goal}'),
                       const SizedBox(width: 4),
-                      Text(fixture.home.club.name),
+                      Text('${fixture.home.club.name}(${fixture.home.club.tactics.pressDistance.toStringAsFixed(1)})'),
                       const SizedBox(width: 4),
                       Text('${fixture.homeBallPercent}%'),
                       const SizedBox(width: 16),
@@ -57,7 +57,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       const SizedBox(width: 16),
                       Text('${fixture.awayBallPercent}%'),
                       const SizedBox(width: 4),
-                      Text(fixture.away.club.name),
+                      Text('${fixture.away.club.name}(${fixture.away.club.tactics.pressDistance.toStringAsFixed(1)})'),
                       const SizedBox(width: 4),
                       Text('${fixture.away.goal}'),
                     ],
@@ -90,7 +90,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                     child: LayoutBuilder(builder: (context, constraints) {
                       final stadiumWidth = constraints.maxWidth;
                       final stadiumHeight = constraints.maxHeight;
-                      double playerSize = stadiumWidth / 22;
+                      double playerSize = stadiumWidth / 20;
                       double ballSize = stadiumWidth / 30;
                       return Stack(
                         children: [
@@ -111,7 +111,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                                 child: PlayerWidget(
                                   player: player,
                                   playerSize: playerSize,
-                                  color: player.hasBall ? Colors.black : fixture.home.club.color,
+                                  color: fixture.home.club.color,
                                 ),
                               ),
                             );
@@ -132,7 +132,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                                 child: PlayerWidget(
                                   player: player,
                                   playerSize: playerSize,
-                                  color: player.hasBall ? Colors.black : fixture.away.club.color,
+                                  color: fixture.away.club.color,
                                 ),
                               ),
                             );
@@ -274,7 +274,7 @@ class PlayerWidget extends StatelessWidget {
       width: playerSize,
       height: playerSize,
       decoration: BoxDecoration(
-        color: color,
+        color: color.withOpacity(player.hasBall ? 1 : 0.5),
         borderRadius: BorderRadius.circular(playerSize),
       ),
       child: Center(
