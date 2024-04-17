@@ -182,7 +182,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       Formation formation = formations.first;
       return Club(
           name: RandomNames(Zone.germany).manName(),
-          tactics: Tactics(pressDistance: R().getDouble(min: 0, max: 70)),
+          tactics: Tactics(pressDistance: R().getDouble(min: 0, max: 50)),
           color: Color.fromRGBO(
             Random().nextInt(200) + 55,
             Random().nextInt(200) + 55,
@@ -203,7 +203,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   ..position = formation.positions[index].position
                   ..startingPoxXY = formation.positions[index].pos);
     })
-      ..add(Club(name: 'Arsenal', color: Colors.red, tactics: Tactics(pressDistance: 30))
+      ..add(Club(name: 'Arsenal', color: Colors.red, tactics: Tactics(pressDistance: 20))
         ..players = List.generate(
             11,
             (index) => Player.random(

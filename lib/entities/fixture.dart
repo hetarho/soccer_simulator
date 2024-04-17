@@ -71,8 +71,10 @@ class Fixture {
   updateGameInSimulate() {
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
-    bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
-    bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
+    bool homeScored =
+        Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
+    bool awayScored =
+        Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
     if (homeScored) {
       scored(
@@ -94,7 +96,8 @@ class Fixture {
 
   playWithBallTeam(ClubInFixture team, ClubInFixture opposite) {
     for (var player in team.club.players) {
-      player.actionWidthBall(team: team, opposite: opposite, ball: _ball, fixture: this, hasBallPlayerId: _hasBallPlaterId);
+      player.actionWidthBall(
+          team: team, opposite: opposite, ball: _ball, fixture: this, hasBallPlayerId: _hasBallPlaterId);
       if (player.lastAction != null) {
         records.add(FixtureRecord(
           time: playTime,
@@ -116,7 +119,8 @@ class Fixture {
 
   playWithOutBallTeam(ClubInFixture team, ClubInFixture opposite) {
     for (var player in team.club.players) {
-      player.actionWithOutBall(team: team, opposite: opposite, ball: _ball, fixture: this, hasBallPlayerId: _hasBallPlaterId);
+      player.actionWithOutBall(
+          team: team, opposite: opposite, ball: _ball, fixture: this, hasBallPlayerId: _hasBallPlaterId);
       if (player.lastAction != null) {
         records.add(FixtureRecord(
           time: playTime,
