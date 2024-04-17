@@ -49,7 +49,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                     children: [
                       Text('${fixture.home.goal}'),
                       const SizedBox(width: 4),
-                      Text('${fixture.home.club.name}(${fixture.home.club.tactics.pressDistance.toStringAsFixed(1)})'),
+                      Text('${fixture.home.club.name}(${fixture.home.club.overall}/${fixture.home.club.tactics.pressDistance.toStringAsFixed(1)})'),
                       const SizedBox(width: 4),
                       Text('${fixture.homeBallPercent}%'),
                       const SizedBox(width: 16),
@@ -57,7 +57,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       const SizedBox(width: 16),
                       Text('${fixture.awayBallPercent}%'),
                       const SizedBox(width: 4),
-                      Text('${fixture.away.club.name}(${fixture.away.club.tactics.pressDistance.toStringAsFixed(1)})'),
+                      Text('${fixture.away.club.name}(${fixture.away.club.overall}/${fixture.away.club.tactics.pressDistance.toStringAsFixed(1)})'),
                       const SizedBox(width: 4),
                       Text('${fixture.away.goal}'),
                     ],
@@ -105,6 +105,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                                 onTap: () {
                                   setState(() {
                                     _selectedPlayer = player;
+                                    print(player.gameRecord);
                                     showModal = true;
                                   });
                                 },
@@ -126,6 +127,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                                 onTap: () {
                                   setState(() {
                                     _selectedPlayer = player;
+                                    print(player.gameRecord);
                                     showModal = true;
                                   });
                                 },
@@ -178,8 +180,10 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                     height: 120,
                     child: ListView.builder(
                         itemCount: fixture.records.length,
-                        itemBuilder: (context, index) =>
-                            Text('${fixture.records[index].time.inMinutes} -${fixture.records[index].player?.backNumber} ${fixture.records[index].player?.name} /${fixture.records[index].action}')),
+                        itemBuilder: (context, index) => Text(
+                              '${fixture.records[index].time.inMinutes} -${fixture.records[index].player?.backNumber} ${fixture.records[index].player?.name} /${fixture.records[index].action}',
+                              style: TextStyle(color: fixture.records[index].club?.color),
+                            )),
                   ),
                   Row(
                     mainAxisSize: MainAxisSize.min,

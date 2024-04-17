@@ -191,6 +191,7 @@ class Player extends Member {
   }
 
   void gamePlayed() {
+    print('gamePlayed');
     gameRecord.add({
       'goal': goal,
       'assist': assist,

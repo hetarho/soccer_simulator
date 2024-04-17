@@ -89,13 +89,23 @@ extension _PlayerMove on Player {
     required ClubInFixture team,
     required ClubInFixture opposite,
   }) {
-    int ranNum = R().getInt(min: 0, max: 100);
     hasBall = false;
     goalKeeper.hasBall = true;
     team.shoot += 1;
     shooting++;
 
-    if (ranNum < 10) {
+    double distanceBonus = goalKeeper.posXY.distance(PosXY(
+      100 - posXY.x,
+      200 - posXY.y,
+    ));
+
+    // print('========shoot=========');
+    // print('overall:$overall');
+    // print('distanceBonus:$distanceBonus');
+    // print('m:${goalKeeper.overall * distanceBonus + overall}');
+    // print('확률:${(overall * 100 / (goalKeeper.overall * distanceBonus + overall))}%');
+
+    if ((overall / (goalKeeper.overall * distanceBonus + overall)) > R().getDouble(max: 1)) {
       goal++;
       fixture.scored(
         scoredClub: team,

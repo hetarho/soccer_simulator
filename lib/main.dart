@@ -197,7 +197,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   backNumber: index,
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,
-                  stat: PlayerStat.random(position: formation.positions[index].position, min: 100, max: 200),
+                  stat: PlayerStat.random(position: formation.positions[index].position, min:50, max: 150),
                 )
                   ..isStartingPlayer = true
                   ..position = formation.positions[index].position
@@ -212,7 +212,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   position: formation433.positions[index].position,
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,
-                  stat: PlayerStat.random(position: formation433.positions[index].position, min: 100, max: 200),
+                  stat: PlayerStat.random(position: formation433.positions[index].position, min: 300, max: 600),
                 )
                   ..isStartingPlayer = true
                   ..position = formation433.positions[index].position
@@ -415,7 +415,7 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
   Widget build(BuildContext context) {
     if (_streamSubscription != null) _streamSubscription!.cancel();
     _streamSubscription = widget.fixture.gameStream.listen((event) {
-      if (widget.fixture.isGameEnd && mounted) {
+      if (event.isGameEnd && mounted) {
         for (var players in widget.fixture.home.club.startPlayers) {
           players.gamePlayed();
         }

@@ -100,12 +100,14 @@ class Fixture {
           club: team.club,
           player: player,
           action: player.lastAction,
+          isGameEnd: isGameEnd,
         ));
         _streamController.add(FixtureRecord(
           time: playTime,
           club: team.club,
           player: player,
           action: player.lastAction,
+          isGameEnd: isGameEnd,
         ));
       }
     }
@@ -120,12 +122,14 @@ class Fixture {
           club: team.club,
           player: player,
           action: player.lastAction,
+          isGameEnd: isGameEnd,
         ));
         _streamController.add(FixtureRecord(
           time: playTime,
           club: team.club,
           player: player,
           action: player.lastAction,
+          isGameEnd: isGameEnd,
         ));
       }
     }
@@ -182,6 +186,7 @@ class Fixture {
       club: scoredClub.club,
       player: scoredPlayer,
       action: PlayerAction.goal,
+      isGameEnd: isGameEnd,
     ));
 
     records.add(FixtureRecord(
@@ -189,6 +194,7 @@ class Fixture {
       club: scoredClub.club,
       player: assistPlayer,
       action: PlayerAction.assist,
+      isGameEnd: isGameEnd,
     ));
 
     assistPlayer.assist += 1;
@@ -212,7 +218,10 @@ class Fixture {
             playerWithBall?.hasBall = false;
             _ball.posXY = PosXY(50, 100);
           }
-          _streamController.add(FixtureRecord(time: playTime));
+          _streamController.add(FixtureRecord(
+            time: playTime,
+            isGameEnd: isGameEnd,
+          ));
         }
       });
     }
@@ -274,9 +283,11 @@ class FixtureRecord {
   final Club? club;
   final PlayerAction? action;
   final Player? player;
+  final bool isGameEnd;
 
   FixtureRecord({
     required this.time,
+    required this.isGameEnd,
     this.club,
     this.action,
     this.player,
