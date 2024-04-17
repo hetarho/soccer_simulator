@@ -16,6 +16,7 @@ class Fixture {
   final ClubInFixture home;
   final ClubInFixture away;
   List<FixtureRecord> records = [];
+  String _hasBallPlaterId = '';
 
   Timer? _timer; // Timer 인스턴스를 저장할 변수
   late StreamController<FixtureRecord> _streamController;
@@ -93,7 +94,7 @@ class Fixture {
 
   playWithBallTeam(ClubInFixture team, ClubInFixture opposite) {
     for (var player in team.club.players) {
-      player.actionWidthBall(team: team, opposite: opposite, ball: _ball, fixture: this);
+      player.actionWidthBall(team: team, opposite: opposite, ball: _ball, fixture: this, hasBallPlayerId: _hasBallPlaterId);
       if (player.lastAction != null) {
         records.add(FixtureRecord(
           time: playTime,
@@ -115,7 +116,7 @@ class Fixture {
 
   playWithOutBallTeam(ClubInFixture team, ClubInFixture opposite) {
     for (var player in team.club.players) {
-      player.actionWithOutBall(team: team, opposite: opposite, ball: _ball, fixture: this);
+      player.actionWithOutBall(team: team, opposite: opposite, ball: _ball, fixture: this, hasBallPlayerId: _hasBallPlaterId);
       if (player.lastAction != null) {
         records.add(FixtureRecord(
           time: playTime,
@@ -138,6 +139,8 @@ class Fixture {
   updateGame() async {
     ClubInFixture withBallTeam = isHomeTeamBall ? home : away;
     ClubInFixture withOutBallTeam = !isHomeTeamBall ? home : away;
+
+    _hasBallPlaterId = playerWithBall?.id ?? '';
 
     playWithBallTeam(withBallTeam, withOutBallTeam);
     playWithOutBallTeam(withOutBallTeam, withBallTeam);

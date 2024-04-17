@@ -191,7 +191,6 @@ class Player extends Member {
   }
 
   void gamePlayed() {
-    print('gamePlayed');
     gameRecord.add({
       'goal': goal,
       'assist': assist,
@@ -264,22 +263,23 @@ class Player extends Member {
     required ClubInFixture opposite,
     required Ball ball,
     required Fixture fixture,
+    required String hasBallPlayerId,
   }) {
     lastAction = null;
     List<Player> teamPlayers = [...team.club.players.where((p) => p.id != id)];
     List<Player> oppositePlayers = opposite.club.players;
 
-    ///슛으로 소유권을 상실했을 경우
+    ///소유권을 상실했을 경우
     if (teamPlayers.where((player) => player.hasBall).isEmpty && !hasBall) {
-      actionWithOutBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
+      actionWithOutBall(team: team, opposite: opposite, ball: ball, fixture: fixture, hasBallPlayerId: hasBallPlayerId);
       return;
     }
 
-    if (hasBall) {
+    if (id == hasBallPlayerId) {
       teamPlayers.sort((a, b) => a.posXY.distance(posXY) - b.posXY.distance(posXY) > 0 ? 1 : -1);
-      int shootPercent = (200 / max(2, PosXY(50, 200).distance(posXY))).round();
-      int passPercent = 100;
-      int dribblePercent = 30;
+      int shootPercent = max(0, ((2500 - pow(PosXY(50, 200).distance(posXY), 2.5)) / 10).round());
+      int passPercent = 50;
+      int dribblePercent = 49;
       int ranNum = R().getInt(min: 0, max: shootPercent + passPercent + dribblePercent);
       List<Player> frontPlayers = teamPlayers.where((p) => p.posXY.y > posXY.y - 20).toList();
 
@@ -295,12 +295,11 @@ class Player extends Member {
       bool canShoot = true;
 
       for (var opposite in nearOpposite) {
-        double distanceBonus = 3 -
+        double distanceBonus = 10 -
             opposite.posXY.distance(PosXY(
-                  100 - posXY.x,
-                  200 - posXY.y,
-                )) *
-                1.5;
+              100 - posXY.x,
+              200 - posXY.y,
+            ));
 
         if ((overall / (opposite.overall * distanceBonus + overall)) < R().getDouble(max: 1)) {
           canShoot = false;
@@ -308,6 +307,8 @@ class Player extends Member {
       }
 
       if (canShoot && (ranNum < shootPercent || frontPlayers.isEmpty)) {
+        print('nearOpposite.length:${nearOpposite.length}');
+        print('canShoot:${canShoot}');
         lastAction = PlayerAction.shoot;
         shoot(fixture: fixture, team: team, opposite: opposite, goalKeeper: oppositePlayers.firstWhere((player) => player.position == Position.goalKeeper));
       } else if (ranNum < shootPercent + passPercent) {
@@ -320,6 +321,17 @@ class Player extends Member {
         } else {
           target = R().getInt(max: 10, min: 0) > 3 ? teamPlayers[R().getInt(min: 0, max: 2)] : teamPlayers[R().getInt(min: 5, max: 7)];
         }
+
+        List<Player> nearOppositeAtTarget = oppositePlayers
+            .where((opposite) =>
+                opposite.posXY.distance(PosXY(
+                  100 - target.posXY.x,
+                  200 - target.posXY.y,
+                )) <
+                10)
+            .toList();
+
+        // print(nearOppositeAtTarget.length);
 
         pass(target, team);
       } else if (ranNum < shootPercent + passPercent + dribblePercent) {
@@ -350,13 +362,14 @@ class Player extends Member {
     required ClubInFixture opposite,
     required Ball ball,
     required Fixture fixture,
+    required String hasBallPlayerId,
   }) {
     lastAction = null;
     List<Player> oppositePlayers = opposite.club.players;
 
     ///상대방의 공을 이미 배았았을 경우
     if (oppositePlayers.where((player) => player.hasBall).isEmpty) {
-      actionWidthBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
+      actionWidthBall(team: team, opposite: opposite, ball: ball, fixture: fixture, hasBallPlayerId: hasBallPlayerId);
       return;
     }
     PosXY ballPos = PosXY(100 - ball.posXY.x, 200 - ball.posXY.y);
@@ -369,7 +382,7 @@ class Player extends Member {
       Position.defender => 10,
       _ => 0,
     };
-    bool canPress = team.club.tactics.pressDistance + personalPressBonus > ballPos.distance(posXY);
+    bool canPress = (team.club.tactics.pressDistance + personalPressBonus > ballPos.distance(posXY)) && position != Position.goalKeeper;
 
     if (canTackle) {
       int tacklePercent = 50;
