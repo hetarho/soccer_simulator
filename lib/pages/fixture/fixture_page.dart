@@ -85,79 +85,83 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       Text('${fixture.away.dribble}'),
                     ],
                   ),
-                  AspectRatio(
-                    aspectRatio: 1.6,
-                    child: LayoutBuilder(builder: (context, constraints) {
-                      final stadiumWidth = constraints.maxWidth;
-                      final stadiumHeight = constraints.maxHeight;
-                      double playerSize = stadiumWidth / 20;
-                      double ballSize = stadiumWidth / 30;
-                      return Stack(
-                        children: [
-                          Container(color: Colors.green),
-                          ...fixture.home.club.startPlayers.map((player) {
-                            return AnimatedPositioned(
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    color: Colors.green,
+                    child: AspectRatio(
+                      aspectRatio: 1.6,
+                      child: LayoutBuilder(builder: (context, constraints) {
+                        final stadiumWidth = constraints.maxWidth;
+                        final stadiumHeight = constraints.maxHeight;
+                        double playerSize = stadiumWidth / 16;
+                        double ballSize = stadiumWidth / 28;
+                        return Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            ...fixture.home.club.startPlayers.map((player) {
+                              return AnimatedPositioned(
+                                duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
+                                curve: Curves.decelerate,
+                                top: stadiumHeight * (player.posXY.x) / 100 - (playerSize / 2),
+                                left: stadiumWidth * (player.posXY.y) / 200 - (playerSize / 2),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedPlayer = player;
+                                      showModal = true;
+                                    });
+                                  },
+                                  child: PlayerWidget(
+                                    player: player,
+                                    playerSize: playerSize,
+                                    color: fixture.home.club.color,
+                                  ),
+                                ),
+                              );
+                            }),
+                            ...fixture.away.club.startPlayers.map((player) {
+                              return AnimatedPositioned(
+                                duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
+                                curve: Curves.decelerate,
+                                top: stadiumHeight - (stadiumHeight * (player.posXY.x) / 100 + (playerSize / 2)),
+                                left: stadiumWidth - (stadiumWidth * (player.posXY.y) / 200 + (playerSize / 2)),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedPlayer = player;
+                                      showModal = true;
+                                    });
+                                  },
+                                  child: PlayerWidget(
+                                    player: player,
+                                    playerSize: playerSize,
+                                    color: fixture.away.club.color,
+                                  ),
+                                ),
+                              );
+                            }),
+                            AnimatedPositioned(
                               duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
                               curve: Curves.decelerate,
-                              top: stadiumHeight * (player.posXY.x) / 100 - (playerSize / 2),
-                              left: stadiumWidth * (player.posXY.y) / 200 - (playerSize / 2),
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedPlayer = player;
-                                    print(player.gameRecord);
-                                    showModal = true;
-                                  });
-                                },
-                                child: PlayerWidget(
-                                  player: player,
-                                  playerSize: playerSize,
-                                  color: fixture.home.club.color,
+                              top: fixture.isHomeTeamBall
+                                  ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)
+                                  : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
+                              left: fixture.isHomeTeamBall
+                                  ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10
+                                  : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
+                              child: Container(
+                                width: ballSize,
+                                height: ballSize,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                              ),
-                            );
-                          }),
-                          ...fixture.away.club.startPlayers.map((player) {
-                            return AnimatedPositioned(
-                              duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
-                              curve: Curves.decelerate,
-                              top: stadiumHeight - (stadiumHeight * (player.posXY.x) / 100 + (playerSize / 2)),
-                              left: stadiumWidth - (stadiumWidth * (player.posXY.y) / 200 + (playerSize / 2)),
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedPlayer = player;
-                                    print(player.gameRecord);
-                                    showModal = true;
-                                  });
-                                },
-                                child: PlayerWidget(
-                                  player: player,
-                                  playerSize: playerSize,
-                                  color: fixture.away.club.color,
-                                ),
-                              ),
-                            );
-                          }),
-                          AnimatedPositioned(
-                            duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
-                            curve: Curves.decelerate,
-                            top: fixture.isHomeTeamBall ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2) : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
-                            left: fixture.isHomeTeamBall
-                                ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10
-                                : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
-                            child: Container(
-                              width: ballSize,
-                              height: ballSize,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30),
                               ),
                             ),
-                          ),
-                        ],
-                      );
-                    }),
+                          ],
+                        );
+                      }),
+                    ),
                   ),
                   ElevatedButton(
                       onPressed: () {
@@ -166,7 +170,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       child: const Text('play')),
                   Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [0, 10, 100, 200, 500, 1000, 3000]
+                    children: [0, 100, 200, 500, 1000, 3000]
                         .map((speed) => ElevatedButton(
                               style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(0)),
                               onPressed: () {

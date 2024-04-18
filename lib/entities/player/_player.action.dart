@@ -1,42 +1,28 @@
 part of 'player.dart';
 
 extension _PlayerMove on Player {
-  move(double distance, [double frontAdditional = 0]) {
-    double frontDistance = switch (position) {
-      Position.forward => 16,
-      Position.midfielder => 15,
-      Position.defender => (startingPoxXY.x - 50).abs() > 25 ? 24 : 12,
-      Position.goalKeeper => 1,
-      _ => 0,
+  double get posXMinBoundary {
+    return max(startingPoxXY.x - 20, 0);
+  }
+
+  double get posXMaxBoundary {
+    return min(startingPoxXY.x + 20, 100);
+  }
+
+  double get posYMinBoundary {
+    return max(startingPoxXY.y - 20, 0);
+  }
+
+  double get posYMaxBoundary {
+    bool isWinger = posXY.x < 30 || posXY.x > 70;
+
+    return switch (position) {
+      Position.goalKeeper => startingPoxXY.y + 10,
+      Position.defender => startingPoxXY.y + (isWinger ? 150 : 40),
+      Position.midfielder => startingPoxXY.y + (isWinger ? 120 : 55),
+      Position.forward => startingPoxXY.y + (isWinger ? 100 : 100),
+      _ => min(startingPoxXY.y + 200, 200),
     };
-
-    double backDistance = switch (position) {
-      Position.forward => 5,
-      Position.midfielder => 7,
-      Position.defender => 2,
-      Position.goalKeeper => 1,
-      _ => 0,
-    };
-
-    double horizontalDistance = switch (position) {
-      Position.forward => 5,
-      Position.midfielder => 4.5,
-      Position.defender => 2.5,
-      Position.goalKeeper => 1,
-      _ => 0,
-    };
-
-    double ranNum = R().getDouble(min: -3, max: 3);
-
-    double minX = max(0, startingPoxXY.x - 2 * horizontalDistance + ranNum);
-    double maxX = min(100, startingPoxXY.x + 2 * horizontalDistance + ranNum);
-    double minY = max(0, startingPoxXY.y - 4 * backDistance + ranNum);
-    double maxY = min(200, startingPoxXY.y + 7 * frontDistance + ranNum);
-
-    posXY = PosXY(
-      (posXY.x + R().getDouble(min: -1 * distance, max: distance)).clamp(minX, maxX),
-      (posXY.y + R().getDouble(min: -1 * distance, max: distance) + frontAdditional).clamp(minY, maxY),
-    );
   }
 
   stayFront() {
@@ -46,7 +32,7 @@ extension _PlayerMove on Player {
       Position.defender => 2,
       _ => 0,
     };
-    move(5, frontDistance);
+    _move(targetPosition: PosXY.random(posXY.x, posXY.y + frontDistance, 5));
   }
 
   moveFront() {
@@ -56,7 +42,7 @@ extension _PlayerMove on Player {
       Position.defender => 8,
       _ => 0,
     };
-    move(12, frontDistance);
+    _move(targetPosition: PosXY.random(posXY.x, posXY.y + frontDistance, 5));
   }
 
   stayBack() {
@@ -67,12 +53,12 @@ extension _PlayerMove on Player {
       _ => 0,
     };
 
-    move(5, backDistance);
+    _move(targetPosition: PosXY.random(posXY.x, posXY.y + backDistance, 5));
   }
 
   dribble(ClubInFixture team, int dribbleBonus) {
+    _move(targetPosition: PosXY.random(posXY.x, posXY.y + 15, 10), maximumDistance: 15);
     lastAction = PlayerAction.dribble;
-    move(9, 12 * 1.1);
     dribbleSuccess++;
     team.dribble++;
   }
@@ -94,22 +80,15 @@ extension _PlayerMove on Player {
       (target.posXY.y + R().getDouble(min: 2, max: 3 + ballLandingAccuracy)).clamp(0, 200),
     );
 
-    nearOppositeAtTarget.sort((a, b) => a.posXY.distance(PosXY(100 - ballLandingPos.x, 200 - ballLandingPos.y)) -
-                b.posXY.distance(PosXY(100 - ballLandingPos.x, 200 - ballLandingPos.y)) >
-            0
-        ? 1
-        : -1);
+    nearOppositeAtTarget.sort((a, b) => a.posXY.distance(PosXY(100 - ballLandingPos.x, 200 - ballLandingPos.y)) - b.posXY.distance(PosXY(100 - ballLandingPos.x, 200 - ballLandingPos.y)) > 0 ? 1 : -1);
 
     double targetDistance = target.posXY.distance(ballLandingPos);
     hasBall = false;
-    if (nearOppositeAtTarget.isEmpty ||
-        targetDistance <
-            nearOppositeAtTarget.first.posXY.distance(PosXY(100 - ballLandingPos.x, 200 - ballLandingPos.y))) {
+    if (nearOppositeAtTarget.isEmpty || targetDistance < nearOppositeAtTarget.first.posXY.distance(PosXY(100 - ballLandingPos.x, 200 - ballLandingPos.y))) {
       passSuccess++;
       target.hasBall = true;
       team.pass += 1;
     } else {
-      print('intercept!');
       nearOppositeAtTarget.first.hasBall = true;
     }
   }
@@ -164,23 +143,44 @@ extension _PlayerMove on Player {
     } else {}
   }
 
-  press(PosXY target) {
-    double targetX = 100 - target.x;
-    double targetY = 200 - target.y;
+  press(PosXY ballPosition) {
+    double ballPositionX = 100 - ballPosition.x;
+    double ballPositionY = 200 - ballPosition.y;
 
-    double diffX = (targetX - posXY.x);
-    double diffY = (targetY - posXY.y);
+    _move(targetPosition: PosXY(ballPositionX, ballPositionY), maximumDistance: 10, ignoreBoundary: true);
+  }
 
-    double distanceToTarget = PosXY(targetX, targetY).distance(posXY);
+  _move({
+    required PosXY targetPosition,
+    double? maximumDistance,
+    bool ignoreBoundary = false,
+  }) {
+    /// x,y 좌표의 차이를 각각 구하기
+    double deltaX = (targetPosition.x - posXY.x);
+    double deltaY = (targetPosition.y - posXY.y);
 
-    double distanceCanForward = min(distanceToTarget, 10);
+    /// 해당 타깃과의 거리 구하기
+    double distanceToTarget = PosXY(targetPosition.x, targetPosition.y).distance(posXY);
 
-    double sin = diffY / distanceToTarget;
-    double cos = diffX / distanceToTarget;
+    /// 이동할 수 있는 최대 거리 구하기
+    double distanceCanForward = min(distanceToTarget, maximumDistance ?? distanceToTarget);
 
-    double distanceCanForwardX = distanceCanForward * cos;
-    double distanceCanForwardY = distanceCanForward * sin;
+    /// sine,cosine값 구하기
+    double sine = deltaY / distanceToTarget;
+    double cosine = deltaX / distanceToTarget;
 
-    posXY = PosXY((posXY.x + distanceCanForwardX).clamp(0, 100), (posXY.y + distanceCanForwardY).clamp(0, 200));
+    /// x,y 축으로의 실제 이동거리
+    double travelX = distanceCanForward * cosine;
+    double travelY = distanceCanForward * sine;
+
+    posXY = PosXY(
+        (posXY.x + travelX).clamp(
+          ignoreBoundary ? 0 : posXMinBoundary,
+          ignoreBoundary ? 100 : posXMaxBoundary,
+        ),
+        (posXY.y + travelY).clamp(
+          ignoreBoundary ? 0 : posYMinBoundary,
+          ignoreBoundary ? 200 : posYMaxBoundary,
+        ));
   }
 }

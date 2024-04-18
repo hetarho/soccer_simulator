@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:soccer_simulator/entities/ball.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
@@ -277,18 +278,14 @@ class Player extends Member {
 
     if (id == hasBallPlayerId) {
       teamPlayers.sort((a, b) => a.posXY.distance(posXY) - b.posXY.distance(posXY) > 0 ? 1 : -1);
-      int shootPercent = max(0, ((2500 - pow(PosXY(50, 200).distance(posXY), 2.5)) / 10).round());
-      int passPercent = 50;
+      int shootPercent = max(0, ((2500 - pow(PosXY(50, 200).distance(posXY), 2))).round());
+      int passPercent = 100;
 
-      int dribbleBonus = (11 -
-          oppositePlayers
-              .where((opposite) =>
-                  ((100 - opposite.posXY.x + 15) > posXY.x && (100 - opposite.posXY.x - 15) < posXY.x) ||
-                  (200 - opposite.posXY.y - posXY.y) > 50)
-              .length);
-      int dribblePercent = 50 + dribbleBonus * 15;
+      int dribbleBonus =
+          (11 - oppositePlayers.where((opposite) => ((100 - opposite.posXY.x + 15) > posXY.x && (100 - opposite.posXY.x - 15) < posXY.x) || (200 - opposite.posXY.y - posXY.y) > 50).length);
+      int dribblePercent = position == Position.goalKeeper ? 0 : (50 + dribbleBonus * 100);
       int ranNum = R().getInt(min: 0, max: shootPercent + passPercent + dribblePercent);
-      List<Player> frontPlayers = teamPlayers.where((p) => p.posXY.y > posXY.y - 20).toList();
+      List<Player> frontPlayers = teamPlayers.where((p) => p.posXY.y > posXY.y - 30).toList();
 
       List<Player> nearOpposite = oppositePlayers
           .where((opposite) =>
@@ -313,24 +310,16 @@ class Player extends Member {
         }
       }
 
-      if (canShoot && (ranNum < shootPercent || frontPlayers.isEmpty)) {
-        shoot(
-            fixture: fixture,
-            team: team,
-            opposite: opposite,
-            goalKeeper: oppositePlayers.firstWhere((player) => player.position == Position.goalKeeper));
+      if (canShoot && (ranNum < shootPercent || (posXY.y > 180 && frontPlayers.isEmpty))) {
+        shoot(fixture: fixture, team: team, opposite: opposite, goalKeeper: oppositePlayers.firstWhere((player) => player.position == Position.goalKeeper));
       } else if (ranNum < shootPercent + passPercent) {
         late Player target;
         if (ball.posXY.y >= 100 && frontPlayers.isNotEmpty) {
           target = frontPlayers[R().getInt(min: 0, max: frontPlayers.length - 1)];
         } else if (ball.posXY.y >= 50) {
-          target = R().getInt(max: 10, min: 0) > 1
-              ? teamPlayers[R().getInt(min: 0, max: 1)]
-              : teamPlayers[R().getInt(min: 7, max: 9)];
+          target = R().getInt(max: 10, min: 0) > 1 ? teamPlayers[R().getInt(min: 0, max: 1)] : teamPlayers[R().getInt(min: 7, max: 9)];
         } else {
-          target = R().getInt(max: 10, min: 0) > 3
-              ? teamPlayers[R().getInt(min: 0, max: 2)]
-              : teamPlayers[R().getInt(min: 5, max: 7)];
+          target = R().getInt(max: 10, min: 0) > 3 ? teamPlayers[R().getInt(min: 0, max: 2)] : teamPlayers[R().getInt(min: 5, max: 7)];
         }
 
         List<Player> nearOppositeAtTarget = oppositePlayers
@@ -392,8 +381,7 @@ class Player extends Member {
       Position.defender => 5,
       _ => 0,
     };
-    bool canPress = (team.club.tactics.pressDistance + personalPressBonus > ballPos.distance(posXY)) &&
-        position != Position.goalKeeper;
+    bool canPress = (team.club.tactics.pressDistance + personalPressBonus > ballPos.distance(posXY)) && position != Position.goalKeeper;
 
     if (canTackle) {
       int tacklePercent = 50;
