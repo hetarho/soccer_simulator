@@ -11,7 +11,7 @@ import 'package:soccer_simulator/entities/pos/pos.dart';
 class Fixture {
   Fixture({required this.home, required this.away}) {
     _streamController = StreamController<FixtureRecord>.broadcast();
-    playerStream = StreamGroup.merge(allPlayers.map((e) => e.playerStream).toList());
+    playerStream = StreamGroup.merge(allPlayers.map((e) => e.playerStream).toList()).asBroadcastStream();
   }
   ////테스트용
   bool stopWhenGoal = false;
@@ -70,6 +70,10 @@ class Fixture {
 
   Player? get playerWithBall {
     return [...home.club.players, ...away.club.players, null].firstWhere((player) => player?.hasBall ?? true);
+  }
+
+  setBallPos() {
+    if (playerWithBall != null) _ball.posXY = playerWithBall!.posXY;
   }
 
   updateGameInSimulate() {

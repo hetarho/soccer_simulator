@@ -197,7 +197,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   backNumber: index,
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,
-                  stat: Stat.random(position: formation.positions[index].position, min: 30, max: 100),
+                  stat: Stat.random(position: formation.positions[index].position, min: 30, max: 80),
                 )
                   ..isStartingPlayer = true
                   ..position = formation.positions[index].position
@@ -210,7 +210,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   name: RandomNames(Zone.us).manFullName(),
                   backNumber: index,
                   position: formation433.positions[index].position,
-                  reflex: 200,
+                  reflex: 150,
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,
                   stat: Stat.random(position: formation433.positions[index].position, min: 100, max: 150),

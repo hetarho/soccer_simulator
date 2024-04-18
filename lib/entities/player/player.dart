@@ -55,7 +55,7 @@ class Player extends Member {
   }
 
   Duration get playSpeed {
-    return Duration(milliseconds: (_playSpeed.inMilliseconds * 100 / reflex).round());
+    return Duration(milliseconds: (_playSpeed.inMilliseconds * 50 / reflex).round());
   }
 
   gameStart({
@@ -65,7 +65,6 @@ class Player extends Member {
     required Ball ball,
     required bool isHome,
   }) {
-    print('$name play speed :${playSpeed.inMilliseconds}');
     _timer?.cancel();
     _timer = Timer.periodic(playSpeed, (timer) async {
       playTime = fixture.playTime;
@@ -76,12 +75,12 @@ class Player extends Member {
       } else {
         actionWithOutBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
       }
-      if (hasBall) ball.posXY = isHome ? posXY : PosXY(100 - posXY.x, 200 - posXY.y);
       if (lastAction != null) _streamController.add(lastAction!);
     });
   }
 
   gameEnd() {
+    posXY = startingPoxXY;
     _timer?.cancel();
   }
 
@@ -255,7 +254,16 @@ class Player extends Member {
   }
 
   ///현재 공을 가지고 있는지 여부
-  bool hasBall = false;
+  bool _hasBall = false;
+
+  bool get hasBall => _hasBall;
+
+  set hasBall(bool newVal) {
+    if (newVal) {
+      _streamController.add(PlayerAction.none);
+    }
+    _hasBall = newVal;
+  }
 }
 
 //---타고난거

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
@@ -16,19 +18,33 @@ class _FixturePageState extends ConsumerState<FixturePage> {
   bool showModal = false;
   Player? _selectedPlayer;
   List<Player> actingPlayer = [];
+  StreamSubscription<PlayerAction>? _playerStreamSubscription;
+  // StreamSubscription<PlayerAction>? _streamSubscription;
+  // StreamSubscription<PlayerAction>? _streamSubscription;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _playerStreamSubscription?.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
-    ref.read(fixtureProvider)?.playerStream.listen((event) {
-      // if (event != PlayerAction.none) print(event);
-      if (mounted) setState(() {});
+    Fixture? fixture = ref.read(fixtureProvider);
+    _playerStreamSubscription = fixture?.playerStream.listen((event) {
+      if (mounted) {
+        setState(() {
+          fixture.setBallPos();
+        });
+      }
     });
-    ref.read(fixtureProvider)?.gameStream.listen((event) {
-      if (mounted) setState(() {});
-    });
+    // fixture?.gameStream.listen((event) {
+    //   if (mounted) setState(() {});
+    // });
 
-    ref.read(fixtureProvider)?.isSimulation = false;
+    fixture?.isSimulation = false;
   }
 
   @override
