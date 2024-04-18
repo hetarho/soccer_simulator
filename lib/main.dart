@@ -177,6 +177,23 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
     List<Formation> formations = [formation433, formation442, formation41212, formation4222, formation4141, formation352];
 
+    Club arsenal = Club(name: 'Arsenal', color: Colors.red, tactics: Tactics(pressDistance: 20))
+      ..players = List.generate(
+          11,
+          (index) => Player.random(
+                name: RandomNames(Zone.us).manFullName(),
+                backNumber: index,
+                position: formation433.positions[index].position,
+                reflex: index == 0 ? 150 : 50,
+                speed: index == 0 ? 150 : 50,
+                birthDay: DateTime(2002, 03, 01),
+                national: National.england,
+                stat: Stat.random(position: formation433.positions[index].position, min: 100, max: 150),
+              )
+                ..isStartingPlayer = true
+                ..position = formation433.positions[index].position
+                ..startingPoxXY = formation433.positions[index].pos);
+
     List<Club> clubs = List.generate(19, (index) {
       formations.shuffle();
       Formation formation = formations.first;
@@ -197,26 +214,13 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   backNumber: index,
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,
-                  stat: Stat.random(position: formation.positions[index].position, min:50, max: 150),
+                  stat: Stat.random(position: formation.positions[index].position, min: 30, max: 80),
                 )
                   ..isStartingPlayer = true
                   ..position = formation.positions[index].position
                   ..startingPoxXY = formation.positions[index].pos);
     })
-      ..add(Club(name: 'Arsenal', color: Colors.red, tactics: Tactics(pressDistance: 20))
-        ..players = List.generate(
-            11,
-            (index) => Player.random(
-                  name: RandomNames(Zone.us).manFullName(),
-                  backNumber: index,
-                  position: formation433.positions[index].position,
-                  birthDay: DateTime(2002, 03, 01),
-                  national: National.england,
-                  stat: Stat.random(position: formation433.positions[index].position, min: 300, max: 600),
-                )
-                  ..isStartingPlayer = true
-                  ..position = formation433.positions[index].position
-                  ..startingPoxXY = formation433.positions[index].pos));
+      ..add(arsenal);
     _league = League(clubs: clubs);
     _league.startNewSeason();
     _isAutoPlay = false;

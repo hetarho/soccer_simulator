@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
@@ -16,15 +18,34 @@ class _FixturePageState extends ConsumerState<FixturePage> {
   bool showModal = false;
   Player? _selectedPlayer;
   List<Player> actingPlayer = [];
+  StreamSubscription<PlayerEvent>? _playerStreamSubscription;
+  late Fixture _fixture;
+  // StreamSubscription<PlayerAction>? _streamSubscription;
+  // StreamSubscription<PlayerAction>? _streamSubscription;
+
+  @override
+  void dispose() {
+    _fixture.dispose();
+    _playerStreamSubscription?.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
-    ref.read(fixtureProvider)?.gameStream.listen((event) {
-      if (mounted) setState(() {});
+    _fixture = ref.read(fixtureProvider) ?? Fixture.empty();
+    _playerStreamSubscription = _fixture.playerStream.listen((event) {
+      if (mounted) {
+        setState(() {
+          _fixture.setBallPos();
+        });
+      }
     });
+    // fixture?.gameStream.listen((event) {
+    //   if (mounted) setState(() {});
+    // });
 
-    ref.read(fixtureProvider)?.isSimulation = false;
+    _fixture.isSimulation = false;
   }
 
   @override
@@ -100,7 +121,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                           children: [
                             ...fixture.home.club.startPlayers.map((player) {
                               return AnimatedPositioned(
-                                duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
+                                duration: Duration(milliseconds: (player.playSpeed.inMilliseconds / 1).round()),
                                 curve: Curves.decelerate,
                                 top: stadiumHeight * (player.posXY.x) / 100 - (playerSize / 2),
                                 left: stadiumWidth * (player.posXY.y) / 200 - (playerSize / 2),
@@ -121,7 +142,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                             }),
                             ...fixture.away.club.startPlayers.map((player) {
                               return AnimatedPositioned(
-                                duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
+                                duration: Duration(milliseconds: (player.playSpeed.inMilliseconds / 1).round()),
                                 curve: Curves.decelerate,
                                 top: stadiumHeight - (stadiumHeight * (player.posXY.x) / 100 + (playerSize / 2)),
                                 left: stadiumWidth - (stadiumWidth * (player.posXY.y) / 200 + (playerSize / 2)),
@@ -141,7 +162,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                               );
                             }),
                             AnimatedPositioned(
-                              duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
+                              duration: Duration(milliseconds: (fixture.playerWithBall?.playSpeed.inMilliseconds ?? fixture.playSpeed.inMilliseconds / 2).round()),
                               curve: Curves.decelerate,
                               top: fixture.isHomeTeamBall
                                   ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)

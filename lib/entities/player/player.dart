@@ -2,14 +2,13 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/material.dart';
-import 'package:soccer_simulator/entities/ball.dart';
-import 'package:soccer_simulator/entities/fixture.dart';
-import 'package:soccer_simulator/entities/pos/pos.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:soccer_simulator/entities/ball.dart';
+import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/member.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
+import 'package:soccer_simulator/entities/pos/pos.dart';
 import 'package:soccer_simulator/enum/player.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/enum/training_type.dart';
@@ -19,7 +18,8 @@ part 'player.action.dart';
 part 'player.grow.dart';
 
 class Player extends Member {
-  late StreamController<PlayerAction> _streamController;
+  late StreamController<PlayerEvent> _streamController;
+  Stream<PlayerEvent> get playerStream => _streamController.stream;
   Player({
     required super.name,
     required super.birthDay,
@@ -34,13 +34,55 @@ class Player extends Member {
     required this.soccerIQ,
     required this.reflex,
     required this.flexibility,
+    required this.speed,
     int? potential,
   }) {
     _stat = stat;
 
     //포텐셜을 지정해주지 않으면 랜덤으로 책정
     _potential = potential ?? R().getInt(min: 30, max: 120);
-    _streamController = StreamController<PlayerAction>.broadcast();
+    _streamController = StreamController<PlayerEvent>.broadcast();
+  }
+
+  bool isPlaying = false;
+  Timer? _timer; // Timer 인스턴스를 저장할 변수
+  Duration _playSpeed = const Duration(milliseconds: 0);
+
+  ///현재 경기 시간
+  Duration playTime = const Duration(seconds: 0);
+
+  void updateTimeSpeed(Duration newTimeSpeed) {
+    _playSpeed = newTimeSpeed;
+  }
+
+  Duration get playSpeed {
+    return Duration(milliseconds: (_playSpeed.inMilliseconds * 50 / reflex).round());
+  }
+
+  gameStart({
+    required Fixture fixture,
+    required ClubInFixture team,
+    required ClubInFixture opposite,
+    required Ball ball,
+    required bool isHome,
+  }) {
+    _timer?.cancel();
+    _timer = Timer.periodic(playSpeed, (timer) async {
+      playTime = fixture.playTime;
+      bool teamHasBall = team.club.startPlayers.where((player) => player.hasBall).isNotEmpty;
+      lastAction = null;
+      if (teamHasBall) {
+        actionWidthBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
+      } else {
+        actionWithOutBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
+      }
+      if (lastAction != null) _streamController.add(PlayerEvent(player: this, action: lastAction!));
+    });
+  }
+
+  gameEnd() {
+    posXY = startingPoxXY;
+    _timer?.cancel();
   }
 
   Player.random({
@@ -56,17 +98,19 @@ class Player extends Member {
     int? soccerIQ,
     int? reflex,
     int? flexibility,
+    int? speed,
     this.personalTrainingTypes = const [],
     this.teamTrainingTypePercent = 0.5,
   }) {
-    height = height ?? R().getDouble(min: 165, max: 210);
-    bodyType = bodyType ?? R().getBodyType();
-    soccerIQ = soccerIQ ?? R().getInt(min: 30, max: 120);
-    reflex = reflex ?? R().getInt(min: 30, max: 120);
-    flexibility = flexibility ?? R().getInt(min: 30, max: 120);
+    this.height = height ?? R().getDouble(min: 165, max: 210);
+    this.bodyType = bodyType ?? R().getBodyType();
+    this.soccerIQ = soccerIQ ?? R().getInt(min: 30, max: 120);
+    this.reflex = reflex ?? R().getInt(min: 30, max: 120);
+    this.speed = speed ?? R().getInt(min: 30, max: 120);
+    this.flexibility = flexibility ?? R().getInt(min: 30, max: 120);
     _potential = potential ?? R().getInt(min: 30, max: 120);
     _stat = stat ?? Stat.random(position: position);
-    _streamController = StreamController<PlayerAction>.broadcast();
+    _streamController = StreamController<PlayerEvent>.broadcast();
   }
 
   final String id = const Uuid().v4();
@@ -108,13 +152,16 @@ class Player extends Member {
   late final BodyType bodyType;
 
   ///축구 지능
-  late final int soccerIQ;
+  late int soccerIQ;
 
   ///반응 속도
-  late final int reflex;
+  late int reflex;
+
+  ///스피드
+  late int speed;
 
   ///유연성
-  late final int flexibility;
+  late int flexibility;
 
   //선수의 스텟
   late final Stat _stat;
@@ -213,7 +260,16 @@ class Player extends Member {
   }
 
   ///현재 공을 가지고 있는지 여부
-  bool hasBall = false;
+  bool _hasBall = false;
+
+  bool get hasBall => _hasBall;
+
+  set hasBall(bool newVal) {
+    if (newVal) {
+      _streamController.add(PlayerEvent(player: this, action: PlayerAction.none));
+    }
+    _hasBall = newVal;
+  }
 }
 
 //---타고난거
@@ -271,9 +327,11 @@ class Player extends Member {
 ///패스 마스터 - 짧은패스 + 롱패스 + 키패스 + 기술
 
 enum PlayerAction {
+  none('none'),
   shoot('shoot'),
   tackle('tackle'),
   pass('pass'),
+  press('press'),
   dribble('dribble'),
   goal('goal'),
   assist('assist'),
@@ -284,4 +342,13 @@ enum PlayerAction {
 
   @override
   String toString() => text;
+}
+
+class PlayerEvent {
+  final Player player;
+  final PlayerAction action;
+  PlayerEvent({
+    required this.player,
+    required this.action,
+  });
 }
