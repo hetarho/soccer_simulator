@@ -1,6 +1,150 @@
 part of 'player.dart';
 
-extension _PlayerMove on Player {
+extension PlayerMove on Player {
+  actionWithOutBall({
+    required ClubInFixture team,
+    required ClubInFixture opposite,
+    required Ball ball,
+    required Fixture fixture,
+    required String hasBallPlayerId,
+  }) {
+    lastAction = null;
+    List<Player> oppositePlayers = opposite.club.players;
+
+    ///상대방의 공을 이미 배았았을 경우
+    if (oppositePlayers.where((player) => player.hasBall).isEmpty) {
+      actionWidthBall(team: team, opposite: opposite, ball: ball, fixture: fixture, hasBallPlayerId: hasBallPlayerId);
+      return;
+    }
+    PosXY ballPos = PosXY(100 - ball.posXY.x, 200 - ball.posXY.y);
+    bool canTackle = ballPos.distance(posXY) < 7;
+
+    double personalPressBonus = switch (position) {
+      Position.forward when ballPos.y > posXY.y => 100,
+      Position.forward => 15,
+      Position.midfielder => 10,
+      Position.defender => 5,
+      _ => 0,
+    };
+    bool canPress = (team.club.tactics.pressDistance + personalPressBonus > ballPos.distance(posXY)) && position != Position.goalKeeper;
+
+    if (canTackle) {
+      int tacklePercent = 50;
+      int stayBackPercent = 100;
+      int ranNum = R().getInt(min: 0, max: tacklePercent + stayBackPercent);
+
+      if (ranNum < tacklePercent) {
+        tackle(fixture.playerWithBall!, team);
+      } else if (ranNum < tacklePercent + stayBackPercent) {
+        stayBack();
+      }
+    } else {
+      if (canPress) {
+        press(ball.posXY);
+      } else {
+        stayBack();
+      }
+    }
+    if (lastAction != null) _streamController.add(lastAction!);
+  }
+
+  actionWidthBall({
+    required ClubInFixture team,
+    required ClubInFixture opposite,
+    required Ball ball,
+    required Fixture fixture,
+    required String hasBallPlayerId,
+  }) {
+    lastAction = null;
+    List<Player> teamPlayers = [...team.club.players.where((p) => p.id != id)];
+    List<Player> oppositePlayers = opposite.club.players;
+
+    ///소유권을 상실했을 경우
+    if (teamPlayers.where((player) => player.hasBall).isEmpty && !hasBall) {
+      actionWithOutBall(team: team, opposite: opposite, ball: ball, fixture: fixture, hasBallPlayerId: hasBallPlayerId);
+      return;
+    }
+
+    if (id == hasBallPlayerId) {
+      teamPlayers.sort((a, b) => a.posXY.distance(posXY) - b.posXY.distance(posXY) > 0 ? 1 : -1);
+      int shootPercent = max(0, ((2500 - pow(PosXY(50, 200).distance(posXY), 2))).round());
+      int passPercent = 100;
+
+      int dribbleBonus =
+          (11 - oppositePlayers.where((opposite) => ((100 - opposite.posXY.x + 15) > posXY.x && (100 - opposite.posXY.x - 15) < posXY.x) || (200 - opposite.posXY.y - posXY.y) > 50).length);
+      int dribblePercent = position == Position.goalKeeper ? 0 : (50 + dribbleBonus * 100);
+      int ranNum = R().getInt(min: 0, max: shootPercent + passPercent + dribblePercent);
+      List<Player> frontPlayers = teamPlayers.where((p) => p.posXY.y > posXY.y - 30).toList();
+
+      List<Player> nearOpposite = oppositePlayers
+          .where((opposite) =>
+              opposite.posXY.distance(PosXY(
+                100 - posXY.x,
+                200 - posXY.y,
+              )) <
+              10)
+          .toList();
+
+      bool canShoot = true;
+
+      for (var opposite in nearOpposite) {
+        double distanceBonus = 10 -
+            opposite.posXY.distance(PosXY(
+              100 - posXY.x,
+              200 - posXY.y,
+            ));
+
+        if ((overall / (opposite.overall * distanceBonus + overall)) < R().getDouble(max: 1)) {
+          canShoot = false;
+        }
+      }
+
+      if (canShoot && (ranNum < shootPercent || (posXY.y > 180 && frontPlayers.isEmpty))) {
+        shoot(fixture: fixture, team: team, opposite: opposite, goalKeeper: oppositePlayers.firstWhere((player) => player.position == Position.goalKeeper));
+      } else if (ranNum < shootPercent + passPercent) {
+        late Player target;
+        if (ball.posXY.y >= 100 && frontPlayers.isNotEmpty) {
+          target = frontPlayers[R().getInt(min: 0, max: frontPlayers.length - 1)];
+        } else if (ball.posXY.y >= 50) {
+          target = R().getInt(max: 10, min: 0) > 1 ? teamPlayers[R().getInt(min: 0, max: 1)] : teamPlayers[R().getInt(min: 7, max: 9)];
+        } else {
+          target = R().getInt(max: 10, min: 0) > 3 ? teamPlayers[R().getInt(min: 0, max: 2)] : teamPlayers[R().getInt(min: 5, max: 7)];
+        }
+
+        List<Player> nearOppositeAtTarget = oppositePlayers
+            .where((opposite) =>
+                opposite.posXY.distance(PosXY(
+                  100 - target.posXY.x,
+                  200 - target.posXY.y,
+                )) <
+                15)
+            .toList();
+
+        // print(nearOppositeAtTarget.length);
+
+        pass(target, team, nearOppositeAtTarget, fixture);
+      } else if (ranNum < shootPercent + passPercent + dribblePercent) {
+        dribble(team, dribbleBonus);
+      }
+
+      if (lastAction != null) _streamController.add(lastAction!);
+    } else {
+      int ranNum = R().getInt(min: 0, max: 100);
+      switch (ranNum) {
+        case < 40:
+          stayFront();
+          break;
+        case < 100:
+          moveFront();
+          break;
+        case < 7:
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
   double get posXMinBoundary {
     return max(startingPoxXY.x - 20, 0);
   }

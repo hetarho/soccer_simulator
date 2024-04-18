@@ -15,8 +15,8 @@ import 'package:soccer_simulator/utils/random.dart';
 /// 90 ~ 120 리그 탑급 플레이어
 ///
 /// 120 ~ 월드클래스
-class PlayerStat {
-  PlayerStat({
+class Stat {
+  Stat({
     int? stamina,
     int? strength,
     int? attSkill,
@@ -39,7 +39,7 @@ class PlayerStat {
     return '''TODO''';
   }
 
-  PlayerStat.random({
+  Stat.random({
     int min = 15,
     int max = 40,
     required Position position,
@@ -75,7 +75,7 @@ class PlayerStat {
   }
 
   ///훈련시 상승시킬 능력치
-  PlayerStat.training({
+  Stat.training({
     required List<TrainingType> type,
     required int point,
     bool isTeamTraining = false,
@@ -105,7 +105,7 @@ class PlayerStat {
   }
 
   ///게임 투입시 상승시킬 능력치
-  PlayerStat.playGame({
+  Stat.playGame({
     required Position position,
     required int point,
   }) {
@@ -150,7 +150,7 @@ class PlayerStat {
   int teamwork = 0;
 
   ///새로운 스탯을 더하면 스텟이 올라가는 함수 : TODO
-  add(PlayerStat newStat) {
+  add(Stat newStat) {
     stamina = stamina + newStat.stamina;
     strength = strength + newStat.strength;
     attSkill = attSkill + newStat.attSkill;

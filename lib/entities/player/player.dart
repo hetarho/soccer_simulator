@@ -15,8 +15,8 @@ import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/enum/training_type.dart';
 import 'package:soccer_simulator/utils/random.dart';
 
-part '_player.action.dart';
-part '_player.grow.dart';
+part 'player.action.dart';
+part 'player.grow.dart';
 
 class Player extends Member {
   late StreamController<PlayerAction> _streamController;
@@ -25,7 +25,7 @@ class Player extends Member {
     required super.birthDay,
     required super.national,
     required this.backNumber,
-    required PlayerStat stat,
+    required Stat stat,
     this.personalTrainingTypes = const [],
     this.teamTrainingTypePercent = 0.5,
     this.position,
@@ -49,7 +49,7 @@ class Player extends Member {
     required super.national,
     required this.backNumber,
     required Position position,
-    PlayerStat? stat,
+    Stat? stat,
     int? potential,
     double? height,
     BodyType? bodyType,
@@ -65,7 +65,7 @@ class Player extends Member {
     reflex = reflex ?? R().getInt(min: 30, max: 120);
     flexibility = flexibility ?? R().getInt(min: 30, max: 120);
     _potential = potential ?? R().getInt(min: 30, max: 120);
-    _stat = stat ?? PlayerStat.random(position: position);
+    _stat = stat ?? Stat.random(position: position);
     _streamController = StreamController<PlayerAction>.broadcast();
   }
 
@@ -90,7 +90,7 @@ class Player extends Member {
   }
 
   ///선수 스텟
-  PlayerStat get stat {
+  Stat get stat {
     return _stat;
   }
 
@@ -117,7 +117,7 @@ class Player extends Member {
   late final int flexibility;
 
   //선수의 스텟
-  late final PlayerStat _stat;
+  late final Stat _stat;
 
   ///개인 트레이닝 시 훈련 종류
   List<TrainingType> personalTrainingTypes;
@@ -182,7 +182,7 @@ class Player extends Member {
   }
 
   ///선수의 특정 능력치를 향상시켜주는 메소드
-  void addStat(PlayerStat stat, int point) {
+  void addStat(Stat stat, int point) {
     _stat.add(stat);
     _extraStat -= point;
   }
@@ -214,194 +214,6 @@ class Player extends Member {
 
   ///현재 공을 가지고 있는지 여부
   bool hasBall = false;
-
-  ///선수를 트레이닝 시켜서 알고리즘에 따라 선수 능력치를 향상시키는 메소드
-  ///
-  ///[coachAbility]
-  ///
-  /// ~0.2 하급 코치
-  ///
-  /// ~0.4 중급 코치
-  ///
-  /// ~0.6 고급 코치
-  ///
-  /// ~ 0.8 엘리트 코치
-  void growAfterTraining({
-    required double coachAbility,
-    required List<TrainingType> teamTrainingTypes,
-  }) {
-    //남은 포텐셜이 0보다 커야 성장 가능
-    if (_potential > 0) {
-      double personalSuccessPercent = coachAbility * (1 - teamTrainingTypePercent);
-      double teamSuccessPercent = coachAbility * teamTrainingTypePercent;
-
-      int personalGrowPoint = personalSuccessPercent ~/ (Random().nextDouble() + 0.03);
-      int teamGrowPoint = teamSuccessPercent ~/ (Random().nextDouble() + 0.03);
-
-      if (teamGrowPoint > 0 && _potential / 20 > Random().nextDouble()) {
-        _potential -= 1;
-        PlayerStat newStat = PlayerStat.training(
-          type: teamTrainingTypes,
-          point: teamGrowPoint,
-          isTeamTraining: true,
-        );
-        _stat.add(newStat);
-        _stat.add(PlayerStat(teamwork: 1));
-      }
-      if (personalGrowPoint > 0 && _potential / 20 > Random().nextDouble()) {
-        _potential -= 1;
-        PlayerStat newStat = PlayerStat.training(
-          type: personalTrainingTypes,
-          point: personalGrowPoint,
-        );
-        _stat.add(newStat);
-      }
-    }
-  }
-
-  actionWidthBall({
-    required ClubInFixture team,
-    required ClubInFixture opposite,
-    required Ball ball,
-    required Fixture fixture,
-    required String hasBallPlayerId,
-  }) {
-    lastAction = null;
-    List<Player> teamPlayers = [...team.club.players.where((p) => p.id != id)];
-    List<Player> oppositePlayers = opposite.club.players;
-
-    ///소유권을 상실했을 경우
-    if (teamPlayers.where((player) => player.hasBall).isEmpty && !hasBall) {
-      actionWithOutBall(team: team, opposite: opposite, ball: ball, fixture: fixture, hasBallPlayerId: hasBallPlayerId);
-      return;
-    }
-
-    if (id == hasBallPlayerId) {
-      teamPlayers.sort((a, b) => a.posXY.distance(posXY) - b.posXY.distance(posXY) > 0 ? 1 : -1);
-      int shootPercent = max(0, ((2500 - pow(PosXY(50, 200).distance(posXY), 2))).round());
-      int passPercent = 100;
-
-      int dribbleBonus =
-          (11 - oppositePlayers.where((opposite) => ((100 - opposite.posXY.x + 15) > posXY.x && (100 - opposite.posXY.x - 15) < posXY.x) || (200 - opposite.posXY.y - posXY.y) > 50).length);
-      int dribblePercent = position == Position.goalKeeper ? 0 : (50 + dribbleBonus * 100);
-      int ranNum = R().getInt(min: 0, max: shootPercent + passPercent + dribblePercent);
-      List<Player> frontPlayers = teamPlayers.where((p) => p.posXY.y > posXY.y - 30).toList();
-
-      List<Player> nearOpposite = oppositePlayers
-          .where((opposite) =>
-              opposite.posXY.distance(PosXY(
-                100 - posXY.x,
-                200 - posXY.y,
-              )) <
-              10)
-          .toList();
-
-      bool canShoot = true;
-
-      for (var opposite in nearOpposite) {
-        double distanceBonus = 10 -
-            opposite.posXY.distance(PosXY(
-              100 - posXY.x,
-              200 - posXY.y,
-            ));
-
-        if ((overall / (opposite.overall * distanceBonus + overall)) < R().getDouble(max: 1)) {
-          canShoot = false;
-        }
-      }
-
-      if (canShoot && (ranNum < shootPercent || (posXY.y > 180 && frontPlayers.isEmpty))) {
-        shoot(fixture: fixture, team: team, opposite: opposite, goalKeeper: oppositePlayers.firstWhere((player) => player.position == Position.goalKeeper));
-      } else if (ranNum < shootPercent + passPercent) {
-        late Player target;
-        if (ball.posXY.y >= 100 && frontPlayers.isNotEmpty) {
-          target = frontPlayers[R().getInt(min: 0, max: frontPlayers.length - 1)];
-        } else if (ball.posXY.y >= 50) {
-          target = R().getInt(max: 10, min: 0) > 1 ? teamPlayers[R().getInt(min: 0, max: 1)] : teamPlayers[R().getInt(min: 7, max: 9)];
-        } else {
-          target = R().getInt(max: 10, min: 0) > 3 ? teamPlayers[R().getInt(min: 0, max: 2)] : teamPlayers[R().getInt(min: 5, max: 7)];
-        }
-
-        List<Player> nearOppositeAtTarget = oppositePlayers
-            .where((opposite) =>
-                opposite.posXY.distance(PosXY(
-                  100 - target.posXY.x,
-                  200 - target.posXY.y,
-                )) <
-                15)
-            .toList();
-
-        // print(nearOppositeAtTarget.length);
-
-        pass(target, team, nearOppositeAtTarget, fixture);
-      } else if (ranNum < shootPercent + passPercent + dribblePercent) {
-        dribble(team, dribbleBonus);
-      }
-
-      if (lastAction != null) _streamController.add(lastAction!);
-    } else {
-      int ranNum = R().getInt(min: 0, max: 100);
-      switch (ranNum) {
-        case < 40:
-          stayFront();
-          break;
-        case < 100:
-          moveFront();
-          break;
-        case < 7:
-          break;
-        default:
-          break;
-      }
-    }
-  }
-
-  actionWithOutBall({
-    required ClubInFixture team,
-    required ClubInFixture opposite,
-    required Ball ball,
-    required Fixture fixture,
-    required String hasBallPlayerId,
-  }) {
-    lastAction = null;
-    List<Player> oppositePlayers = opposite.club.players;
-
-    ///상대방의 공을 이미 배았았을 경우
-    if (oppositePlayers.where((player) => player.hasBall).isEmpty) {
-      actionWidthBall(team: team, opposite: opposite, ball: ball, fixture: fixture, hasBallPlayerId: hasBallPlayerId);
-      return;
-    }
-    PosXY ballPos = PosXY(100 - ball.posXY.x, 200 - ball.posXY.y);
-    bool canTackle = ballPos.distance(posXY) < 7;
-
-    double personalPressBonus = switch (position) {
-      Position.forward when ballPos.y > posXY.y => 100,
-      Position.forward => 15,
-      Position.midfielder => 10,
-      Position.defender => 5,
-      _ => 0,
-    };
-    bool canPress = (team.club.tactics.pressDistance + personalPressBonus > ballPos.distance(posXY)) && position != Position.goalKeeper;
-
-    if (canTackle) {
-      int tacklePercent = 50;
-      int stayBackPercent = 100;
-      int ranNum = R().getInt(min: 0, max: tacklePercent + stayBackPercent);
-
-      if (ranNum < tacklePercent) {
-        tackle(fixture.playerWithBall!, team);
-      } else if (ranNum < tacklePercent + stayBackPercent) {
-        stayBack();
-      }
-    } else {
-      if (canPress) {
-        press(ball.posXY);
-      } else {
-        stayBack();
-      }
-    }
-    if (lastAction != null) _streamController.add(lastAction!);
-  }
 }
 
 //---타고난거

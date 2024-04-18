@@ -22,7 +22,7 @@ class PlayerDetail extends ConsumerWidget {
           birthDay: DateTime.now(),
           national: National.algeria,
           height: 123,
-          stat: PlayerStat(),
+          stat: Stat(),
         );
     return Scaffold(
       appBar: AppBar(),
