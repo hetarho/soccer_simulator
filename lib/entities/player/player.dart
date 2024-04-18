@@ -17,6 +17,7 @@ import 'package:soccer_simulator/utils/random.dart';
 
 part 'player.action.dart';
 part 'player.grow.dart';
+part 'player.stat.dart';
 
 class Player extends Member {
   late StreamController<PlayerEvent> _streamController;
@@ -73,10 +74,11 @@ class Player extends Member {
       bool teamHasBall = team.club.startPlayers.where((player) => player.hasBall).isNotEmpty;
       lastAction = null;
       if (teamHasBall) {
-        actionWidthBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
+        attack(team: team, opponent: opposite, ball: ball, fixture: fixture);
       } else {
-        actionWithOutBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
+        defend(team: team, opponent: opposite, ball: ball, fixture: fixture);
       }
+
       if (lastAction != null) _streamController.add(PlayerEvent(player: this, action: lastAction!));
     });
   }
@@ -121,6 +123,9 @@ class Player extends Member {
 
   ///경기에서 현재 포지션
   PosXY posXY = PosXY(0, 0);
+
+  ///상대팀 선수와 거리 비교를 위한 포지션
+  PosXY get reversePosXy => PosXY(100 - posXY.x, 200 - posXY.y);
 
   ///스타팅 포지션
   PosXY _startingPoxXY = PosXY(0, 0);
@@ -259,12 +264,15 @@ class Player extends Member {
     defSuccess = 0;
     saveSuccess = 0;
     dribbleSuccess = 0;
+    _currentStamina = 100;
     resetPosXY();
     _growAfterPlay();
   }
 
   ///현재 공을 가지고 있는지 여부
   bool _hasBall = false;
+
+  double _currentStamina = 100;
 
   bool get hasBall => _hasBall;
 
@@ -274,61 +282,59 @@ class Player extends Member {
     }
     _hasBall = newVal;
   }
+
+  ///윙어인지 아닌지를 나타내는 변수
+  bool get isWinger => isLeftWinger || isRightWinger;
+
+  bool get isLeftWinger => startingPoxXY.x < 30;
+  bool get isRightWinger => startingPoxXY.x > 70;
+
+  double get _posXMinBoundary {
+    return max(
+        0,
+        switch (position) {
+          Position.goalKeeper => startingPoxXY.x - 5,
+          Position.defender => startingPoxXY.x - 5,
+          Position.midfielder => startingPoxXY.x - (isLeftWinger ? 10 : 15),
+          Position.forward => startingPoxXY.x - (isLeftWinger ? 15 : 25),
+          _ => min(startingPoxXY.x - 100, 0),
+        });
+  }
+
+  double get _posXMaxBoundary {
+    return min(
+        100,
+        switch (position) {
+          Position.goalKeeper => startingPoxXY.x + 5,
+          Position.defender => startingPoxXY.x + 5,
+          Position.midfielder => startingPoxXY.x + (isRightWinger ? 10 : 15),
+          Position.forward => startingPoxXY.x + (isRightWinger ? 15 : 25),
+          _ => min(startingPoxXY.x + 100, 100),
+        });
+  }
+
+  double get _posYMinBoundary {
+    return max(
+        0,
+        switch (position) {
+          Position.goalKeeper => startingPoxXY.y,
+          Position.defender => startingPoxXY.y - 10,
+          Position.midfielder => startingPoxXY.y - (isWinger ? 30 : 20),
+          Position.forward => startingPoxXY.y - (isWinger ? 50 : 30),
+          _ => min(startingPoxXY.y - 100, 0),
+        });
+  }
+
+  double get _posYMaxBoundary {
+    return switch (position) {
+      Position.goalKeeper => startingPoxXY.y + 10,
+      Position.defender => startingPoxXY.y + (isWinger ? 150 : 40),
+      Position.midfielder => startingPoxXY.y + (isWinger ? 110 : 55),
+      Position.forward => startingPoxXY.y + (isWinger ? 100 : 100),
+      _ => min(startingPoxXY.y + 200, 200),
+    };
+  }
 }
-
-//---타고난거
-
-///키
-///체형 - 마름 / 보통 / 건장
-///축구지능
-///반응속도
-///유연성
-
-//---훈련으로 바뀌는거
-
-///체력
-///근력
-///기술
-
-//---경기 경험으로 바뀌는 것
-
-///침착함
-
-//--경기 경험 + 훈련으로 바뀌는 것
-
-///조직력
-
-//온더볼
-
-/// 슛 - 축구지능 + 기술 + 근력 + 침착함 + 체력
-/// 중거리 슛 - 축구지능 + 기술 + 근력 + 침착함 + 체력
-/// 키패스 - 축구지능 +  기술 + 근력 + 체력 + 조직력 + 침착함
-/// 짧은패스 - 축구지능 + 기술 + 조직력 + 침착함
-/// 롱패스 - 축구지능 + 체력 + 기술 + 근력 + 조직력 + 침착함
-/// 헤딩 - 키 + 체형 + 기술 + 체력
-/// 드리블 - 키 + 체형 + 축구지능 + 반응속도 + 체력 + 기술 + 유연성
-/// 탈압박 - 축구지능 + 반응속도 + 유연성 + 체력 + 기술 + 침착함
-
-//오프더볼
-
-///태클 - 축구지능 + 반응속도 + 체형 + 체력 + 기술 + 침착함
-///인터셉트 - 축구지능 + 반응속도  + 체력
-///압박 - 축구지능 + 체력 + 조직력 + 침착함
-///침투 - 축구지능 + 반응속도 + 체력 + 근력 + 조직력
-
-//일반
-
-///판단력 - 축구지능 + 반응속도 + 체력 + 조직력 + 침착함
-
-//특수능력
-
-///방향전환 - 판단력 + 축구 지능
-///빌드업 - 짧은패스 + 롱패스
-///반박자 빠른 슈팅 - 슛 + 반응속도
-///아크로바틱 - 슛 + 유연성
-
-///태클 마스터 - 태클 + 기술
-///패스 마스터 - 짧은패스 + 롱패스 + 키패스 + 기술
 
 enum PlayerAction {
   none('none'),

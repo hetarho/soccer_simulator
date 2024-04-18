@@ -14,7 +14,13 @@ class Fixture {
     playerStream = StreamGroup.merge(allPlayers.map((e) => e.playerStream).toList()).asBroadcastStream();
 
     _streamSubscription = playerStream.listen((event) {
-      if (event.action != PlayerAction.none && isGameStart) {
+      if ([
+            PlayerAction.goal,
+            PlayerAction.assist,
+            PlayerAction.shoot,
+            PlayerAction.tackle,
+          ].contains(event.action) &&
+          isGameStart) {
         records.add(FixtureRecord(
           time: playTime,
           club: home.club.players.where((element) => element.id == event.player.id).isEmpty ? away.club : home.club,

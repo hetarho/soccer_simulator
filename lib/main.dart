@@ -177,6 +177,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
     List<Formation> formations = [formation433, formation442, formation41212, formation4222, formation4141, formation352];
 
+    List<int> specialTest = [6];
     Club arsenal = Club(name: 'Arsenal', color: Colors.red, tactics: Tactics(pressDistance: 20))
       ..players = List.generate(
           11,
@@ -184,17 +185,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 name: RandomNames(Zone.us).manFullName(),
                 backNumber: index,
                 position: formation433.positions[index].position,
-                reflex: [0, 6, 9].contains(index) ? 150 : 50,
-                speed: [0, 6, 9].contains(index) ? 150 : 50,
+                reflex: specialTest.contains(index) ? 150 : null,
+                speed: specialTest.contains(index) ? 150 : null,
                 birthDay: DateTime(2002, 03, 01),
                 national: National.england,
                 stat: Stat.random(
                   position: formation433.positions[index].position,
-                  min: [0, 6, 9].contains(index) ? 150 : 80,
-                  max: [0, 6, 9].contains(index) ? 200 : 120,
+                  min: specialTest.contains(index) ? 190 : 70,
+                  max: specialTest.contains(index) ? 200 : 100,
                 ),
               )
-                ..tactics = [0, 6, 9].contains(index) ? Tactics(pressDistance: 30) : null
+                ..tactics = specialTest.contains(index) ? Tactics(pressDistance: 30) : null
                 ..isStartingPlayer = true
                 ..position = formation433.positions[index].position
                 ..startingPoxXY = formation433.positions[index].pos);
@@ -219,7 +220,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   backNumber: index,
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,
-                  stat: Stat.random(position: formation.positions[index].position, min: 30, max: 80),
+                  stat: Stat.random(position: formation.positions[index].position, min: 70, max: 100),
                 )
                   ..isStartingPlayer = true
                   ..position = formation.positions[index].position

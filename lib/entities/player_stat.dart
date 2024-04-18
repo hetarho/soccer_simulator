@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/enum/training_type.dart';
 import 'package:soccer_simulator/utils/random.dart';
