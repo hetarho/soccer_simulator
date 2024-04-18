@@ -20,8 +20,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
   List<Player> actingPlayer = [];
   StreamSubscription<PlayerEvent>? _playerStreamSubscription;
   late Fixture _fixture;
-  // StreamSubscription<PlayerAction>? _streamSubscription;
-  // StreamSubscription<PlayerAction>? _streamSubscription;
+  int _ballAnimationSpeed = 0;
 
   @override
   void dispose() {
@@ -41,10 +40,6 @@ class _FixturePageState extends ConsumerState<FixturePage> {
         });
       }
     });
-    // fixture?.gameStream.listen((event) {
-    //   if (mounted) setState(() {});
-    // });
-
     _fixture.isSimulation = false;
   }
 
@@ -162,7 +157,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                               );
                             }),
                             AnimatedPositioned(
-                              duration: Duration(milliseconds: (fixture.playerWithBall?.playSpeed.inMilliseconds ?? fixture.playSpeed.inMilliseconds / 2).round()),
+                              duration: Duration(milliseconds: (_ballAnimationSpeed).round()),
                               curve: Curves.decelerate,
                               top: fixture.isHomeTeamBall
                                   ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)
@@ -196,6 +191,10 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                               style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(0)),
                               onPressed: () {
                                 fixture.updateTimeSpeed(Duration(milliseconds: speed));
+
+                                _fixture.allPlayers.sort((a, b) => a.playSpeed > b.playSpeed ? 1 : -1);
+
+                                _ballAnimationSpeed = _fixture.allPlayers.first.playSpeed.inMilliseconds;
                               },
                               child: Text('${speed}'),
                             ))
@@ -303,13 +302,13 @@ class PlayerWidget extends StatelessWidget {
       width: playerSize,
       height: playerSize,
       decoration: BoxDecoration(
-        color: color.withOpacity(player.hasBall ? 1 : 0.5),
+        color: color,
         borderRadius: BorderRadius.circular(playerSize),
       ),
       child: Center(
         child: Text(
           '${player.backNumber}',
-          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(color: player.hasBall ? Colors.white : Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ),
     );

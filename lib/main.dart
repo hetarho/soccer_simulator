@@ -184,12 +184,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 name: RandomNames(Zone.us).manFullName(),
                 backNumber: index,
                 position: formation433.positions[index].position,
-                reflex: index == 0 ? 150 : 50,
-                speed: index == 0 ? 150 : 50,
+                reflex: [0, 6, 9].contains(index) ? 150 : 50,
+                speed: [0, 6, 9].contains(index) ? 150 : 50,
                 birthDay: DateTime(2002, 03, 01),
                 national: National.england,
-                stat: Stat.random(position: formation433.positions[index].position, min: 100, max: 150),
+                stat: Stat.random(
+                  position: formation433.positions[index].position,
+                  min: [0, 6, 9].contains(index) ? 150 : 80,
+                  max: [0, 6, 9].contains(index) ? 200 : 120,
+                ),
               )
+                ..tactics = [0, 6, 9].contains(index) ? Tactics(pressDistance: 30) : null
                 ..isStartingPlayer = true
                 ..position = formation433.positions[index].position
                 ..startingPoxXY = formation433.positions[index].pos);

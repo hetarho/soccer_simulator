@@ -8,7 +8,7 @@ extension PlayerMove on Player {
     required Fixture fixture,
   }) {
     PosXY ballPos = PosXY(100 - ball.posXY.x, 200 - ball.posXY.y);
-    bool canTackle = ballPos.distance(posXY) < 7;
+    bool canTackle = ballPos.distance(posXY) < 12;
 
     double personalPressBonus = switch (position) {
       Position.forward when ballPos.y > posXY.y => 100,
@@ -17,14 +17,14 @@ extension PlayerMove on Player {
       Position.defender => 5,
       _ => 0,
     };
-    bool canPress = (team.club.tactics.pressDistance + personalPressBonus > ballPos.distance(posXY)) && position != Position.goalKeeper;
+    bool canPress = ((tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance + personalPressBonus > ballPos.distance(posXY)) && position != Position.goalKeeper;
 
     if (canTackle) {
       int tacklePercent = 50;
       int stayBackPercent = 100;
       int ranNum = R().getInt(min: 0, max: tacklePercent + stayBackPercent);
 
-      if (ranNum < tacklePercent) {
+      if (ranNum < tacklePercent && fixture.playerWithBall != null) {
         tackle(fixture.playerWithBall!, team);
       } else if (ranNum < tacklePercent + stayBackPercent) {
         stayBack();
@@ -55,7 +55,8 @@ extension PlayerMove on Player {
       int dribbleBonus =
           (11 - oppositePlayers.where((opposite) => ((100 - opposite.posXY.x + 15) > posXY.x && (100 - opposite.posXY.x - 15) < posXY.x) || (200 - opposite.posXY.y - posXY.y) > 50).length);
       int dribblePercent = position == Position.goalKeeper ? 0 : (50 + dribbleBonus * 100);
-      int ranNum = R().getInt(min: 0, max: shootPercent + passPercent + dribblePercent);
+      int stayPercent = position == Position.goalKeeper ? 0 : 250;
+      int ranNum = R().getInt(min: 0, max: shootPercent + passPercent + dribblePercent + stayPercent);
       List<Player> frontPlayers = teamPlayers.where((p) => p.posXY.y > posXY.y - 30).toList();
 
       List<Player> nearOpposite = oppositePlayers
@@ -102,11 +103,11 @@ extension PlayerMove on Player {
                 15)
             .toList();
 
-        // print(nearOppositeAtTarget.length);
-
         pass(target, team, nearOppositeAtTarget, fixture);
       } else if (ranNum < shootPercent + passPercent + dribblePercent) {
         dribble(team, dribbleBonus);
+      } else {
+        stayFront();
       }
     } else {
       int ranNum = R().getInt(min: 0, max: 100);
@@ -126,20 +127,48 @@ extension PlayerMove on Player {
   }
 
   double get posXMinBoundary {
-    return max(startingPoxXY.x - 20, 0);
+    return max(
+        0,
+        switch (position) {
+          Position.goalKeeper => startingPoxXY.x - 5,
+          Position.defender => startingPoxXY.x - (isLeftWinger ? 10 : 20),
+          Position.midfielder => startingPoxXY.x - (isLeftWinger ? 15 : 25),
+          Position.forward => startingPoxXY.x - (isLeftWinger ? 20 : 40),
+          _ => min(startingPoxXY.x - 100, 0),
+        });
   }
 
   double get posXMaxBoundary {
-    return min(startingPoxXY.x + 20, 100);
+    return min(
+        100,
+        switch (position) {
+          Position.goalKeeper => startingPoxXY.x + 5,
+          Position.defender => startingPoxXY.x + (isRightWinger ? 10 : 20),
+          Position.midfielder => startingPoxXY.x + (isRightWinger ? 15 : 25),
+          Position.forward => startingPoxXY.x + (isRightWinger ? 20 : 40),
+          _ => min(startingPoxXY.x + 100, 100),
+        });
   }
 
   double get posYMinBoundary {
-    return max(startingPoxXY.y - 20, 0);
+    return max(
+        0,
+        switch (position) {
+          Position.goalKeeper => startingPoxXY.y,
+          Position.defender => startingPoxXY.y - 10,
+          Position.midfielder => startingPoxXY.y - (isWinger ? 40 : 20),
+          Position.forward => startingPoxXY.y - (isWinger ? 50 : 30),
+          _ => min(startingPoxXY.y - 100, 0),
+        });
   }
 
-  double get posYMaxBoundary {
-    bool isWinger = posXY.x < 30 || posXY.x > 70;
+  ///윙어인지 아닌지를 나타내는 변수
+  bool get isWinger => isLeftWinger || isRightWinger;
 
+  bool get isLeftWinger => posXY.x < 30;
+  bool get isRightWinger => posXY.x > 70;
+
+  double get posYMaxBoundary {
     return switch (position) {
       Position.goalKeeper => startingPoxXY.y + 10,
       Position.defender => startingPoxXY.y + (isWinger ? 150 : 40),
@@ -152,8 +181,8 @@ extension PlayerMove on Player {
   stayFront() {
     lastAction = PlayerAction.none;
     double frontDistance = switch (position) {
-      Position.forward => 4,
-      Position.midfielder => 3,
+      Position.forward => 7,
+      Position.midfielder => 5,
       Position.defender => 2,
       _ => 0,
     };
@@ -165,26 +194,27 @@ extension PlayerMove on Player {
     double frontDistance = switch (position) {
       Position.forward => 16,
       Position.midfielder => 12,
-      Position.defender => 8,
+      Position.defender => isWinger ? 15 : 8,
       _ => 0,
     };
-    _move(targetPosition: PosXY.random(posXY.x, posXY.y + frontDistance, 5));
+    _move(targetPosition: PosXY.random(posXY.x, posXY.y + frontDistance, 5), maximumDistance: speed / 50);
   }
 
   stayBack() {
     lastAction = PlayerAction.none;
     double backDistance = switch (position) {
-      Position.forward => -1,
-      Position.midfielder => -3,
-      Position.defender => -6,
-      _ => 0,
-    };
+          Position.forward => -1,
+          Position.midfielder => -3,
+          Position.defender => -5,
+          _ => 0,
+        } -
+        min(9, posXY.y * 0.08);
 
     _move(targetPosition: PosXY.random(posXY.x, posXY.y + backDistance, 5));
   }
 
   dribble(ClubInFixture team, int dribbleBonus) {
-    _move(targetPosition: PosXY.random(posXY.x, posXY.y + 15, 10), maximumDistance: speed / 50);
+    _move(targetPosition: PosXY.random(posXY.x, posXY.y + 15 + dribbleBonus / 100, 10), maximumDistance: speed / 50);
     lastAction = PlayerAction.dribble;
     dribbleSuccess++;
     team.dribble++;
@@ -275,7 +305,7 @@ extension PlayerMove on Player {
     double ballPositionY = 200 - ballPosition.y;
     lastAction = PlayerAction.press;
 
-    _move(targetPosition: PosXY(ballPositionX, ballPositionY), maximumDistance:  speed / 50, ignoreBoundary: true);
+    _move(targetPosition: PosXY(ballPositionX, ballPositionY), maximumDistance: speed / 50, ignoreBoundary: true);
   }
 
   _move({

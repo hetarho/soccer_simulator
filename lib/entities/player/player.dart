@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:soccer_simulator/entities/tactics.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/entities/ball.dart';
@@ -166,6 +167,9 @@ class Player extends Member {
   //선수의 스텟
   late final Stat _stat;
 
+  ///선수의 개인 전술
+  Tactics? tactics;
+
   ///개인 트레이닝 시 훈련 종류
   List<TrainingType> personalTrainingTypes;
 
@@ -302,7 +306,7 @@ class Player extends Member {
 /// 짧은패스 - 축구지능 + 기술 + 조직력 + 침착함
 /// 롱패스 - 축구지능 + 체력 + 기술 + 근력 + 조직력 + 침착함
 /// 헤딩 - 키 + 체형 + 기술 + 체력
-/// 드리블 - 키 + 체형 + 축구지능 + 반응속도 + 치력 + 기술 + 유연성
+/// 드리블 - 키 + 체형 + 축구지능 + 반응속도 + 체력 + 기술 + 유연성
 /// 탈압박 - 축구지능 + 반응속도 + 유연성 + 체력 + 기술 + 침착함
 
 //오프더볼
