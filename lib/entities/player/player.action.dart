@@ -19,10 +19,12 @@ extension PlayerMove on Player {
     ///현재 내가 공을 잡은 상태인 경우
     if (hasBall) {
       ///공을 잡을 선수가 느끼는 압박감: 주위 선수들의 압박스텟 / 상대와의 거리 - 나의 탈압박 능력
-      double pressureIntensity = nearOpponentPlayers.fold(0.0, (prev, opponent) {
-            return prev + opponent.pressureStat * 2 / opponent.posXY.distance(reversePosXy);
-          }) -
-          evadePressStat.toDouble();
+      double pressureIntensity = min(
+          0,
+          nearOpponentPlayers.fold(0.0, (prev, opponent) {
+                return prev + opponent.pressureStat * 2 / opponent.posXY.distance(reversePosXy);
+              }) -
+              evadePressStat.toDouble());
 
       ///내가 활용 가능한 우리팀 선수들: visionStat - pressureIntensity 거리 이내
       List<Player> visibleOurTeamPlayers = ourTeamPlayers.where((teamPlayer) => teamPlayer.posXY.distance(posXY) < (visionStat - pressureIntensity)).toList();
@@ -38,7 +40,32 @@ extension PlayerMove on Player {
         return;
       }
 
-      ourTeamPlayers.sort((a, b) => a.posXY.distance(posXY) - b.posXY.distance(posXY) > 0 ? 1 : -1);
+      ///활용 가능한 선수들의 매력도를 판단
+
+      List<Map<String, dynamic>> judgedTeamPlayer = visibleOurTeamPlayers.map((player) {
+        double attractive = 0;
+
+        ///선수가 앞쪽에 있을 수록 매력도 상승
+        attractive += player.posXY.y / 2;
+
+        ///선수의 능력치가 높을 수록 매력도 상승
+        attractive += player.overall;
+
+        ///해당 선수에게 패스시 패스길과의 거리가 10 이내인 적의 수 *10 매력도 하락
+        attractive -= opponentPlayers.where((opponent) {
+              double distanceToPathRoute = sqrt(pow(reversePosXy.distance(opponent.posXY), 2) - pow(posXY.distance(player.posXY) / 2, 2));
+              return distanceToPathRoute < 10;
+            }).length *
+            10;
+
+        return {
+          "attractive": attractive,
+          "player": player,
+        };
+      }).toList();
+
+      judgedTeamPlayer.sort((a, b) => b['attractive'] - a['attractive'] > 0 ? 1 : -1);
+
       int shootPercent = max(0, ((2500 - pow(PosXY(50, 200).distance(posXY), 2))).round());
       int passPercent = 250;
 
@@ -46,7 +73,6 @@ extension PlayerMove on Player {
       int dribblePercent = position == Position.goalKeeper ? 0 : (50 + dribbleBonus * 100);
       int stayPercent = position == Position.goalKeeper ? 0 : 250;
       int ranNum = R().getInt(min: 0, max: shootPercent + passPercent + dribblePercent + stayPercent);
-      List<Player> frontPlayers = ourTeamPlayers.where((p) => p.posXY.y > posXY.y - 30).toList();
 
       bool canShoot = true;
 
@@ -62,17 +88,10 @@ extension PlayerMove on Player {
         }
       }
 
-      if (canShoot && (ranNum < shootPercent || (posXY.y > 180 && frontPlayers.isEmpty))) {
+      if (canShoot && (ranNum < shootPercent || (posXY.y > 180))) {
         shoot(fixture: fixture, team: team, opponent: opponent, goalKeeper: opponentPlayers.firstWhere((player) => player.position == Position.goalKeeper));
       } else if (ranNum < shootPercent + passPercent) {
-        late Player target;
-        if (ball.posXY.y >= 100 && frontPlayers.isNotEmpty) {
-          target = frontPlayers[R().getInt(min: 0, max: frontPlayers.length - 1)];
-        } else if (ball.posXY.y >= 50) {
-          target = R().getInt(max: 10, min: 0) > 1 ? ourTeamPlayers[R().getInt(min: 0, max: 1)] : ourTeamPlayers[R().getInt(min: 7, max: 9)];
-        } else {
-          target = R().getInt(max: 10, min: 0) > 3 ? ourTeamPlayers[R().getInt(min: 0, max: 2)] : ourTeamPlayers[R().getInt(min: 5, max: 7)];
-        }
+        Player target = judgedTeamPlayer.first["player"];
 
         List<Player> nearOpponentAtTarget = opponentPlayers
             .where((opponent) =>

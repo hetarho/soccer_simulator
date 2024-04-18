@@ -159,12 +159,8 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                             AnimatedPositioned(
                               duration: Duration(milliseconds: (_ballAnimationSpeed).round()),
                               curve: Curves.decelerate,
-                              top: fixture.isHomeTeamBall
-                                  ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)
-                                  : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
-                              left: fixture.isHomeTeamBall
-                                  ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10
-                                  : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
+                              top: fixture.isHomeTeamBall ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2) : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
+                              left: fixture.isHomeTeamBall ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10 : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
                               child: Container(
                                 width: ballSize,
                                 height: ballSize,
@@ -238,6 +234,68 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       });
                     },
                     child: const Text('x')),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('키'),
+                    Text('축구지능'),
+                    Text('반응속도'),
+                    Text('스피드'),
+                    Text('유연성'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('${_selectedPlayer?.height.round()}'),
+                    Text('${_selectedPlayer?.soccerIQ}'),
+                    Text('${_selectedPlayer?.reflex}'),
+                    Text('${_selectedPlayer?.speed}'),
+                    Text('${_selectedPlayer?.flexibility}'),
+                  ],
+                ),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('체력'),
+                    Text('근력'),
+                    Text('공격스킬'),
+                    Text('패스스킬'),
+                    Text('수비스킬'),
+                    Text('침착함'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('${_selectedPlayer?.stat.stamina}'),
+                    Text('${_selectedPlayer?.stat.strength}'),
+                    Text('${_selectedPlayer?.stat.attSkill}'),
+                    Text('${_selectedPlayer?.stat.passSkill}'),
+                    Text('${_selectedPlayer?.stat.defSkill}'),
+                    Text('${_selectedPlayer?.stat.composure}'),
+                  ],
+                ),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('슈팅'),
+                    Text('중거리'),
+                    Text('탈압박'),
+                    Text('압박'),
+                    Text('시야'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('${_selectedPlayer?.shootingStat}'),
+                    Text('${_selectedPlayer?.midRangeShootStat}'),
+                    Text('${_selectedPlayer?.evadePressStat}'),
+                    Text('${_selectedPlayer?.pressureStat}'),
+                    Text('${_selectedPlayer?.visionStat}'),
+                  ],
+                ),
                 Row(
                   children: [
                     const SizedBox(width: 120, child: Text('name')),

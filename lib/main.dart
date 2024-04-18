@@ -187,6 +187,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 position: formation433.positions[index].position,
                 reflex: specialTest.contains(index) ? 150 : null,
                 speed: specialTest.contains(index) ? 150 : null,
+                soccerIQ: specialTest.contains(index) ? 150 : null,
                 birthDay: DateTime(2002, 03, 01),
                 national: National.england,
                 stat: Stat.random(
