@@ -84,16 +84,20 @@ class Club {
     lost = 0;
   }
 
+  List<Player> get forwards => startPlayers.where((player) => player.position == Position.forward).toList();
+  List<Player> get midfielders => startPlayers.where((player) => player.position == Position.midfielder).toList();
+  List<Player> get defenders => startPlayers.where((player) => player.position == Position.defender ||  player.position == Position.goalKeeper).toList();
+
   int get attOverall {
-    return (startPlayers.where((player) => player.position == Position.forward).fold(0, (pre, curr) => pre + curr.overall) / 11).round();
+    return (forwards.fold(0, (pre, curr) => pre + curr.overall) / forwards.length).round();
   }
 
   int get midOverall {
-    return (startPlayers.where((player) => player.position == Position.midfielder).fold(0, (pre, curr) => pre + curr.overall) / 11).round();
+    return (midfielders.fold(0, (pre, curr) => pre + curr.overall) / midfielders.length).round();
   }
 
   int get defOverall {
-    return (startPlayers.where((player) => player.position == Position.defender).fold(0, (pre, curr) => pre + curr.overall) / 11).round();
+    return (defenders.fold(0, (pre, curr) => pre + curr.overall) / defenders.length).round();
   }
 
   int get overall {

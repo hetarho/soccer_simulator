@@ -6,16 +6,7 @@ extension PlayerMove on Player {
     required ClubInFixture opposite,
     required Ball ball,
     required Fixture fixture,
-    required String hasBallPlayerId,
   }) {
-    lastAction = null;
-    List<Player> oppositePlayers = opposite.club.players;
-
-    ///상대방의 공을 이미 배았았을 경우
-    if (oppositePlayers.where((player) => player.hasBall).isEmpty) {
-      actionWidthBall(team: team, opposite: opposite, ball: ball, fixture: fixture, hasBallPlayerId: hasBallPlayerId);
-      return;
-    }
     PosXY ballPos = PosXY(100 - ball.posXY.x, 200 - ball.posXY.y);
     bool canTackle = ballPos.distance(posXY) < 7;
 
@@ -45,7 +36,6 @@ extension PlayerMove on Player {
         stayBack();
       }
     }
-    if (lastAction != null) _streamController.add(lastAction!);
   }
 
   actionWidthBall({
@@ -53,19 +43,11 @@ extension PlayerMove on Player {
     required ClubInFixture opposite,
     required Ball ball,
     required Fixture fixture,
-    required String hasBallPlayerId,
   }) {
-    lastAction = null;
     List<Player> teamPlayers = [...team.club.players.where((p) => p.id != id)];
     List<Player> oppositePlayers = opposite.club.players;
 
-    ///소유권을 상실했을 경우
-    if (teamPlayers.where((player) => player.hasBall).isEmpty && !hasBall) {
-      actionWithOutBall(team: team, opposite: opposite, ball: ball, fixture: fixture, hasBallPlayerId: hasBallPlayerId);
-      return;
-    }
-
-    if (id == hasBallPlayerId) {
+    if (hasBall) {
       teamPlayers.sort((a, b) => a.posXY.distance(posXY) - b.posXY.distance(posXY) > 0 ? 1 : -1);
       int shootPercent = max(0, ((2500 - pow(PosXY(50, 200).distance(posXY), 2))).round());
       int passPercent = 100;
@@ -126,8 +108,6 @@ extension PlayerMove on Player {
       } else if (ranNum < shootPercent + passPercent + dribblePercent) {
         dribble(team, dribbleBonus);
       }
-
-      if (lastAction != null) _streamController.add(lastAction!);
     } else {
       int ranNum = R().getInt(min: 0, max: 100);
       switch (ranNum) {
@@ -170,6 +150,7 @@ extension PlayerMove on Player {
   }
 
   stayFront() {
+    lastAction = PlayerAction.none;
     double frontDistance = switch (position) {
       Position.forward => 4,
       Position.midfielder => 3,
@@ -180,6 +161,7 @@ extension PlayerMove on Player {
   }
 
   moveFront() {
+    lastAction = PlayerAction.none;
     double frontDistance = switch (position) {
       Position.forward => 16,
       Position.midfielder => 12,
@@ -190,6 +172,7 @@ extension PlayerMove on Player {
   }
 
   stayBack() {
+    lastAction = PlayerAction.none;
     double backDistance = switch (position) {
       Position.forward => -1,
       Position.midfielder => -3,
@@ -244,6 +227,13 @@ extension PlayerMove on Player {
     required ClubInFixture opposite,
   }) {
     lastAction = PlayerAction.shoot;
+    fixture.records.add(FixtureRecord(
+      time: playTime,
+      club: team.club,
+      player: this,
+      action: lastAction,
+      isGameEnd: fixture.isGameEnd,
+    ));
     hasBall = false;
     goalKeeper.hasBall = true;
     team.shoot += 1;
@@ -290,6 +280,7 @@ extension PlayerMove on Player {
   press(PosXY ballPosition) {
     double ballPositionX = 100 - ballPosition.x;
     double ballPositionY = 200 - ballPosition.y;
+    lastAction = PlayerAction.press;
 
     _move(targetPosition: PosXY(ballPositionX, ballPositionY), maximumDistance: 10, ignoreBoundary: true);
   }

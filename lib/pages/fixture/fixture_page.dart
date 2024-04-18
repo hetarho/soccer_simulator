@@ -20,6 +20,10 @@ class _FixturePageState extends ConsumerState<FixturePage> {
   @override
   void initState() {
     super.initState();
+    ref.read(fixtureProvider)?.playerStream.listen((event) {
+      // if (event != PlayerAction.none) print(event);
+      if (mounted) setState(() {});
+    });
     ref.read(fixtureProvider)?.gameStream.listen((event) {
       if (mounted) setState(() {});
     });
@@ -100,7 +104,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                           children: [
                             ...fixture.home.club.startPlayers.map((player) {
                               return AnimatedPositioned(
-                                duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
+                                duration: Duration(milliseconds: (player.playSpeed.inMilliseconds / 1).round()),
                                 curve: Curves.decelerate,
                                 top: stadiumHeight * (player.posXY.x) / 100 - (playerSize / 2),
                                 left: stadiumWidth * (player.posXY.y) / 200 - (playerSize / 2),
@@ -121,7 +125,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                             }),
                             ...fixture.away.club.startPlayers.map((player) {
                               return AnimatedPositioned(
-                                duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
+                                duration: Duration(milliseconds: (player.playSpeed.inMilliseconds / 1).round()),
                                 curve: Curves.decelerate,
                                 top: stadiumHeight - (stadiumHeight * (player.posXY.x) / 100 + (playerSize / 2)),
                                 left: stadiumWidth - (stadiumWidth * (player.posXY.y) / 200 + (playerSize / 2)),
@@ -141,7 +145,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                               );
                             }),
                             AnimatedPositioned(
-                              duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 1).round() + 50),
+                              duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 2).round()),
                               curve: Curves.decelerate,
                               top: fixture.isHomeTeamBall
                                   ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)

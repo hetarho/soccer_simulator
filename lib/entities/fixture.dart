@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:async/async.dart';
 import 'package:soccer_simulator/entities/ball.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
@@ -10,6 +11,7 @@ import 'package:soccer_simulator/entities/pos/pos.dart';
 class Fixture {
   Fixture({required this.home, required this.away}) {
     _streamController = StreamController<FixtureRecord>.broadcast();
+    playerStream = StreamGroup.merge(allPlayers.map((e) => e.playerStream).toList());
   }
   ////테스트용
   bool stopWhenGoal = false;
@@ -22,6 +24,8 @@ class Fixture {
   late StreamController<FixtureRecord> _streamController;
 
   Stream<FixtureRecord> get gameStream => _streamController.stream;
+
+  late Stream<PlayerAction> playerStream;
 
   ///현재 경기 시간
   Duration playTime = const Duration(seconds: 0);
@@ -71,10 +75,8 @@ class Fixture {
   updateGameInSimulate() {
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
-    bool homeScored =
-        Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
-    bool awayScored =
-        Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
+    bool homeScored = Random().nextDouble() * 150 < home.club.attOverall / (away.club.defOverall + home.club.attOverall);
+    bool awayScored = Random().nextDouble() * 150 < away.club.attOverall / (home.club.defOverall + away.club.attOverall);
 
     if (homeScored) {
       scored(
@@ -94,51 +96,49 @@ class Fixture {
     }
   }
 
-  playWithBallTeam(ClubInFixture team, ClubInFixture opposite) {
-    for (var player in team.club.players) {
-      player.actionWidthBall(
-          team: team, opposite: opposite, ball: _ball, fixture: this, hasBallPlayerId: _hasBallPlaterId);
-      if (player.lastAction != null) {
-        records.add(FixtureRecord(
-          time: playTime,
-          club: team.club,
-          player: player,
-          action: player.lastAction,
-          isGameEnd: isGameEnd,
-        ));
-        _streamController.add(FixtureRecord(
-          time: playTime,
-          club: team.club,
-          player: player,
-          action: player.lastAction,
-          isGameEnd: isGameEnd,
-        ));
-      }
-    }
-  }
+  // playWithBallTeam(ClubInFixture team, ClubInFixture opposite) {
+  //   for (var player in team.club.players) {
+  //     player.actionWidthBall(team: team, opposite: opposite, ball: _ball, fixture: this, hasBallPlayerId: _hasBallPlaterId);
+  //     if (player.lastAction != null) {
+  //       records.add(FixtureRecord(
+  //         time: playTime,
+  //         club: team.club,
+  //         player: player,
+  //         action: player.lastAction,
+  //         isGameEnd: isGameEnd,
+  //       ));
+  //       _streamController.add(FixtureRecord(
+  //         time: playTime,
+  //         club: team.club,
+  //         player: player,
+  //         action: player.lastAction,
+  //         isGameEnd: isGameEnd,
+  //       ));
+  //     }
+  //   }
+  // }
 
-  playWithOutBallTeam(ClubInFixture team, ClubInFixture opposite) {
-    for (var player in team.club.players) {
-      player.actionWithOutBall(
-          team: team, opposite: opposite, ball: _ball, fixture: this, hasBallPlayerId: _hasBallPlaterId);
-      if (player.lastAction != null) {
-        records.add(FixtureRecord(
-          time: playTime,
-          club: team.club,
-          player: player,
-          action: player.lastAction,
-          isGameEnd: isGameEnd,
-        ));
-        _streamController.add(FixtureRecord(
-          time: playTime,
-          club: team.club,
-          player: player,
-          action: player.lastAction,
-          isGameEnd: isGameEnd,
-        ));
-      }
-    }
-  }
+  // playWithOutBallTeam(ClubInFixture team, ClubInFixture opposite) {
+  //   for (var player in team.club.players) {
+  //     player.actionWithOutBall(team: team, opposite: opposite, ball: _ball, fixture: this, hasBallPlayerId: _hasBallPlaterId);
+  //     if (player.lastAction != null) {
+  //       records.add(FixtureRecord(
+  //         time: playTime,
+  //         club: team.club,
+  //         player: player,
+  //         action: player.lastAction,
+  //         isGameEnd: isGameEnd,
+  //       ));
+  //       _streamController.add(FixtureRecord(
+  //         time: playTime,
+  //         club: team.club,
+  //         player: player,
+  //         action: player.lastAction,
+  //         isGameEnd: isGameEnd,
+  //       ));
+  //     }
+  //   }
+  // }
 
   updateGame() async {
     ClubInFixture withBallTeam = isHomeTeamBall ? home : away;
@@ -146,10 +146,10 @@ class Fixture {
 
     _hasBallPlaterId = playerWithBall?.id ?? '';
 
-    playWithBallTeam(withBallTeam, withOutBallTeam);
-    playWithOutBallTeam(withOutBallTeam, withBallTeam);
+    // playWithBallTeam(withBallTeam, withOutBallTeam);
+    // playWithOutBallTeam(withOutBallTeam, withBallTeam);
 
-    _ball.posXY = playerWithBall!.posXY;
+    // _ball.posXY = playerWithBall!.posXY;
 
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
@@ -215,9 +215,18 @@ class Fixture {
     if (playerWithBall == null) home.club.players.first.hasBall = true;
 
     if (!_streamController.isClosed) {
+      for (var player in home.club.players) {
+        player.gameStart(fixture: this, team: home, opposite: away, ball: _ball, isHome: true);
+      }
+      for (var player in away.club.players) {
+        player.gameStart(fixture: this, team: away, opposite: home, ball: _ball, isHome: false);
+      }
       _timer?.cancel();
       _timer = Timer.periodic(_playSpeed, (timer) async {
         if (isGameEnd) {
+          for (var player in allPlayers) {
+            player.gameEnd();
+          }
           gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
         } else {
           isSimulation ? updateGameInSimulate() : updateGame();
@@ -252,10 +261,17 @@ class Fixture {
 
   void updateTimeSpeed(Duration newTimeSpeed) {
     _playSpeed = newTimeSpeed;
+
+    for (var player in allPlayers) {
+      player.updateTimeSpeed(newTimeSpeed);
+    }
+
     if (_timer?.isActive ?? false) {
       gameStart(); // 타이머가 활성 상태인 경우, play를 다시 호출하여 타이머를 재시작
     }
   }
+
+  List<Player> get allPlayers => [...home.club.players, ...away.club.players];
 }
 
 class ClubInFixture {

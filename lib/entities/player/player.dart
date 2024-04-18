@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:soccer_simulator/entities/ball.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
@@ -20,6 +19,7 @@ part 'player.grow.dart';
 
 class Player extends Member {
   late StreamController<PlayerAction> _streamController;
+  Stream<PlayerAction> get playerStream => _streamController.stream;
   Player({
     required super.name,
     required super.birthDay,
@@ -43,6 +43,48 @@ class Player extends Member {
     _streamController = StreamController<PlayerAction>.broadcast();
   }
 
+  bool isPlaying = false;
+  Timer? _timer; // Timer 인스턴스를 저장할 변수
+  Duration _playSpeed = const Duration(milliseconds: 0);
+
+  ///현재 경기 시간
+  Duration playTime = const Duration(seconds: 0);
+
+  void updateTimeSpeed(Duration newTimeSpeed) {
+    _playSpeed = newTimeSpeed;
+  }
+
+  Duration get playSpeed {
+    return Duration(milliseconds: (_playSpeed.inMilliseconds * 100 / reflex).round());
+  }
+
+  gameStart({
+    required Fixture fixture,
+    required ClubInFixture team,
+    required ClubInFixture opposite,
+    required Ball ball,
+    required bool isHome,
+  }) {
+    print('$name play speed :${playSpeed.inMilliseconds}');
+    _timer?.cancel();
+    _timer = Timer.periodic(playSpeed, (timer) async {
+      playTime = fixture.playTime;
+      bool teamHasBall = team.club.startPlayers.where((player) => player.hasBall).isNotEmpty;
+      lastAction = null;
+      if (teamHasBall) {
+        actionWidthBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
+      } else {
+        actionWithOutBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
+      }
+      if (hasBall) ball.posXY = isHome ? posXY : PosXY(100 - posXY.x, 200 - posXY.y);
+      if (lastAction != null) _streamController.add(lastAction!);
+    });
+  }
+
+  gameEnd() {
+    _timer?.cancel();
+  }
+
   Player.random({
     required super.name,
     required super.birthDay,
@@ -59,11 +101,11 @@ class Player extends Member {
     this.personalTrainingTypes = const [],
     this.teamTrainingTypePercent = 0.5,
   }) {
-    height = height ?? R().getDouble(min: 165, max: 210);
-    bodyType = bodyType ?? R().getBodyType();
-    soccerIQ = soccerIQ ?? R().getInt(min: 30, max: 120);
-    reflex = reflex ?? R().getInt(min: 30, max: 120);
-    flexibility = flexibility ?? R().getInt(min: 30, max: 120);
+    this.height = height ?? R().getDouble(min: 165, max: 210);
+    this.bodyType = bodyType ?? R().getBodyType();
+    this.soccerIQ = soccerIQ ?? R().getInt(min: 30, max: 120);
+    this.reflex = reflex ?? R().getInt(min: 30, max: 120);
+    this.flexibility = flexibility ?? R().getInt(min: 30, max: 120);
     _potential = potential ?? R().getInt(min: 30, max: 120);
     _stat = stat ?? Stat.random(position: position);
     _streamController = StreamController<PlayerAction>.broadcast();
@@ -271,9 +313,11 @@ class Player extends Member {
 ///패스 마스터 - 짧은패스 + 롱패스 + 키패스 + 기술
 
 enum PlayerAction {
+  none('none'),
   shoot('shoot'),
   tackle('tackle'),
   pass('pass'),
+  press('press'),
   dribble('dribble'),
   goal('goal'),
   assist('assist'),
