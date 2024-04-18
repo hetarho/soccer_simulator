@@ -50,7 +50,7 @@ extension PlayerMove on Player {
     if (hasBall) {
       teamPlayers.sort((a, b) => a.posXY.distance(posXY) - b.posXY.distance(posXY) > 0 ? 1 : -1);
       int shootPercent = max(0, ((2500 - pow(PosXY(50, 200).distance(posXY), 2))).round());
-      int passPercent = 100;
+      int passPercent = 250;
 
       int dribbleBonus =
           (11 - oppositePlayers.where((opposite) => ((100 - opposite.posXY.x + 15) > posXY.x && (100 - opposite.posXY.x - 15) < posXY.x) || (200 - opposite.posXY.y - posXY.y) > 50).length);
@@ -184,7 +184,7 @@ extension PlayerMove on Player {
   }
 
   dribble(ClubInFixture team, int dribbleBonus) {
-    _move(targetPosition: PosXY.random(posXY.x, posXY.y + 15, 10), maximumDistance: 15);
+    _move(targetPosition: PosXY.random(posXY.x, posXY.y + 15, 10), maximumDistance: speed / 50);
     lastAction = PlayerAction.dribble;
     dribbleSuccess++;
     team.dribble++;
@@ -227,13 +227,6 @@ extension PlayerMove on Player {
     required ClubInFixture opposite,
   }) {
     lastAction = PlayerAction.shoot;
-    fixture.records.add(FixtureRecord(
-      time: playTime,
-      club: team.club,
-      player: this,
-      action: lastAction,
-      isGameEnd: fixture.isGameEnd,
-    ));
     hasBall = false;
     goalKeeper.hasBall = true;
     team.shoot += 1;
@@ -282,7 +275,7 @@ extension PlayerMove on Player {
     double ballPositionY = 200 - ballPosition.y;
     lastAction = PlayerAction.press;
 
-    _move(targetPosition: PosXY(ballPositionX, ballPositionY), maximumDistance: 10, ignoreBoundary: true);
+    _move(targetPosition: PosXY(ballPositionX, ballPositionY), maximumDistance:  speed / 50, ignoreBoundary: true);
   }
 
   _move({

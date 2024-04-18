@@ -2,13 +2,13 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:soccer_simulator/entities/ball.dart';
-import 'package:soccer_simulator/entities/fixture.dart';
-import 'package:soccer_simulator/entities/pos/pos.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:soccer_simulator/entities/ball.dart';
+import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/member.dart';
 import 'package:soccer_simulator/entities/player_stat.dart';
+import 'package:soccer_simulator/entities/pos/pos.dart';
 import 'package:soccer_simulator/enum/player.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/enum/training_type.dart';
@@ -18,8 +18,8 @@ part 'player.action.dart';
 part 'player.grow.dart';
 
 class Player extends Member {
-  late StreamController<PlayerAction> _streamController;
-  Stream<PlayerAction> get playerStream => _streamController.stream;
+  late StreamController<PlayerEvent> _streamController;
+  Stream<PlayerEvent> get playerStream => _streamController.stream;
   Player({
     required super.name,
     required super.birthDay,
@@ -34,13 +34,14 @@ class Player extends Member {
     required this.soccerIQ,
     required this.reflex,
     required this.flexibility,
+    required this.speed,
     int? potential,
   }) {
     _stat = stat;
 
     //포텐셜을 지정해주지 않으면 랜덤으로 책정
     _potential = potential ?? R().getInt(min: 30, max: 120);
-    _streamController = StreamController<PlayerAction>.broadcast();
+    _streamController = StreamController<PlayerEvent>.broadcast();
   }
 
   bool isPlaying = false;
@@ -75,7 +76,7 @@ class Player extends Member {
       } else {
         actionWithOutBall(team: team, opposite: opposite, ball: ball, fixture: fixture);
       }
-      if (lastAction != null) _streamController.add(lastAction!);
+      if (lastAction != null) _streamController.add(PlayerEvent(player: this, action: lastAction!));
     });
   }
 
@@ -97,6 +98,7 @@ class Player extends Member {
     int? soccerIQ,
     int? reflex,
     int? flexibility,
+    int? speed,
     this.personalTrainingTypes = const [],
     this.teamTrainingTypePercent = 0.5,
   }) {
@@ -104,10 +106,11 @@ class Player extends Member {
     this.bodyType = bodyType ?? R().getBodyType();
     this.soccerIQ = soccerIQ ?? R().getInt(min: 30, max: 120);
     this.reflex = reflex ?? R().getInt(min: 30, max: 120);
+    this.speed = speed ?? R().getInt(min: 30, max: 120);
     this.flexibility = flexibility ?? R().getInt(min: 30, max: 120);
     _potential = potential ?? R().getInt(min: 30, max: 120);
     _stat = stat ?? Stat.random(position: position);
-    _streamController = StreamController<PlayerAction>.broadcast();
+    _streamController = StreamController<PlayerEvent>.broadcast();
   }
 
   final String id = const Uuid().v4();
@@ -149,13 +152,16 @@ class Player extends Member {
   late final BodyType bodyType;
 
   ///축구 지능
-  late final int soccerIQ;
+  late int soccerIQ;
 
   ///반응 속도
-  late final int reflex;
+  late int reflex;
+
+  ///스피드
+  late int speed;
 
   ///유연성
-  late final int flexibility;
+  late int flexibility;
 
   //선수의 스텟
   late final Stat _stat;
@@ -260,7 +266,7 @@ class Player extends Member {
 
   set hasBall(bool newVal) {
     if (newVal) {
-      _streamController.add(PlayerAction.none);
+      _streamController.add(PlayerEvent(player: this, action: PlayerAction.none));
     }
     _hasBall = newVal;
   }
@@ -336,4 +342,13 @@ enum PlayerAction {
 
   @override
   String toString() => text;
+}
+
+class PlayerEvent {
+  final Player player;
+  final PlayerAction action;
+  PlayerEvent({
+    required this.player,
+    required this.action,
+  });
 }

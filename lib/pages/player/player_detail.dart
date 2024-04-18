@@ -19,6 +19,7 @@ class PlayerDetail extends ConsumerWidget {
           backNumber: 0,
           reflex: 0,
           soccerIQ: 0,
+          speed: 0,
           birthDay: DateTime.now(),
           national: National.algeria,
           height: 123,

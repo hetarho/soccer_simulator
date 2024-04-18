@@ -18,13 +18,14 @@ class _FixturePageState extends ConsumerState<FixturePage> {
   bool showModal = false;
   Player? _selectedPlayer;
   List<Player> actingPlayer = [];
-  StreamSubscription<PlayerAction>? _playerStreamSubscription;
+  StreamSubscription<PlayerEvent>? _playerStreamSubscription;
+  late Fixture _fixture;
   // StreamSubscription<PlayerAction>? _streamSubscription;
   // StreamSubscription<PlayerAction>? _streamSubscription;
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    _fixture.dispose();
     _playerStreamSubscription?.cancel();
     super.dispose();
   }
@@ -32,11 +33,11 @@ class _FixturePageState extends ConsumerState<FixturePage> {
   @override
   void initState() {
     super.initState();
-    Fixture? fixture = ref.read(fixtureProvider);
-    _playerStreamSubscription = fixture?.playerStream.listen((event) {
+    _fixture = ref.read(fixtureProvider) ?? Fixture.empty();
+    _playerStreamSubscription = _fixture.playerStream.listen((event) {
       if (mounted) {
         setState(() {
-          fixture.setBallPos();
+          _fixture.setBallPos();
         });
       }
     });
@@ -44,7 +45,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
     //   if (mounted) setState(() {});
     // });
 
-    fixture?.isSimulation = false;
+    _fixture.isSimulation = false;
   }
 
   @override
@@ -161,7 +162,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                               );
                             }),
                             AnimatedPositioned(
-                              duration: Duration(milliseconds: (fixture.playSpeed.inMilliseconds / 2).round()),
+                              duration: Duration(milliseconds: (fixture.playerWithBall?.playSpeed.inMilliseconds ?? fixture.playSpeed.inMilliseconds / 2).round()),
                               curve: Curves.decelerate,
                               top: fixture.isHomeTeamBall
                                   ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)

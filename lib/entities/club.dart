@@ -15,6 +15,8 @@ class Club {
     this.tactics = tactics ?? Tactics.normal();
   }
 
+  Club.empty({this.name = '', this.color = Colors.black});
+
   final String id = const Uuid().v4();
   final String name;
   final Color color;
@@ -86,7 +88,7 @@ class Club {
 
   List<Player> get forwards => startPlayers.where((player) => player.position == Position.forward).toList();
   List<Player> get midfielders => startPlayers.where((player) => player.position == Position.midfielder).toList();
-  List<Player> get defenders => startPlayers.where((player) => player.position == Position.defender ||  player.position == Position.goalKeeper).toList();
+  List<Player> get defenders => startPlayers.where((player) => player.position == Position.defender || player.position == Position.goalKeeper).toList();
 
   int get attOverall {
     return (forwards.fold(0, (pre, curr) => pre + curr.overall) / forwards.length).round();

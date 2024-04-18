@@ -12,26 +12,47 @@ class Fixture {
   Fixture({required this.home, required this.away}) {
     _streamController = StreamController<FixtureRecord>.broadcast();
     playerStream = StreamGroup.merge(allPlayers.map((e) => e.playerStream).toList()).asBroadcastStream();
+
+    _streamSubscription = playerStream.listen((event) {
+      if (event.action != PlayerAction.none && isGameStart) {
+        records.add(FixtureRecord(
+          time: playTime,
+          club: home.club.players.where((element) => element.id == event.player.id).isEmpty ? away.club : home.club,
+          player: event.player,
+          action: event.action,
+          isGameEnd: isGameEnd,
+        ));
+      }
+    });
+  }
+
+  Fixture.empty() {
+    home = ClubInFixture.empty();
+    away = ClubInFixture.empty();
   }
   ////테스트용
   bool stopWhenGoal = false;
-  final ClubInFixture home;
-  final ClubInFixture away;
+  late final ClubInFixture home;
+  late final ClubInFixture away;
   List<FixtureRecord> records = [];
-  String _hasBallPlaterId = '';
+
+  StreamSubscription<PlayerEvent>? _streamSubscription;
 
   Timer? _timer; // Timer 인스턴스를 저장할 변수
   late StreamController<FixtureRecord> _streamController;
 
   Stream<FixtureRecord> get gameStream => _streamController.stream;
 
-  late Stream<PlayerAction> playerStream;
+  late Stream<PlayerEvent> playerStream;
 
   ///현재 경기 시간
   Duration playTime = const Duration(seconds: 0);
 
   ///해당 경기를 시뮬레이션으로 구동할지 나타내는 변수
   bool isSimulation = true;
+
+  ///경기가 시작 되었는지 안되었는지
+  bool isGameStart = false;
 
   ///경기가 종료 되었는지 안되었는지
   bool get isGameEnd {
@@ -100,61 +121,7 @@ class Fixture {
     }
   }
 
-  // playWithBallTeam(ClubInFixture team, ClubInFixture opposite) {
-  //   for (var player in team.club.players) {
-  //     player.actionWidthBall(team: team, opposite: opposite, ball: _ball, fixture: this, hasBallPlayerId: _hasBallPlaterId);
-  //     if (player.lastAction != null) {
-  //       records.add(FixtureRecord(
-  //         time: playTime,
-  //         club: team.club,
-  //         player: player,
-  //         action: player.lastAction,
-  //         isGameEnd: isGameEnd,
-  //       ));
-  //       _streamController.add(FixtureRecord(
-  //         time: playTime,
-  //         club: team.club,
-  //         player: player,
-  //         action: player.lastAction,
-  //         isGameEnd: isGameEnd,
-  //       ));
-  //     }
-  //   }
-  // }
-
-  // playWithOutBallTeam(ClubInFixture team, ClubInFixture opposite) {
-  //   for (var player in team.club.players) {
-  //     player.actionWithOutBall(team: team, opposite: opposite, ball: _ball, fixture: this, hasBallPlayerId: _hasBallPlaterId);
-  //     if (player.lastAction != null) {
-  //       records.add(FixtureRecord(
-  //         time: playTime,
-  //         club: team.club,
-  //         player: player,
-  //         action: player.lastAction,
-  //         isGameEnd: isGameEnd,
-  //       ));
-  //       _streamController.add(FixtureRecord(
-  //         time: playTime,
-  //         club: team.club,
-  //         player: player,
-  //         action: player.lastAction,
-  //         isGameEnd: isGameEnd,
-  //       ));
-  //     }
-  //   }
-  // }
-
   updateGame() async {
-    ClubInFixture withBallTeam = isHomeTeamBall ? home : away;
-    ClubInFixture withOutBallTeam = !isHomeTeamBall ? home : away;
-
-    _hasBallPlaterId = playerWithBall?.id ?? '';
-
-    // playWithBallTeam(withBallTeam, withOutBallTeam);
-    // playWithOutBallTeam(withOutBallTeam, withBallTeam);
-
-    // _ball.posXY = playerWithBall!.posXY;
-
     playTime = Duration(seconds: playTime.inSeconds + _playTimeAmount);
 
     if (isHomeTeamBall) {
@@ -192,22 +159,6 @@ class Fixture {
     concedeClub.club.players.first.hasBall = true;
     _ball.posXY = PosXY(50, 100);
 
-    records.add(FixtureRecord(
-      time: playTime,
-      club: scoredClub.club,
-      player: scoredPlayer,
-      action: PlayerAction.goal,
-      isGameEnd: isGameEnd,
-    ));
-
-    records.add(FixtureRecord(
-      time: playTime,
-      club: scoredClub.club,
-      player: assistPlayer,
-      action: PlayerAction.assist,
-      isGameEnd: isGameEnd,
-    ));
-
     assistPlayer.assist += 1;
   }
 
@@ -216,6 +167,7 @@ class Fixture {
   }
 
   gameStart() async {
+    isGameStart = true;
     if (playerWithBall == null) home.club.players.first.hasBall = true;
 
     if (!_streamController.isClosed) {
@@ -275,11 +227,15 @@ class Fixture {
     }
   }
 
+  Future<void> dispose() async {
+    await _streamSubscription?.cancel();
+  }
+
   List<Player> get allPlayers => [...home.club.players, ...away.club.players];
 }
 
 class ClubInFixture {
-  final Club club;
+  late final Club club;
   int _scoredGoal = 0;
   int hasBallTime = 0;
   int shoot = 0;
@@ -303,6 +259,10 @@ class ClubInFixture {
   ClubInFixture({
     required this.club,
   });
+
+  ClubInFixture.empty() {
+    club = Club.empty();
+  }
 }
 
 class FixtureRecord {
