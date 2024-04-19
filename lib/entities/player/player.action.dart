@@ -67,8 +67,6 @@ extension PlayerMove on Player {
           attractive += sqrt(distanceToOpponent);
         }
 
-        print('attractive:$attractive');
-
         return {
           "attractive": attractive,
           "player": player,
@@ -89,11 +87,7 @@ extension PlayerMove on Player {
       bool canShoot = true;
 
       for (var opponent in nearOpponentPlayers) {
-        double distanceBonus = 10 -
-            opponent.posXY.distance(PosXY(
-              100 - posXY.x,
-              200 - posXY.y,
-            ));
+        double distanceBonus = 10 - opponent.posXY.distance(reversePosXy);
 
         if ((overall / (opponent.overall * distanceBonus + overall)) < R().getDouble(max: 1)) {
           canShoot = false;
@@ -239,12 +233,9 @@ extension PlayerMove on Player {
     team.shoot += 1;
     shooting++;
 
-    double distanceBonus = goalKeeper.posXY.distance(PosXY(
-      100 - posXY.x,
-      200 - posXY.y,
-    ));
+    double distanceBonus = goalKeeper.posXY.distance(reversePosXy) / 5;
 
-    if ((overall / (goalKeeper.overall * distanceBonus + overall)) > R().getDouble(max: 1)) {
+    if ((shootingStat / (goalKeeper.keepingStat * distanceBonus)) > R().getDouble(max: 1)) {
       goal++;
       fixture.scored(
         scoredClub: team,
@@ -256,11 +247,7 @@ extension PlayerMove on Player {
   }
 
   tackle(Player targetPlayer, ClubInFixture team) {
-    double distanceBonus = targetPlayer.posXY.distance(PosXY(
-          100 - posXY.x,
-          200 - posXY.y,
-        )) /
-        7;
+    double distanceBonus = targetPlayer.posXY.distance(reversePosXy) / 7;
 
     if ((overall / (targetPlayer.overall * distanceBonus + overall)) > R().getDouble(max: 1)) {
       lastAction = PlayerAction.tackle;

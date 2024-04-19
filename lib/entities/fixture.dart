@@ -57,7 +57,7 @@ class Fixture {
   Duration playTime = const Duration(seconds: 0);
 
   ///해당 경기를 시뮬레이션으로 구동할지 나타내는 변수
-  bool isSimulation = true;
+  bool isSimulation = false;
 
   ///경기가 시작 되었는지 안되었는지
   bool isGameStart = false;

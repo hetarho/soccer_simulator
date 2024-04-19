@@ -108,6 +108,17 @@ extension PlayerStat on Player {
     res = res + stat.composure * 0.1;
     return res.round();
   }
+
+  ///선방 - 키 + 축구지능 + 반응속도 + 유연성 + 수비스킬 + 침착함
+  int get keepingStat {
+    double res = height * 0.2;
+    res = res + soccerIQ * 0.1;
+    res = res + reflex * 0.5;
+    res = res + flexibility * 0.05;
+    res = res + stat.defSkill * 0.1;
+    res = res + stat.composure * 0.05;
+    return res.round();
+  }
 }
 // 빌드업: buildUp
 // 반박자빠른슈팅: quickReleaseShot

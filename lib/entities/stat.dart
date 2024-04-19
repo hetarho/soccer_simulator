@@ -109,21 +109,21 @@ class Stat {
   }) {
     switch (position) {
       case Position.forward:
-        attSkill = R().getInt(max: 2, min: 1);
-        passSkill = R().getInt(max: 2, min: 1);
+        attSkill = R().getInt(max: 2, min: 0);
+        passSkill = R().getInt(max: 2, min: 0);
         break;
       case Position.midfielder:
-        attSkill = R().getInt(max: 2, min: 1);
-        passSkill = R().getInt(max: 2, min: 1);
-        defSkill = R().getInt(max: 2, min: 1);
+        attSkill = R().getInt(max: 2, min: 0);
+        passSkill = R().getInt(max: 2, min: 0);
+        defSkill = R().getInt(max: 2, min: 0);
         break;
       case Position.defender:
-        passSkill = R().getInt(max: 2, min: 1);
-        defSkill = R().getInt(max: 2, min: 1);
+        passSkill = R().getInt(max: 2, min: 0);
+        defSkill = R().getInt(max: 2, min: 0);
         break;
       default:
     }
-    teamwork = R().getInt(max: 2, min: 1);
+    teamwork = R().getInt(max: 2, min: 0);
   }
 
   ///체력
