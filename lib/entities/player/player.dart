@@ -116,6 +116,7 @@ class Player extends Member {
     int? speed,
     int? min,
     int? max,
+    Tactics? tactics,
     this.personalTrainingTypes = const [],
     this.teamTrainingTypePercent = 0.5,
   }) {
@@ -128,6 +129,7 @@ class Player extends Member {
     _potential = potential ?? R().getInt(min: min ?? 30, max: max ?? 120);
     _stat = stat ?? Stat.random(position: position);
     _streamController = StreamController<PlayerActEvent>.broadcast();
+    this.tactics = tactics ?? Tactics(pressDistance: 15);
   }
 
   final String id = const Uuid().v4();
