@@ -46,17 +46,28 @@ extension PlayerMove on Player {
         double attractive = 0;
 
         ///선수가 앞쪽에 있을 수록 매력도 상승
-        attractive += player.posXY.y / 2;
+        attractive += player.posXY.y * 5;
 
         ///선수의 능력치가 높을 수록 매력도 상승
         attractive += player.overall;
 
-        ///해당 선수에게 패스시 패스길과의 거리가 10 이내인 적의 수 *10 매력도 하락
-        attractive -= opponentPlayers.where((opponent) {
-              double distanceToPathRoute = sqrt(pow(reversePosXy.distance(opponent.posXY), 2) - pow(posXY.distance(player.posXY) / 2, 2));
-              return distanceToPathRoute < 10;
-            }).length *
-            10;
+        ///상대편 선수들과 해당 선수의 거리를 비교
+        for (var opponent in opponentPlayers) {
+          ///해당 선수에게 패스시 패스길과 적의 거리
+          double distanceToPathRoute = M().getDistanceFromPointToLine(linePoint1: posXY, linePoint2: player.posXY, point: opponent.reversePosXy);
+
+          ///해당 선수에게 패스시 패스길과 특정 거리 이내 매력도 하락
+          double unit = 12.0;
+          if (distanceToPathRoute < unit) {
+            attractive -= distanceToPathRoute * unit;
+          }
+
+          ///패스를 받는 선수와 상대 선수 거리가 멀수록 매력도 상승
+          double distanceToOpponent = player.posXY.distance(opponent.reversePosXy);
+          attractive += sqrt(distanceToOpponent);
+        }
+
+        print('attractive:$attractive');
 
         return {
           "attractive": attractive,
@@ -69,7 +80,8 @@ extension PlayerMove on Player {
       int shootPercent = max(0, ((2500 - pow(PosXY(50, 200).distance(posXY), 2))).round());
       int passPercent = 250;
 
-      int dribbleBonus = (11 - opponentPlayers.where((opponent) => ((100 - opponent.posXY.x + 15) > posXY.x && (100 - opponent.posXY.x - 15) < posXY.x) || (200 - opponent.posXY.y - posXY.y) > 50).length);
+      int dribbleBonus =
+          (11 - opponentPlayers.where((opponent) => ((100 - opponent.posXY.x + 15) > posXY.x && (100 - opponent.posXY.x - 15) < posXY.x) || (200 - opponent.posXY.y - posXY.y) > 50).length);
       int dribblePercent = position == Position.goalKeeper ? 0 : (50 + dribbleBonus * 100);
       int stayPercent = position == Position.goalKeeper ? 0 : 250;
       int ranNum = R().getInt(min: 0, max: shootPercent + passPercent + dribblePercent + stayPercent);
@@ -93,14 +105,7 @@ extension PlayerMove on Player {
       } else if (ranNum < shootPercent + passPercent) {
         Player target = judgedTeamPlayer.first["player"];
 
-        List<Player> nearOpponentAtTarget = opponentPlayers
-            .where((opponent) =>
-                opponent.posXY.distance(PosXY(
-                  100 - target.posXY.x,
-                  200 - target.posXY.y,
-                )) <
-                15)
-            .toList();
+        List<Player> nearOpponentAtTarget = opponentPlayers.where((opponent) => opponent.posXY.distance(target.reversePosXy) < 15).toList();
 
         pass(target, team, nearOpponentAtTarget, fixture);
       } else if (ranNum < shootPercent + passPercent + dribblePercent) {

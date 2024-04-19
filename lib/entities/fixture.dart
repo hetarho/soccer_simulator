@@ -6,7 +6,9 @@ import 'package:async/async.dart';
 import 'package:soccer_simulator/entities/ball.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
+import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
+import 'package:soccer_simulator/enum/player_action.dart';
 
 class Fixture {
   Fixture({required this.home, required this.away}) {
@@ -42,14 +44,14 @@ class Fixture {
   late final ClubInFixture away;
   List<FixtureRecord> records = [];
 
-  StreamSubscription<PlayerEvent>? _streamSubscription;
+  StreamSubscription<PlayerActEvent>? _streamSubscription;
 
   Timer? _timer; // Timer 인스턴스를 저장할 변수
   late StreamController<FixtureRecord> _streamController;
 
   Stream<FixtureRecord> get gameStream => _streamController.stream;
 
-  late Stream<PlayerEvent> playerStream;
+  late Stream<PlayerActEvent> playerStream;
 
   ///현재 경기 시간
   Duration playTime = const Duration(seconds: 0);

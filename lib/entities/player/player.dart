@@ -2,7 +2,10 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/tactics.dart';
+import 'package:soccer_simulator/enum/player_action.dart';
+import 'package:soccer_simulator/utils/math.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/entities/ball.dart';
@@ -20,8 +23,8 @@ part 'player.grow.dart';
 part 'player.stat.dart';
 
 class Player extends Member {
-  late StreamController<PlayerEvent> _streamController;
-  Stream<PlayerEvent> get playerStream => _streamController.stream;
+  late StreamController<PlayerActEvent> _streamController;
+  Stream<PlayerActEvent> get playerStream => _streamController.stream;
   Player({
     required super.name,
     required super.birthDay,
@@ -43,7 +46,7 @@ class Player extends Member {
 
     //포텐셜을 지정해주지 않으면 랜덤으로 책정
     _potential = potential ?? R().getInt(min: 30, max: 120);
-    _streamController = StreamController<PlayerEvent>.broadcast();
+    _streamController = StreamController<PlayerActEvent>.broadcast();
   }
 
   bool isPlaying = false;
@@ -79,7 +82,7 @@ class Player extends Member {
         defend(team: team, opponent: opposite, ball: ball, fixture: fixture);
       }
 
-      if (lastAction != null) _streamController.add(PlayerEvent(player: this, action: lastAction!));
+      if (lastAction != null) _streamController.add(PlayerActEvent(player: this, action: lastAction!));
     });
   }
 
@@ -113,7 +116,7 @@ class Player extends Member {
     this.flexibility = flexibility ?? R().getInt(min: 30, max: 120);
     _potential = potential ?? R().getInt(min: 30, max: 120);
     _stat = stat ?? Stat.random(position: position);
-    _streamController = StreamController<PlayerEvent>.broadcast();
+    _streamController = StreamController<PlayerActEvent>.broadcast();
   }
 
   final String id = const Uuid().v4();
@@ -278,7 +281,7 @@ class Player extends Member {
 
   set hasBall(bool newVal) {
     if (newVal) {
-      _streamController.add(PlayerEvent(player: this, action: PlayerAction.none));
+      _streamController.add(PlayerActEvent(player: this, action: PlayerAction.none));
     }
     _hasBall = newVal;
   }
@@ -334,31 +337,4 @@ class Player extends Member {
       _ => min(startingPoxXY.y + 200, 200),
     };
   }
-}
-
-enum PlayerAction {
-  none('none'),
-  shoot('shoot'),
-  tackle('tackle'),
-  pass('pass'),
-  press('press'),
-  dribble('dribble'),
-  goal('goal'),
-  assist('assist'),
-  keeping('keeping');
-
-  final String text;
-  const PlayerAction(this.text);
-
-  @override
-  String toString() => text;
-}
-
-class PlayerEvent {
-  final Player player;
-  final PlayerAction action;
-  PlayerEvent({
-    required this.player,
-    required this.action,
-  });
 }

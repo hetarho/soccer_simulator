@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
+import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';
 
 class FixturePage extends ConsumerStatefulWidget {
@@ -18,7 +19,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
   bool showModal = false;
   Player? _selectedPlayer;
   List<Player> actingPlayer = [];
-  StreamSubscription<PlayerEvent>? _playerStreamSubscription;
+  StreamSubscription<PlayerActEvent>? _playerStreamSubscription;
   late Fixture _fixture;
   int _ballAnimationSpeed = 0;
 
