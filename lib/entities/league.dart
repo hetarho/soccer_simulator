@@ -25,6 +25,10 @@ class League {
   nextRound() {
     if (_currentSeason.currentRound.isAllGameEnd) _currentSeason.nextRound();
   }
+
+  // getTopScorers() {
+  //   clubs.map((e) => e.players).;
+  // }
 }
 
 class Round {

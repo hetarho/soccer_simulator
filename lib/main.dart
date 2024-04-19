@@ -182,7 +182,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       ..players = List.generate(
           11,
           (index) => Player.random(
-                name: RandomNames(Zone.us).manFullName(),
+                name: RandomNames(Zone.us).name(),
                 backNumber: index,
                 position: formation433.positions[index].position,
                 reflex: specialTest.contains(index) ? 150 : null,
@@ -200,13 +200,12 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 ..isStartingPlayer = true
                 ..position = formation433.positions[index].position
                 ..startingPoxXY = formation433.positions[index].pos);
-
     List<Club> clubs = List.generate(19, (index) {
       formations.shuffle();
       Formation formation = formations.first;
       return Club(
           name: RandomNames(Zone.germany).manName(),
-          tactics: Tactics(pressDistance: R().getDouble(min: 0, max: 50)),
+          tactics: Tactics(pressDistance: R().getDouble(min: 0, max: 60)),
           color: Color.fromRGBO(
             Random().nextInt(200) + 55,
             Random().nextInt(200) + 55,
@@ -221,7 +220,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   backNumber: index,
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,
-                  stat: Stat.random(position: formation.positions[index].position, min: 70, max: 100),
+                  stat: Stat.random(position: formation.positions[index].position, min: 30, max: 110),
                 )
                   ..isStartingPlayer = true
                   ..position = formation.positions[index].position

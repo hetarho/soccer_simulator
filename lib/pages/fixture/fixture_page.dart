@@ -160,8 +160,12 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                             AnimatedPositioned(
                               duration: Duration(milliseconds: (_ballAnimationSpeed).round()),
                               curve: Curves.decelerate,
-                              top: fixture.isHomeTeamBall ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2) : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
-                              left: fixture.isHomeTeamBall ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10 : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
+                              top: fixture.isHomeTeamBall
+                                  ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)
+                                  : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
+                              left: fixture.isHomeTeamBall
+                                  ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10
+                                  : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
                               child: Container(
                                 width: ballSize,
                                 height: ballSize,
@@ -303,41 +307,41 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                     Text(_selectedPlayer?.name ?? ''),
                   ],
                 ),
-                if (_selectedPlayer?.gameRecord.isNotEmpty ?? false) ...[
+                ...[
                   Row(
                     children: [
                       const SizedBox(width: 120, child: Text('goal')),
-                      Text(_selectedPlayer?.gameRecord.last['goal'].toString() ?? ''),
+                      Text(_selectedPlayer?.seasonGoal.toString() ?? ''),
                     ],
                   ),
                   Row(
                     children: [
                       const SizedBox(width: 120, child: Text('assist')),
-                      Text(_selectedPlayer?.gameRecord.last['assist'].toString() ?? ''),
+                      Text(_selectedPlayer?.gameRecord.last.assist.toString() ?? ''),
                     ],
                   ),
                   Row(
                     children: [
                       const SizedBox(width: 120, child: Text('pass')),
-                      Text(_selectedPlayer?.gameRecord.last['passSuccess'].toString() ?? ''),
+                      Text(_selectedPlayer?.gameRecord.last.passSuccess.toString() ?? ''),
                     ],
                   ),
                   Row(
                     children: [
                       const SizedBox(width: 120, child: Text('shoot')),
-                      Text(_selectedPlayer?.gameRecord.last['shooting'].toString() ?? ''),
+                      Text(_selectedPlayer?.gameRecord.last.shooting.toString() ?? ''),
                     ],
                   ),
                   Row(
                     children: [
                       const SizedBox(width: 120, child: Text('dribbleSuccess')),
-                      Text(_selectedPlayer?.gameRecord.last['dribbleSuccess'].toString() ?? ''),
+                      Text(_selectedPlayer?.gameRecord.last.dribbleSuccess.toString() ?? ''),
                     ],
                   ),
                   Row(
                     children: [
                       const SizedBox(width: 120, child: Text('defSuccess')),
-                      Text(_selectedPlayer?.gameRecord.last['defSuccess'].toString() ?? ''),
+                      Text(_selectedPlayer?.gameRecord.last.defSuccess.toString() ?? ''),
                     ],
                   ),
                 ]

@@ -214,6 +214,7 @@ extension PlayerMove on Player {
     hasBall = false;
     if (nearOpponentAtTarget.isEmpty || targetDistance < nearOpponentAtTarget.first.posXY.distance(PosXY(100 - ballLandingPos.x, 200 - ballLandingPos.y))) {
       passSuccess++;
+      target.passedPlayer = this;
       target.hasBall = true;
       team.pass += 1;
     } else {
@@ -241,7 +242,7 @@ extension PlayerMove on Player {
         scoredClub: team,
         concedeClub: opponent,
         scoredPlayer: this,
-        assistPlayer: team.club.startPlayers[1],
+        assistPlayer: passedPlayer,
       );
     }
   }

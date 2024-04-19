@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
+import 'package:soccer_simulator/entities/player/vo/player_game_record.dart';
 import 'package:soccer_simulator/entities/tactics.dart';
 import 'package:soccer_simulator/enum/player_action.dart';
 import 'package:soccer_simulator/utils/math.dart';
@@ -219,13 +220,18 @@ class Player extends Member {
 
   int get overall => _stat.average;
 
-  List<Map<String, int>> gameRecord = [];
+  List<PlayerGameRecord> gameRecord = [];
+
+  int get seasonGoal => gameRecord.fold(0, (prev, rec) => prev + rec.goal);
+  int get seasonAssist => gameRecord.fold(0, (prev, rec) => prev + rec.assist);
 
   List<List<int>> seasonRecord = [];
 
   Position get wantPosition => _getWantedPositionFromStat(stat);
 
   PlayerAction? lastAction;
+
+  Player? passedPlayer;
 
   get extraStat => _extraStat;
 
@@ -251,15 +257,15 @@ class Player extends Member {
   }
 
   void gamePlayed() {
-    gameRecord.add({
-      'goal': goal,
-      'assist': assist,
-      'passSuccess': passSuccess,
-      'shooting': shooting,
-      'defSuccess': defSuccess,
-      'saveSuccess': saveSuccess,
-      'dribbleSuccess': dribbleSuccess,
-    });
+    gameRecord.add(PlayerGameRecord(
+      goal: goal,
+      assist: assist,
+      passSuccess: passSuccess,
+      shooting: shooting,
+      defSuccess: defSuccess,
+      saveSuccess: saveSuccess,
+      dribbleSuccess: dribbleSuccess,
+    ));
     goal = 0;
     assist = 0;
     passSuccess = 0;

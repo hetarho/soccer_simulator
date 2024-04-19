@@ -144,7 +144,7 @@ class Fixture {
     required ClubInFixture scoredClub,
     required ClubInFixture concedeClub,
     required Player scoredPlayer,
-    required Player assistPlayer,
+    required Player? assistPlayer,
   }) async {
     scoredClub.score();
     concedeClub.concede();
@@ -167,7 +167,7 @@ class Fixture {
     concedeClub.club.players.first.hasBall = true;
     _ball.posXY = PosXY(50, 100);
 
-    assistPlayer.assist += 1;
+    assistPlayer?.assist += 1;
   }
 
   pause() {
