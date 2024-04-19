@@ -73,6 +73,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   int _finishedFixtureNum = 0;
   bool _showFixtures = false;
   bool _showLeagueTable = false;
+  bool _showTopScorerTable = false;
+  List<Player> _topScorer = [];
 
   @override
   void initState() {
@@ -307,11 +309,19 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           Row(
             children: [
               ElevatedButton(
-                onPressed: () async {
-                  _autoPlaying();
-                },
-                child: const Text('한 시즌 자동 재생'),
-              ),
+                  onPressed: () {
+                    setState(() {
+                      _showTopScorerTable = !_showTopScorerTable;
+                      if (_showTopScorerTable) _topScorer = _league.getTopScorers(20);
+                    });
+                  },
+                  child: const Text('test')),
+              // ElevatedButton(
+              //   onPressed: () async {
+              //     _autoPlaying();
+              //   },
+              //   child: const Text('한 시즌 자동 재생'),
+              // ),
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -344,6 +354,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                             children: _fixtures
                                 .map((fixture) => FixtureInfo(
                                       fixture: fixture,
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                      if (_showTopScorerTable)
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            children: _topScorer
+                                .map((player) => Row(
+                                      children: [Text('${player.name}(${player.overall})${player.seasonGoal}')],
                                     ))
                                 .toList(),
                           ),

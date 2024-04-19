@@ -50,6 +50,11 @@ class Player extends Member {
     _streamController = StreamController<PlayerActEvent>.broadcast();
   }
 
+  @override
+  String toString() {
+    return 'Player:$name goal:$seasonGoal';
+  }
+
   bool isPlaying = false;
   Timer? _timer; // Timer 인스턴스를 저장할 변수
   Duration _playSpeed = const Duration(milliseconds: 0);

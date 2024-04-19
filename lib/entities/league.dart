@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
+import 'package:soccer_simulator/entities/player/player.dart';
 
 class League {
   List<Season> seasons = [];
@@ -26,9 +27,13 @@ class League {
     if (_currentSeason.currentRound.isAllGameEnd) _currentSeason.nextRound();
   }
 
-  // getTopScorers() {
-  //   clubs.map((e) => e.players).;
-  // }
+  getTopScorers(int length) {
+    List<Player> allPlayers = clubs.map((e) => e.players).expand((element) => element).toList();
+
+    allPlayers.sort((a, b) => b.seasonGoal - a.seasonGoal > 0 ? 1 : -1);
+
+    return allPlayers.sublist(0, length);
+  }
 }
 
 class Round {
