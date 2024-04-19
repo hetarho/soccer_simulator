@@ -82,6 +82,9 @@ class Player extends Member {
       playTime = fixture.playTime;
       bool teamHasBall = team.club.startPlayers.where((player) => player.hasBall).isNotEmpty;
       lastAction = null;
+
+      /// 판단력/5 만큼 행동 포인트 적립
+      _actPoint += judgementStat / 10;
       if (teamHasBall) {
         attack(team: team, opponent: opposite, ball: ball, fixture: fixture);
       } else {
@@ -299,9 +302,10 @@ class Player extends Member {
   double attractive = 0.0;
 
   set hasBall(bool newVal) {
+    ///공을 얻거나 잃으면 활동 포인트 초기화
+    _actPoint = 0;
     if (newVal) {
       _streamController.add(PlayerActEvent(player: this, action: PlayerAction.none));
-      _actPoint = 0;
     }
     _hasBall = newVal;
   }

@@ -215,7 +215,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       Formation formation = formations.first;
       return Club(
           name: RandomNames(Zone.germany).manName(),
-          tactics: Tactics(pressDistance: R().getDouble(min: 0, max: 60)),
+          tactics: Tactics(pressDistance: R().getDouble(min: 10, max: 40)),
           color: Color.fromRGBO(
             Random().nextInt(200) + 55,
             Random().nextInt(200) + 55,
@@ -230,8 +230,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   backNumber: index,
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,
-                  min: 30 + idx * 5,
-                  max: 50 + idx * 5,
+                  min: 50 + idx * 3,
+                  max: 70 + idx * 3,
                   stat:
                       Stat.random(position: formation.positions[index].position, min: 50 + idx * 3, max: 100 + idx * 3),
                 )
