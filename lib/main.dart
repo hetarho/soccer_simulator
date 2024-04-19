@@ -177,9 +177,16 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
     ]);
 
-    List<Formation> formations = [formation433, formation442, formation41212, formation4222, formation4141, formation352];
+    List<Formation> formations = [
+      formation433,
+      formation442,
+      formation41212,
+      formation4222,
+      formation4141,
+      formation352
+    ];
 
-    List<int> specialTest = [6];
+    List<int> specialTest = [0, 1, 2];
     Club arsenal = Club(name: 'Arsenal', color: Colors.red, tactics: Tactics(pressDistance: 20))
       ..players = List.generate(
           11,
@@ -192,17 +199,18 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 soccerIQ: specialTest.contains(index) ? 150 : null,
                 birthDay: DateTime(2002, 03, 01),
                 national: National.england,
+                min: specialTest.contains(index) ? 190 : 70,
+                max: specialTest.contains(index) ? 200 : 100,
                 stat: Stat.random(
                   position: formation433.positions[index].position,
                   min: specialTest.contains(index) ? 190 : 70,
                   max: specialTest.contains(index) ? 200 : 100,
                 ),
               )
-                ..tactics = specialTest.contains(index) ? Tactics(pressDistance: 30) : null
                 ..isStartingPlayer = true
                 ..position = formation433.positions[index].position
                 ..startingPoxXY = formation433.positions[index].pos);
-    List<Club> clubs = List.generate(19, (index) {
+    List<Club> clubs = List.generate(19, (idx) {
       formations.shuffle();
       Formation formation = formations.first;
       return Club(
@@ -222,7 +230,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   backNumber: index,
                   birthDay: DateTime(2002, 03, 01),
                   national: National.england,
-                  stat: Stat.random(position: formation.positions[index].position, min: 30, max: 110),
+                  min: 30 + idx * 5,
+                  max: 50 + idx * 5,
+                  stat:
+                      Stat.random(position: formation.positions[index].position, min: 50 + idx * 3, max: 100 + idx * 3),
                 )
                   ..isStartingPlayer = true
                   ..position = formation.positions[index].position
@@ -381,7 +392,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                             ref.read(playerListProvider.notifier).state = club.startPlayers;
                                             context.push('/players');
                                           },
-                                          child: Text('${club.name}(${club.overall} ${club.attOverall}/${club.midOverall}/${club.defOverall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
+                                          child: Text(
+                                              '${club.name}(${club.overall} ${club.attOverall}/${club.midOverall}/${club.defOverall}) - ${club.pts} ${club.won}/${club.drawn}/${club.lost}'),
                                         )
                                       ],
                                     ))
@@ -392,7 +404,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       ...[..._league.seasons.last.rounds..sort((a, b) => a.number - b.number)]
                           .map((round) => round.fixtures)
                           .expand((list) => list)
-                          .where((fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
+                          .where(
+                              (fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
                           .map((fixture) => FixtureInfo(
                                 fixture: fixture,
                                 showWDL: false,
@@ -477,12 +490,16 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
                       children: [
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          width: constraints.maxWidth * ((widget.fixture.home.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          width: constraints.maxWidth *
+                              ((widget.fixture.home.goal + 1) /
+                                  (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
                           color: widget.fixture.home.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
                         ),
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          width: constraints.maxWidth * ((widget.fixture.away.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          width: constraints.maxWidth *
+                              ((widget.fixture.away.goal + 1) /
+                                  (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
                           color: widget.fixture.away.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
                         ),
                       ],

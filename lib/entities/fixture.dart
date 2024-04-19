@@ -219,6 +219,7 @@ class Fixture {
       home.club.lose();
     }
 
+    _streamSubscription?.cancel();
     _timer?.cancel();
     _streamController.close();
   }

@@ -67,7 +67,7 @@ class Player extends Member {
   }
 
   Duration get playSpeed {
-    return Duration(milliseconds: (_playSpeed.inMilliseconds * 50 / reflex).round());
+    return Duration(milliseconds: (_playSpeed.inMilliseconds * 10 / sqrt(reflex)).round());
   }
 
   gameStart({
@@ -111,16 +111,18 @@ class Player extends Member {
     int? reflex,
     int? flexibility,
     int? speed,
+    int? min,
+    int? max,
     this.personalTrainingTypes = const [],
     this.teamTrainingTypePercent = 0.5,
   }) {
     this.height = height ?? R().getDouble(min: 165, max: 210);
     this.bodyType = bodyType ?? R().getBodyType();
-    this.soccerIQ = soccerIQ ?? R().getInt(min: 30, max: 120);
-    this.reflex = reflex ?? R().getInt(min: 30, max: 120);
-    this.speed = speed ?? R().getInt(min: 30, max: 120);
-    this.flexibility = flexibility ?? R().getInt(min: 30, max: 120);
-    _potential = potential ?? R().getInt(min: 30, max: 120);
+    this.soccerIQ = soccerIQ ?? R().getInt(min: min ?? 30, max: max ?? 120);
+    this.reflex = reflex ?? R().getInt(min: min ?? 30, max: max ?? 120);
+    this.speed = speed ?? R().getInt(min: min ?? 30, max: max ?? 120);
+    this.flexibility = flexibility ?? R().getInt(min: min ?? 30, max: max ?? 120);
+    _potential = potential ?? R().getInt(min: min ?? 30, max: max ?? 120);
     _stat = stat ?? Stat.random(position: position);
     _streamController = StreamController<PlayerActEvent>.broadcast();
   }
@@ -290,9 +292,16 @@ class Player extends Member {
 
   bool get hasBall => _hasBall;
 
+  ///현재 공을 잡고 플레이가 가능한지를 나타내는 변수 100이상이 되야 플레이 가능
+  double _actPoint = 0;
+
+  ///현재 선수의 패스 선택지로서의 매력도
+  double attractive = 0.0;
+
   set hasBall(bool newVal) {
     if (newVal) {
       _streamController.add(PlayerActEvent(player: this, action: PlayerAction.none));
+      _actPoint = 0;
     }
     _hasBall = newVal;
   }
@@ -307,8 +316,8 @@ class Player extends Member {
     return max(
         0,
         switch (position) {
-          Position.goalKeeper => startingPoxXY.x - 5,
-          Position.defender => startingPoxXY.x - 5,
+          Position.goalKeeper => startingPoxXY.x - 15,
+          Position.defender => startingPoxXY.x - 15,
           Position.midfielder => startingPoxXY.x - (isLeftWinger ? 10 : 15),
           Position.forward => startingPoxXY.x - (isLeftWinger ? 15 : 25),
           _ => min(startingPoxXY.x - 100, 0),
@@ -319,8 +328,8 @@ class Player extends Member {
     return min(
         100,
         switch (position) {
-          Position.goalKeeper => startingPoxXY.x + 5,
-          Position.defender => startingPoxXY.x + 5,
+          Position.goalKeeper => startingPoxXY.x + 15,
+          Position.defender => startingPoxXY.x + 15,
           Position.midfielder => startingPoxXY.x + (isRightWinger ? 10 : 15),
           Position.forward => startingPoxXY.x + (isRightWinger ? 15 : 25),
           _ => min(startingPoxXY.x + 100, 100),
@@ -342,9 +351,9 @@ class Player extends Member {
   double get _posYMaxBoundary {
     return switch (position) {
       Position.goalKeeper => startingPoxXY.y + 10,
-      Position.defender => startingPoxXY.y + (isWinger ? 150 : 40),
-      Position.midfielder => startingPoxXY.y + (isWinger ? 110 : 55),
-      Position.forward => startingPoxXY.y + (isWinger ? 100 : 100),
+      Position.defender => startingPoxXY.y + (isWinger ? 140 : 30),
+      Position.midfielder => startingPoxXY.y + (isWinger ? 110 : 40),
+      Position.forward => startingPoxXY.y + (isWinger ? 100 : 90),
       _ => min(startingPoxXY.y + 200, 200),
     };
   }

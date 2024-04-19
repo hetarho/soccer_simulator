@@ -66,7 +66,8 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                     children: [
                       Text('${fixture.home.goal}'),
                       const SizedBox(width: 4),
-                      Text('${fixture.home.club.name}(${fixture.home.club.overall}/${fixture.home.club.tactics.pressDistance.toStringAsFixed(1)})'),
+                      Text(
+                          '${fixture.home.club.name}(${fixture.home.club.overall}/${fixture.home.club.tactics.pressDistance.toStringAsFixed(1)})'),
                       const SizedBox(width: 4),
                       Text('${fixture.homeBallPercent}%'),
                       const SizedBox(width: 16),
@@ -74,7 +75,8 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       const SizedBox(width: 16),
                       Text('${fixture.awayBallPercent}%'),
                       const SizedBox(width: 4),
-                      Text('${fixture.away.club.name}(${fixture.away.club.overall}/${fixture.away.club.tactics.pressDistance.toStringAsFixed(1)})'),
+                      Text(
+                          '${fixture.away.club.name}(${fixture.away.club.overall}/${fixture.away.club.tactics.pressDistance.toStringAsFixed(1)})'),
                       const SizedBox(width: 4),
                       Text('${fixture.away.goal}'),
                     ],
@@ -314,36 +316,6 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       Text(_selectedPlayer?.seasonGoal.toString() ?? ''),
                     ],
                   ),
-                  Row(
-                    children: [
-                      const SizedBox(width: 120, child: Text('assist')),
-                      Text(_selectedPlayer?.gameRecord.last.assist.toString() ?? ''),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(width: 120, child: Text('pass')),
-                      Text(_selectedPlayer?.gameRecord.last.passSuccess.toString() ?? ''),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(width: 120, child: Text('shoot')),
-                      Text(_selectedPlayer?.gameRecord.last.shooting.toString() ?? ''),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(width: 120, child: Text('dribbleSuccess')),
-                      Text(_selectedPlayer?.gameRecord.last.dribbleSuccess.toString() ?? ''),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(width: 120, child: Text('defSuccess')),
-                      Text(_selectedPlayer?.gameRecord.last.defSuccess.toString() ?? ''),
-                    ],
-                  ),
                 ]
               ]),
             )
@@ -371,7 +343,8 @@ class PlayerWidget extends StatelessWidget {
       child: Center(
         child: Text(
           '${player.backNumber}',
-          style: TextStyle(color: player.hasBall ? Colors.white : Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+          style:
+              TextStyle(color: player.hasBall ? Colors.white : Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ),
     );
