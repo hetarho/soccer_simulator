@@ -296,11 +296,13 @@ extension PlayerMove on Player {
     double travelX = distanceCanForward * cosine;
     double travelY = distanceCanForward * sine;
 
-    ///ignoreBoundary가 true이면 평소 boundary보다 10정도 여유를둠
+    ///최종 이동할 좌표
     PosXY newPos = PosXY((posXY.x + travelX).clamp(_posXMinBoundary, _posXMaxBoundary), (posXY.y + travelY).clamp(_posYMinBoundary, _posYMaxBoundary));
 
+    ///실제 이동 거리
     double moveDistance = newPos.distance(posXY);
 
+    ///TODO: 체력 감소 로직 추후 구체화
     if (_currentStamina > 30) {
       _currentStamina -= moveDistance / stat.stamina;
     } else {

@@ -11,7 +11,7 @@ import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/league.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
-import 'package:soccer_simulator/entities/player_stat.dart';
+import 'package:soccer_simulator/entities/stat.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
 import 'package:soccer_simulator/entities/tactics.dart';
 import 'package:soccer_simulator/enum/national.dart';

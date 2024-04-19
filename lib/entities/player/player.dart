@@ -8,7 +8,7 @@ import 'package:uuid/uuid.dart';
 import 'package:soccer_simulator/entities/ball.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/member.dart';
-import 'package:soccer_simulator/entities/player_stat.dart';
+import 'package:soccer_simulator/entities/stat.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
 import 'package:soccer_simulator/enum/player.dart';
 import 'package:soccer_simulator/enum/position.dart';
