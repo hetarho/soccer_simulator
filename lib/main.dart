@@ -91,72 +91,66 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 
   init() {
-    // List<Club> clubs = List.generate(18, (idx) {
-    //   allFormations.shuffle();
-    //   Formation formation = allFormations.first;
-    //   return Club(
-    //       name: RandomNames(Zone.germany).manName(),
-    //       tactics: Tactics(pressDistance: R().getDouble(min: 10, max: 40)),
-    //       color: Color.fromRGBO(
-    //         Random().nextInt(200) + 55,
-    //         Random().nextInt(200) + 55,
-    //         Random().nextInt(200) + 55,
-    //         1,
-    //       ))
-    //     ..players = List.generate(
-    //         11,
-    //         (index) => Player.random(
-    //               name: RandomNames(Zone.us).manFullName(),
-    //               position: formation.positions[index].position,
-    //               backNumber: index,
-    //               birthDay: DateTime(2002, 03, 01),
-    //               national: National.england,
-    //               min: 50 + idx * 3,
-    //               max: 70 + idx * 3,
-    //               stat: Stat.random(position: formation.positions[index].position, min: 50 + idx * 3, max: 100 + idx * 3),
-    //             )
-    //               ..isStartingPlayer = true
-    //               ..position = formation.positions[index].position
-    //               ..startingPoxXY = formation.positions[index].pos);
-    // })
-    //   ..add(manchesterCity)
-    //   ..add(arsenal);
-
     Club arsenal = Club(
       name: 'Arsenal',
+      nickName: 'ARS',
       homeColor: Colors.red,
       awayColor: Colors.yellow,
       tactics: Tactics(pressDistance: 30, freeLevel: PlayerFreeLevel.hight),
     );
 
-    arsenal.players = List.generate(
-        11,
-        (index) => Player.random(
-              name: RandomNames(Zone.us).name(),
-              backNumber: index,
-              position: formation433.positions[index].position,
-              birthDay: DateTime(2002, 03, 01),
-              national: National.england,
-              min: 80,
-              max: 135,
-              tactics: Tactics.normal(),
-              stat: Stat.random(
-                position: formation433.positions[index].position,
+    arsenal.players = [
+      ...List.generate(
+          10,
+          (index) => Player.random(
+                name: RandomNames(Zone.us).name(),
+                backNumber: index + 1,
+                position: formation433.positions[index + 1].position,
+                birthDay: DateTime(2002, 03, 01),
+                national: National.england,
                 min: 80,
                 max: 135,
-              ),
-            )
-              ..isStartingPlayer = true
-              ..position = formation433.positions[index].position
-              ..team = arsenal
-              ..startingPoxXY = formation433.positions[index].pos);
+                tactics: Tactics.normal(),
+                stat: Stat.random(
+                  position: formation433.positions[index + 1].position,
+                  min: 80,
+                  max: 135,
+                ),
+              )
+                ..isStartingPlayer = true
+                ..position = formation433.positions[index + 1].position
+                ..team = arsenal
+                ..startingPoxXY = formation433.positions[index + 1].pos),
+      Player.random(
+        name: 'Saka',
+        backNumber: 0,
+        position: formation433.positions[0].position,
+        birthDay: DateTime(2002, 03, 01),
+        national: National.england,
+        min: 130,
+        max: 130,
+        tactics: Tactics.normal(),
+        stat: Stat.random(
+          position: formation433.positions[0].position,
+          min: 130,
+          max: 130,
+        ),
+      )
+        ..isStartingPlayer = true
+        ..position = formation433.positions[0].position
+        ..team = arsenal
+        ..startingPoxXY = formation433.positions[0].pos
+    ];
 
     Club manchesterCity = Club(
       name: 'manchesterCity',
+      nickName: 'MAC',
       homeColor: Colors.blue[100]!,
       awayColor: Colors.blue[800]!,
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.low),
-    )..players = List.generate(
+    );
+
+    manchesterCity.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -165,25 +159,28 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               birthDay: DateTime(2002, 03, 01),
               national: National.england,
               min: 100,
-              max: 110,
+              max: 120,
               tactics: Tactics.normal(),
               stat: Stat.random(
                 position: formation433.positions[index].position,
                 passSkill: 110 + R().getInt(max: 10),
                 min: 100,
-                max: 110,
+                max: 120,
               ),
             )
               ..isStartingPlayer = true
               ..position = formation433.positions[index].position
+              ..team = manchesterCity
               ..startingPoxXY = formation433.positions[index].pos);
 
     Club liverfpool = Club(
       name: 'liverpool',
+      nickName: 'LIV',
       homeColor: Colors.red[800]!,
       awayColor: Colors.blue[900]!,
-      tactics: Tactics(pressDistance: 40, freeLevel: PlayerFreeLevel.hight),
-    )..players = List.generate(
+      tactics: Tactics(pressDistance: 35, freeLevel: PlayerFreeLevel.hight),
+    );
+    liverfpool.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -192,24 +189,27 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               birthDay: DateTime(2002, 03, 01),
               national: National.england,
               min: 70,
-              max: 140,
+              max: 145,
               tactics: Tactics(pressDistance: 5, freeLevel: PlayerFreeLevel.middle),
               stat: Stat.random(
                 position: formation433.positions[index].position,
                 min: 70,
-                max: 140,
+                max: 145,
               ),
             )
               ..isStartingPlayer = true
               ..position = formation433.positions[index].position
+              ..team = liverfpool
               ..startingPoxXY = formation433.positions[index].pos);
 
     Club astonVilla = Club(
       name: 'Aston Villa',
+      nickName: 'AV',
       homeColor: const Color.fromARGB(255, 135, 45, 88),
       awayColor: const Color.fromRGBO(140, 188, 229, 1),
       tactics: Tactics(pressDistance: 15, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    astonVilla.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -228,14 +228,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation4222.positions[index].position
+              ..team = astonVilla
               ..startingPoxXY = formation4222.positions[index].pos);
 
     Club tottenham = Club(
       name: 'Tottenham Hotspur',
+      nickName: 'TOT',
       homeColor: Colors.white,
       awayColor: const Color.fromRGBO(19, 30, 72, 1),
       tactics: Tactics(pressDistance: 10, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    tottenham.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -254,14 +257,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation532.positions[index].position
+              ..team = tottenham
               ..startingPoxXY = formation532.positions[index].pos);
 
     Club newcastle = Club(
       name: 'Newcastle United',
+      nickName: 'NEW',
       homeColor: Colors.black,
       awayColor: Colors.white,
       tactics: Tactics(pressDistance: 35, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    newcastle.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -280,14 +286,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation352.positions[index].position
+              ..team = newcastle
               ..startingPoxXY = formation352.positions[index].pos);
 
     Club manchesterUnited = Club(
       name: 'Manchester United',
+      nickName: 'MU',
       homeColor: Colors.red,
       awayColor: Colors.green[200]!,
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    manchesterUnited.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -306,14 +315,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation4222.positions[index].position
+              ..team = manchesterUnited
               ..startingPoxXY = formation4222.positions[index].pos);
 
     Club westHam = Club(
       name: 'West Ham United',
+      nickName: 'WHU',
       homeColor: const Color.fromARGB(255, 112, 45, 52),
       awayColor: const Color.fromRGBO(179, 110, 70, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    westHam.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -332,14 +344,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation442.positions[index].position
+              ..team = westHam
               ..startingPoxXY = formation442.positions[index].pos);
 
     Club chelsea = Club(
       name: 'Chelsea',
+      nickName: 'CHE',
       homeColor: const Color.fromARGB(255, 0, 27, 123),
       awayColor: const Color.fromRGBO(80, 70, 85, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    chelsea.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -358,14 +373,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation433.positions[index].position
+              ..team = chelsea
               ..startingPoxXY = formation433.positions[index].pos);
 
     Club brighton = Club(
       name: 'Brighton And Hov Albion',
+      nickName: 'BRH',
       homeColor: const Color.fromARGB(255, 0, 77, 152),
       awayColor: const Color.fromRGBO(80, 255, 255, 255),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    brighton.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -384,14 +402,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation3241.positions[index].position
+              ..team = brighton
               ..startingPoxXY = formation3241.positions[index].pos);
 
     Club wolverhampton = Club(
       name: 'Wolverhampton Wanderers',
+      nickName: 'WOV',
       homeColor: const Color.fromARGB(255, 250, 174, 40),
       awayColor: const Color.fromRGBO(27, 27, 27, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    wolverhampton.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -410,14 +431,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation442.positions[index].position
+              ..team = wolverhampton
               ..startingPoxXY = formation442.positions[index].pos);
 
     Club folham = Club(
       name: 'Fulham',
+      nickName: 'FUL',
       homeColor: const Color.fromARGB(255, 15, 15, 15),
       awayColor: const Color.fromRGBO(150, 27, 27, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    folham.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -436,14 +460,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation4141.positions[index].position
+              ..team = folham
               ..startingPoxXY = formation4141.positions[index].pos);
 
     Club bournemouth = Club(
       name: 'Bournemouth',
+      nickName: 'BOU',
       homeColor: const Color.fromARGB(255, 200, 6, 20),
       awayColor: const Color.fromRGBO(120, 120, 120, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    bournemouth.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -462,14 +489,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation4222.positions[index].position
+              ..team = bournemouth
               ..startingPoxXY = formation4222.positions[index].pos);
 
     Club crystalPalace = Club(
       name: 'Crystal Palace',
+      nickName: 'CP',
       homeColor: const Color.fromARGB(255, 15, 45, 115),
       awayColor: const Color.fromRGBO(70, 5, 30, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    crystalPalace.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -488,14 +518,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation352.positions[index].position
+              ..team = crystalPalace
               ..startingPoxXY = formation352.positions[index].pos);
 
     Club brentford = Club(
       name: 'Brentford',
+      nickName: 'BFD',
       homeColor: const Color.fromARGB(255, 180, 0, 15),
       awayColor: const Color.fromRGBO(70, 25, 25, 25),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    brentford.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -514,14 +547,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation41212.positions[index].position
+              ..team = brentford
               ..startingPoxXY = formation41212.positions[index].pos);
 
     Club everton = Club(
       name: 'Everton',
+      nickName: 'EVT',
       homeColor: const Color.fromARGB(255, 0, 60, 140),
       awayColor: const Color.fromRGBO(70, 15, 15, 15),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    everton.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -540,14 +576,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation433.positions[index].position
+              ..team = everton
               ..startingPoxXY = formation433.positions[index].pos);
 
     Club nottingham = Club(
       name: 'Nottingham Forest',
+      nickName: 'NOF',
       homeColor: const Color.fromARGB(255, 230, 35, 55),
       awayColor: const Color.fromRGBO(230, 230, 230, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    nottingham.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -566,14 +605,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation4141.positions[index].position
+              ..team = nottingham
               ..startingPoxXY = formation4141.positions[index].pos);
 
     Club lutonTown = Club(
       name: 'Luton Town',
+      nickName: 'LT',
       homeColor: const Color.fromARGB(255, 130, 130, 110),
       awayColor: const Color.fromRGBO(90, 100, 150, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    lutonTown.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -592,40 +634,40 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation3241.positions[index].position
+              ..team = lutonTown
               ..startingPoxXY = formation3241.positions[index].pos);
 
     Club burnley = Club(
       name: 'Burnley',
+      nickName: 'BUN',
       homeColor: const Color.fromARGB(255, 77, 5, 50),
       awayColor: const Color.fromRGBO(90, 100, 150, 1),
       tactics: Tactics(pressDistance: 5, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    burnley.players = List.generate(
         11,
-        (index) => Player.random(
+        (index) => Player.createCB(
               name: RandomNames(Zone.us).name(),
               backNumber: index,
-              position: formation352.positions[index].position,
               birthDay: DateTime(2002, 03, 01),
               national: National.england,
               min: 50,
               max: 65,
               tactics: Tactics.normal(),
-              stat: Stat.random(
-                position: formation352.positions[index].position,
-                min: 50,
-                max: 65,
-              ),
             )
               ..isStartingPlayer = true
               ..position = formation352.positions[index].position
+              ..team = burnley
               ..startingPoxXY = formation352.positions[index].pos);
 
     Club sheffield = Club(
       name: 'Sheffield United',
+      nickName: 'SHU',
       homeColor: const Color.fromARGB(255, 223, 22, 35),
       awayColor: const Color.fromRGBO(0, 0, 0, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
-    )..players = List.generate(
+    );
+    sheffield.players = List.generate(
         11,
         (index) => Player.random(
               name: RandomNames(Zone.us).name(),
@@ -644,6 +686,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             )
               ..isStartingPlayer = true
               ..position = formation41212.positions[index].position
+              ..team = sheffield
               ..startingPoxXY = formation41212.positions[index].pos);
 
     List<Club> clubs = [
@@ -818,9 +861,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                   child: const Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      SizedBox(width: 180, child: Text('club')),
+                                      SizedBox(width: 50, child: Text('club')),
                                       SizedBox(width: 90, child: Text('name')),
-                                      SizedBox(width: 35, child: Text('bn')),
+                                      SizedBox(width: 55, child: Text('number')),
                                       SizedBox(width: 35, child: Text('ov')),
                                       SizedBox(width: 35, child: Text('goal')),
                                       SizedBox(width: 40, child: Text('assist')),
@@ -841,9 +884,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                             child: Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                SizedBox(width: 180, child: Text(player.team?.name ?? 'none')),
+                                                SizedBox(width: 50, child: Text(player.team?.nickName ?? 'none')),
                                                 SizedBox(width: 90, child: Text(player.name)),
-                                                SizedBox(width: 35, child: Text('${player.backNumber}')),
+                                                SizedBox(width: 55, child: Text('${player.backNumber}')),
                                                 SizedBox(width: 35, child: Text('${player.overall}')),
                                                 SizedBox(width: 35, child: Text('${player.seasonGoal}')),
                                                 SizedBox(width: 40, child: Text('${player.seasonAssist}')),
@@ -896,7 +939,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                             child: Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                SizedBox(width: 200, child: Text(club.name)),
+                                                SizedBox(width: 200, child: Text(club.nickName)),
                                                 SizedBox(width: 35, child: Text('${club.pts}')),
                                                 SizedBox(width: 35, child: Text('${club.won}')),
                                                 SizedBox(width: 35, child: Text('${club.drawn}')),

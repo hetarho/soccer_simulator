@@ -43,6 +43,8 @@ class League {
   List<Player> get topScorers {
     List<Player> allPlayers = clubs.map((e) => e.players).expand((element) => element).toList();
     allPlayers.sort((a, b) => b.seasonGoal - a.seasonGoal > 0 ? 1 : -1);
+
+    print(allPlayers.sublist(0, 10));
     return allPlayers;
   }
 }

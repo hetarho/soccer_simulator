@@ -37,6 +37,15 @@ class Stat {
     return '''TODO''';
   }
 
+  Stat.createCBStat({required int min, required int max}) {
+    stamina = R().getInt(max: max, min: min);
+    strength = R().getInt(max: max + 10, min: min + 10);
+    attSkill = R().getInt(max: max - 20, min: min - 20);
+    passSkill = R().getInt(max: max - 20, min: min - 20);
+    defSkill = R().getInt(max: max + 20, min: min + 20);
+    composure = R().getInt(max: max + 10, min: min + 10);
+  }
+
   Stat.random({
     int min = 15,
     int max = 40,

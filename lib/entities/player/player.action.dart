@@ -1,6 +1,54 @@
 part of 'player.dart';
 
 extension PlayerMove on Player {
+  gameStart({
+    required Fixture fixture,
+    required ClubInFixture team,
+    required ClubInFixture opposite,
+    required Ball ball,
+    required bool isHome,
+  }) {
+    _timer?.cancel();
+    _timer = Timer.periodic(playSpeed, (timer) async {
+      playTime = fixture.playTime;
+      bool teamHasBall = team.club.startPlayers.where((player) => player.hasBall).isNotEmpty;
+      lastAction = null;
+
+      /// 판단력/5 만큼 행동 포인트 적립
+      _actPoint += judgementStat / 10;
+      if (teamHasBall) {
+        attack(team: team, opponent: opposite, ball: ball, fixture: fixture);
+      } else {
+        defend(team: team, opponent: opposite, ball: ball, fixture: fixture);
+      }
+
+      if (lastAction != null) _streamController.add(PlayerActEvent(player: this, action: lastAction!));
+    });
+  }
+
+  gameEnd() {
+    gameRecord.add(PlayerGameRecord(
+      goal: goal,
+      assist: assist,
+      passSuccess: passSuccess,
+      shooting: shooting,
+      defSuccess: defSuccess,
+      saveSuccess: saveSuccess,
+      dribbleSuccess: dribbleSuccess,
+    ));
+    goal = 0;
+    assist = 0;
+    passSuccess = 0;
+    shooting = 0;
+    defSuccess = 0;
+    saveSuccess = 0;
+    dribbleSuccess = 0;
+    _currentStamina = 100;
+    resetPosXY();
+    _growAfterPlay();
+    _timer?.cancel();
+  }
+
   ///상대방의 위치가 특정 포지션을 압박할 수 있는지를 리턴해주는 함수
   bool _isCanPressure(PosXY targetPos, PosXY opponentPos) {
     bool isClosePosX = opponentPos.x < targetPos.x + 20 && opponentPos.x > targetPos.x - 20;

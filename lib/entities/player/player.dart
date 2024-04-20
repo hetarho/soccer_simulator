@@ -71,52 +71,27 @@ class Player extends Member {
     return Duration(milliseconds: (_playSpeed.inMilliseconds * 10 / sqrt(reflex / 2)).round());
   }
 
-  gameStart({
-    required Fixture fixture,
-    required ClubInFixture team,
-    required ClubInFixture opposite,
-    required Ball ball,
-    required bool isHome,
+  Player.createCB({
+    required super.name,
+    required super.birthDay,
+    required super.national,
+    required this.backNumber,
+    this.personalTrainingTypes = const [],
+    this.teamTrainingTypePercent = 0.5,
+    required int min,
+    required int max,
+    Tactics? tactics,
   }) {
-    _timer?.cancel();
-    _timer = Timer.periodic(playSpeed, (timer) async {
-      playTime = fixture.playTime;
-      bool teamHasBall = team.club.startPlayers.where((player) => player.hasBall).isNotEmpty;
-      lastAction = null;
-
-      /// 판단력/5 만큼 행동 포인트 적립
-      _actPoint += judgementStat / 10;
-      if (teamHasBall) {
-        attack(team: team, opponent: opposite, ball: ball, fixture: fixture);
-      } else {
-        defend(team: team, opponent: opposite, ball: ball, fixture: fixture);
-      }
-
-      if (lastAction != null) _streamController.add(PlayerActEvent(player: this, action: lastAction!));
-    });
-  }
-
-  gameEnd() {
-    gameRecord.add(PlayerGameRecord(
-      goal: goal,
-      assist: assist,
-      passSuccess: passSuccess,
-      shooting: shooting,
-      defSuccess: defSuccess,
-      saveSuccess: saveSuccess,
-      dribbleSuccess: dribbleSuccess,
-    ));
-    goal = 0;
-    assist = 0;
-    passSuccess = 0;
-    shooting = 0;
-    defSuccess = 0;
-    saveSuccess = 0;
-    dribbleSuccess = 0;
-    _currentStamina = 100;
-    resetPosXY();
-    _growAfterPlay();
-    _timer?.cancel();
+    height = R().getDouble(min: 180, max: 205);
+    bodyType = R().getBodyType();
+    soccerIQ = R().getInt(min: min, max: max);
+    reflex = R().getInt(min: min, max: max);
+    speed = R().getInt(min: min - 10, max: max - 10);
+    flexibility = R().getInt(min: min - 10, max: max - 10);
+    _potential = R().getInt(min: min, max: max);
+    _stat = Stat.createCBStat(min: min, max: max);
+    _streamController = StreamController<PlayerActEvent>.broadcast();
+    this.tactics = tactics ?? Tactics(pressDistance: 15, freeLevel: PlayerFreeLevel.middle);
   }
 
   Player.random({
@@ -184,13 +159,13 @@ class Player extends Member {
   }
 
   ///등번호
-  final int backNumber;
+  int? backNumber;
 
   ///키
-  late final double height;
+  late double height;
 
   ///체형
-  late final BodyType bodyType;
+  late BodyType bodyType;
 
   ///축구 지능
   late int soccerIQ;
@@ -205,7 +180,7 @@ class Player extends Member {
   late int flexibility;
 
   //선수의 스텟
-  late final Stat _stat;
+  late Stat _stat;
 
   Club? team;
 
