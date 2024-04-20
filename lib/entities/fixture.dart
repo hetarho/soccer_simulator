@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:async/async.dart';
-import 'package:flutter/material.dart';
 import 'package:soccer_simulator/entities/ball.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
@@ -45,7 +44,7 @@ class Fixture {
 
     ///어웨이 유니폼 홈유니폼으로 설정
     ///
-    if (homeDiff < 50) {
+    if (homeDiff < 100) {
       away.club.color = homeDiff > awayDiff ? away.club.homeColor : away.club.awayColor;
     } else {
       away.club.color = away.club.homeColor;
@@ -95,8 +94,7 @@ class Fixture {
     return _playSpeed;
   }
 
-  ///0.01초 = 실제 1초
-  Duration _playSpeed = const Duration(milliseconds: 0);
+  Duration _playSpeed = const Duration(milliseconds: 1);
   final _playTimeAmount = 10;
 
   final Ball _ball = Ball();

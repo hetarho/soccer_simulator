@@ -2,9 +2,10 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/player/vo/player_game_record.dart';
-import 'package:soccer_simulator/entities/tactics.dart';
+import 'package:soccer_simulator/entities/tactics/tactics.dart';
 import 'package:soccer_simulator/enum/player_action.dart';
 import 'package:soccer_simulator/utils/math.dart';
 import 'package:uuid/uuid.dart';
@@ -57,7 +58,7 @@ class Player extends Member {
 
   bool isPlaying = false;
   Timer? _timer; // Timer 인스턴스를 저장할 변수
-  Duration _playSpeed = const Duration(milliseconds: 0);
+  Duration _playSpeed = const Duration(milliseconds: 1);
 
   ///현재 경기 시간
   Duration playTime = const Duration(seconds: 0);
@@ -67,7 +68,7 @@ class Player extends Member {
   }
 
   Duration get playSpeed {
-    return Duration(milliseconds: (_playSpeed.inMilliseconds * 10 / sqrt(reflex)).round());
+    return Duration(milliseconds: (_playSpeed.inMilliseconds * 10 / sqrt(reflex / 2)).round());
   }
 
   gameStart({
@@ -96,7 +97,25 @@ class Player extends Member {
   }
 
   gameEnd() {
-    posXY = startingPoxXY;
+    gameRecord.add(PlayerGameRecord(
+      goal: goal,
+      assist: assist,
+      passSuccess: passSuccess,
+      shooting: shooting,
+      defSuccess: defSuccess,
+      saveSuccess: saveSuccess,
+      dribbleSuccess: dribbleSuccess,
+    ));
+    goal = 0;
+    assist = 0;
+    passSuccess = 0;
+    shooting = 0;
+    defSuccess = 0;
+    saveSuccess = 0;
+    dribbleSuccess = 0;
+    _currentStamina = 100;
+    resetPosXY();
+    _growAfterPlay();
     _timer?.cancel();
   }
 
@@ -129,7 +148,7 @@ class Player extends Member {
     _potential = potential ?? R().getInt(min: min ?? 30, max: max ?? 120);
     _stat = stat ?? Stat.random(position: position);
     _streamController = StreamController<PlayerActEvent>.broadcast();
-    this.tactics = tactics ?? Tactics(pressDistance: 15);
+    this.tactics = tactics ?? Tactics(pressDistance: 15, freeLevel: PlayerFreeLevel.middle);
   }
 
   final String id = const Uuid().v4();
@@ -187,6 +206,8 @@ class Player extends Member {
 
   //선수의 스텟
   late final Stat _stat;
+
+  Club? team;
 
   ///선수의 개인 전술
   Tactics? tactics;
@@ -266,28 +287,6 @@ class Player extends Member {
 
   void resetPosXY() {
     posXY = startingPoxXY;
-  }
-
-  void gamePlayed() {
-    gameRecord.add(PlayerGameRecord(
-      goal: goal,
-      assist: assist,
-      passSuccess: passSuccess,
-      shooting: shooting,
-      defSuccess: defSuccess,
-      saveSuccess: saveSuccess,
-      dribbleSuccess: dribbleSuccess,
-    ));
-    goal = 0;
-    assist = 0;
-    passSuccess = 0;
-    shooting = 0;
-    defSuccess = 0;
-    saveSuccess = 0;
-    dribbleSuccess = 0;
-    _currentStamina = 100;
-    resetPosXY();
-    _growAfterPlay();
   }
 
   ///현재 공을 가지고 있는지 여부

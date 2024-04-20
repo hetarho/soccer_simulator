@@ -27,14 +27,23 @@ class League {
     if (_currentSeason.currentRound.isAllGameEnd) _currentSeason.nextRound();
   }
 
-  getTopScorers(int length) {
+  List<Club> get table {
+    clubs.sort((a, b) {
+      if (a.pts != b.pts) {
+        return b.pts - a.pts;
+      } else if (a.gd != b.gd) {
+        return b.gd - a.gd;
+      } else {
+        return b.gf - a.gf;
+      }
+    });
+    return clubs;
+  }
+
+  List<Player> get topScorers {
     List<Player> allPlayers = clubs.map((e) => e.players).expand((element) => element).toList();
-
     allPlayers.sort((a, b) => b.seasonGoal - a.seasonGoal > 0 ? 1 : -1);
-
-    print(allPlayers);
-
-    return allPlayers.sublist(0, length);
+    return allPlayers;
   }
 }
 
