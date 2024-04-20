@@ -3,12 +3,14 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:async/async.dart';
+import 'package:flutter/material.dart';
 import 'package:soccer_simulator/entities/ball.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
 import 'package:soccer_simulator/enum/player_action.dart';
+import 'package:soccer_simulator/utils/color.dart';
 
 class Fixture {
   Fixture({required this.home, required this.away}) {
@@ -32,6 +34,22 @@ class Fixture {
         ));
       }
     });
+  }
+
+  ready() {
+    ///홈팀 유니폼 홈유니폼으로 설정
+    home.club.color = home.club.homeColor;
+
+    double homeDiff = C().colorDifference(home.club.homeColor, away.club.homeColor);
+    double awayDiff = C().colorDifference(home.club.homeColor, away.club.awayColor);
+
+    ///어웨이 유니폼 홈유니폼으로 설정
+    ///
+    if (homeDiff < 50) {
+      away.club.color = homeDiff > awayDiff ? away.club.homeColor : away.club.awayColor;
+    } else {
+      away.club.color = away.club.homeColor;
+    }
   }
 
   Fixture.empty() {

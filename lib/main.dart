@@ -1,25 +1,20 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:random_name_generator/random_name_generator.dart';
+import 'package:soccer_simulator/data/league/epl.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/league.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
-import 'package:soccer_simulator/entities/stat.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
-import 'package:soccer_simulator/entities/tactics.dart';
-import 'package:soccer_simulator/enum/national.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';
 import 'package:soccer_simulator/router/routes.dart';
-import 'package:soccer_simulator/utils/random.dart';
+import 'package:soccer_simulator/utils/color.dart';
 
 void main() {
   runApp(
@@ -72,7 +67,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   late Stream<FixtureRecord> _roundStream;
   StreamSubscription<FixtureRecord>? _roundSubscription;
   int _finishedFixtureNum = 0;
-  bool _showFixtures = false;
+  bool _showFixtures = true;
   bool _showLeagueTable = false;
   bool _showTopScorerTable = false;
   List<Player> _topScorer = [];
@@ -84,157 +79,37 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 
   init() {
-    Formation formation433 = Formation(positions: [
-      PositionInFormation(pos: PosXY(25, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(50, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(75, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(25, 60), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(50, 60), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(75, 60), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(15, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(40, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(60, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(85, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
-    ]);
-
-    Formation formation442 = Formation(positions: [
-      PositionInFormation(pos: PosXY(35, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(65, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(15, 60), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(40, 60), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(60, 60), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(85, 60), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(15, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(40, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(60, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(85, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
-    ]);
-
-    Formation formation41212 = Formation(positions: [
-      PositionInFormation(pos: PosXY(35, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(65, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(50, 75), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(35, 60), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(65, 60), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(50, 45), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(15, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(40, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(60, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(85, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
-    ]);
-    Formation formation4222 = Formation(positions: [
-      PositionInFormation(pos: PosXY(40, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(60, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(15, 70), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(85, 70), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(40, 50), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(60, 50), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(15, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(40, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(60, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(85, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
-    ]);
-    Formation formation4141 = Formation(positions: [
-      PositionInFormation(pos: PosXY(50, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(15, 70), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(40, 70), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(60, 70), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(85, 70), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(50, 50), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(15, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(40, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(60, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(85, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
-    ]);
-    Formation formation352 = Formation(positions: [
-      PositionInFormation(pos: PosXY(40, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(60, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(10, 65), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(30, 65), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(50, 65), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(70, 65), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(90, 65), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(30, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(50, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(70, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
-    ]);
-    Formation formation532 = Formation(positions: [
-      PositionInFormation(pos: PosXY(40, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(60, 90), position: Position.forward),
-      PositionInFormation(pos: PosXY(30, 65), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(50, 65), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(70, 65), position: Position.midfielder),
-      PositionInFormation(pos: PosXY(10, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(30, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(50, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(70, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(90, 30), position: Position.defender),
-      PositionInFormation(pos: PosXY(50, 0), position: Position.goalKeeper),
-    ]);
-
-    List<Formation> formations = [formation433, formation442, formation41212, formation4222, formation4141, formation352];
-
-    List<int> specialTest = [0, 8, 7, 9];
-    Club arsenal = Club(name: 'Arsenal', color: Colors.red, tactics: Tactics(pressDistance: 25))
-      ..players = List.generate(
-          11,
-          (index) => Player.random(
-                name: RandomNames(Zone.us).name(),
-                backNumber: index,
-                position: formation433.positions[index].position,
-                reflex: specialTest.contains(index) ? 120 : null,
-                speed: specialTest.contains(index) ? 120 : null,
-                soccerIQ: specialTest.contains(index) ? 120 : null,
-                birthDay: DateTime(2002, 03, 01),
-                national: National.england,
-                min: specialTest.contains(index) ? 160 : 70,
-                max: specialTest.contains(index) ? 180 : 100,
-                tactics: Tactics.normal(),
-                stat: Stat.random(
-                  position: formation433.positions[index].position,
-                  min: specialTest.contains(index) ? 160 : 70,
-                  max: specialTest.contains(index) ? 180 : 100,
-                ),
-              )
-                ..isStartingPlayer = true
-                ..position = formation433.positions[index].position
-                ..startingPoxXY = formation433.positions[index].pos);
-    List<Club> clubs = List.generate(19, (idx) {
-      formations.shuffle();
-      Formation formation = formations.first;
-      return Club(
-          name: RandomNames(Zone.germany).manName(),
-          tactics: Tactics(pressDistance: R().getDouble(min: 10, max: 40)),
-          color: Color.fromRGBO(
-            Random().nextInt(200) + 55,
-            Random().nextInt(200) + 55,
-            Random().nextInt(200) + 55,
-            1,
-          ))
-        ..players = List.generate(
-            11,
-            (index) => Player.random(
-                  name: RandomNames(Zone.us).manFullName(),
-                  position: formation.positions[index].position,
-                  backNumber: index,
-                  birthDay: DateTime(2002, 03, 01),
-                  national: National.england,
-                  min: 50 + idx * 3,
-                  max: 70 + idx * 3,
-                  stat: Stat.random(position: formation.positions[index].position, min: 50 + idx * 3, max: 100 + idx * 3),
-                )
-                  ..isStartingPlayer = true
-                  ..position = formation.positions[index].position
-                  ..startingPoxXY = formation.positions[index].pos);
-    })
-      ..add(arsenal);
-    _league = League(clubs: clubs);
+    // List<Club> clubs = List.generate(18, (idx) {
+    //   allFormations.shuffle();
+    //   Formation formation = allFormations.first;
+    //   return Club(
+    //       name: RandomNames(Zone.germany).manName(),
+    //       tactics: Tactics(pressDistance: R().getDouble(min: 10, max: 40)),
+    //       color: Color.fromRGBO(
+    //         Random().nextInt(200) + 55,
+    //         Random().nextInt(200) + 55,
+    //         Random().nextInt(200) + 55,
+    //         1,
+    //       ))
+    //     ..players = List.generate(
+    //         11,
+    //         (index) => Player.random(
+    //               name: RandomNames(Zone.us).manFullName(),
+    //               position: formation.positions[index].position,
+    //               backNumber: index,
+    //               birthDay: DateTime(2002, 03, 01),
+    //               national: National.england,
+    //               min: 50 + idx * 3,
+    //               max: 70 + idx * 3,
+    //               stat: Stat.random(position: formation.positions[index].position, min: 50 + idx * 3, max: 100 + idx * 3),
+    //             )
+    //               ..isStartingPlayer = true
+    //               ..position = formation.positions[index].position
+    //               ..startingPoxXY = formation.positions[index].pos);
+    // })
+    //   ..add(manchesterCity)
+    //   ..add(arsenal);
+    _league = epl;
     _league.startNewSeason();
     _isAutoPlay = false;
     _initFixture();
@@ -242,6 +117,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   _initFixture() {
     _fixtures = _league.getNextFixtures();
+    for (var fixture in _fixtures) {
+      fixture.ready();
+    }
     _roundStream = StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
 
     _roundSubscription?.cancel();
@@ -254,6 +132,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           _autoPlaying();
         }
       }
+      if (mounted) setState(() {});
     });
 
     if (mounted) setState(() {});
@@ -379,18 +258,24 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           padding: const EdgeInsets.all(20),
                           child: Column(
                             children: [
-                              const Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(width: 60, child: Text('name')),
-                                  SizedBox(width: 40, child: Text('pts')),
-                                  SizedBox(width: 40, child: Text('win')),
-                                  SizedBox(width: 40, child: Text('draw')),
-                                  SizedBox(width: 40, child: Text('lose')),
-                                  SizedBox(width: 40, child: Text('gf')),
-                                  SizedBox(width: 40, child: Text('ga')),
-                                  SizedBox(width: 40, child: Text('gd')),
-                                ],
+                              Container(
+                                decoration: const BoxDecoration(
+                                    border: Border(
+                                  bottom: BorderSide(color: Colors.black),
+                                )),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SizedBox(width: 200, child: Text('name')),
+                                    SizedBox(width: 35, child: Text('pts')),
+                                    SizedBox(width: 35, child: Text('win')),
+                                    SizedBox(width: 35, child: Text('draw')),
+                                    SizedBox(width: 35, child: Text('lose')),
+                                    SizedBox(width: 35, child: Text('gf')),
+                                    SizedBox(width: 35, child: Text('ga')),
+                                    SizedBox(width: 35, child: Text('gd')),
+                                  ],
+                                ),
                               ),
                               ...[..._league.clubs..sort((a, b) => b.pts - a.pts)]
                                   .map((club) => GestureDetector(
@@ -398,18 +283,24 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                           ref.read(playerListProvider.notifier).state = club.startPlayers;
                                           context.push('/players');
                                         },
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            SizedBox(width: 60, child: Text(club.name)),
-                                            SizedBox(width: 30, child: Text('${club.pts}')),
-                                            SizedBox(width: 40, child: Text('${club.won}')),
-                                            SizedBox(width: 40, child: Text('${club.drawn}')),
-                                            SizedBox(width: 40, child: Text('${club.lost}')),
-                                            SizedBox(width: 40, child: Text('${club.gf}')),
-                                            SizedBox(width: 40, child: Text('${club.ga}')),
-                                            SizedBox(width: 40, child: Text('${club.gd}')),
-                                          ],
+                                        child: Container(
+                                          decoration: const BoxDecoration(
+                                              border: Border(
+                                            bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
+                                          )),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              SizedBox(width: 200, child: Text(club.name)),
+                                              SizedBox(width: 35, child: Text('${club.pts}')),
+                                              SizedBox(width: 35, child: Text('${club.won}')),
+                                              SizedBox(width: 35, child: Text('${club.drawn}')),
+                                              SizedBox(width: 35, child: Text('${club.lost}')),
+                                              SizedBox(width: 35, child: Text('${club.gf}')),
+                                              SizedBox(width: 35, child: Text('${club.ga}')),
+                                              SizedBox(width: 35, child: Text('${club.gd}')),
+                                            ],
+                                          ),
                                         ),
                                       ))
                                   .toList()
@@ -417,14 +308,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           ),
                         ),
                       const SizedBox(height: 8),
-                      ...[..._league.seasons.last.rounds..sort((a, b) => a.number - b.number)]
-                          .map((round) => round.fixtures)
-                          .expand((list) => list)
-                          .where((fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
-                          .map((fixture) => FixtureInfo(
-                                fixture: fixture,
-                                showWDL: false,
-                              )),
+                      // ...[..._league.seasons.last.rounds..sort((a, b) => a.number - b.number)]
+                      //     .map((round) => round.fixtures)
+                      //     .expand((list) => list)
+                      //     .where((fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
+                      //     .map((fixture) => FixtureInfo(
+                      //           fixture: fixture,
+                      //           showWDL: false,
+                      //         )),
                       const SizedBox(height: 8),
                     ],
                   ),
@@ -445,13 +336,24 @@ class ClubInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextStyle textStyle = TextStyle(
+      color: C().colorDifference(Colors.black, club.homeColor) < C().colorDifference(Colors.white, club.homeColor) ? Colors.white : Colors.black,
+    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('${club.name} ${club.attOverall}/${club.midOverall}/${club.defOverall}'),
+        Text(
+          '${club.name} ${club.attOverall}/${club.midOverall}/${club.defOverall}',
+          style: textStyle,
+        ),
         if (showWDL)
           Row(
-            children: [Text('${club.won}/${club.drawn}/${club.lost}')],
+            children: [
+              Text(
+                '${club.won}/${club.drawn}/${club.lost}',
+                style: textStyle,
+              )
+            ],
           )
       ],
     );
@@ -520,30 +422,21 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
                 Container(
                   color: _bgColor?.withOpacity(0.7),
                 ),
+                // const Center(child: Text('vs')),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GestureDetector(
-                        onTap: () {
-                          // ref.read(selectedClubProvider.notifier).state = widget.fixture.home.club;
-                          // widget.fixture.gameStart();
-                        },
-                        child: ClubInfo(
-                          club: widget.fixture.home.club,
-                          showWDL: widget.showWDL,
-                        )),
+                    ClubInfo(
+                      club: widget.fixture.home.club,
+                      showWDL: widget.showWDL,
+                    ),
                     Text('${widget.fixture.home.goal}'),
                     const Text('vs'),
                     Text('${widget.fixture.away.goal}'),
-                    GestureDetector(
-                        onTap: () {
-                          // ref.read(selectedClubProvider.notifier).state = widget.fixture.away.club;
-                          // widget.fixture.gameStart();
-                        },
-                        child: ClubInfo(
-                          club: widget.fixture.away.club,
-                          showWDL: widget.showWDL,
-                        )),
+                    ClubInfo(
+                      club: widget.fixture.away.club,
+                      showWDL: widget.showWDL,
+                    ),
                   ],
                 ),
               ],

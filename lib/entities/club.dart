@@ -9,17 +9,25 @@ import 'package:soccer_simulator/entities/player/player.dart';
 class Club {
   Club({
     required this.name,
-    required this.color,
+    required this.homeColor,
+    required this.awayColor,
     Tactics? tactics,
   }) {
     this.tactics = tactics ?? Tactics.normal();
+    color = homeColor;
   }
 
-  Club.empty({this.name = '', this.color = Colors.black});
+  Club.empty({
+    this.name = '',
+    this.homeColor = Colors.black,
+    this.awayColor = Colors.black,
+  });
 
   final String id = const Uuid().v4();
   final String name;
-  final Color color;
+  late Color color;
+  final Color homeColor;
+  final Color awayColor;
   late Tactics tactics;
 
   bool hasBall = false;
