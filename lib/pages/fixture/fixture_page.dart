@@ -66,9 +66,8 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('${fixture.home.goal}'),
                       const SizedBox(width: 4),
-                      Text('${fixture.home.club.name}(${fixture.home.club.overall}/${fixture.home.club.tactics.pressDistance.toStringAsFixed(1)})'),
+                      Text(fixture.home.club.name),
                       const SizedBox(width: 4),
                       Text('${fixture.homeBallPercent}%'),
                       const SizedBox(width: 16),
@@ -76,7 +75,26 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       const SizedBox(width: 16),
                       Text('${fixture.awayBallPercent}%'),
                       const SizedBox(width: 4),
-                      Text('${fixture.away.club.name}(${fixture.away.club.overall}/${fixture.away.club.tactics.pressDistance.toStringAsFixed(1)})'),
+                      Text(fixture.away.club.name),
+                      const SizedBox(width: 4),
+                    ],
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('${fixture.home.goal}'),
+                      const SizedBox(width: 4),
+                      Text(
+                          '(${fixture.home.club.overall}/${fixture.home.club.tactics.pressDistance.toStringAsFixed(1)})'),
+                      const SizedBox(width: 4),
+                      Text('${fixture.homeBallPercent}%'),
+                      const SizedBox(width: 16),
+                      const Text('vs'),
+                      const SizedBox(width: 16),
+                      Text('${fixture.awayBallPercent}%'),
+                      const SizedBox(width: 4),
+                      Text(
+                          '(${fixture.away.club.overall}/${fixture.away.club.tactics.pressDistance.toStringAsFixed(1)})'),
                       const SizedBox(width: 4),
                       Text('${fixture.away.goal}'),
                     ],
@@ -162,8 +180,12 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                             AnimatedPositioned(
                               duration: Duration(milliseconds: (_ballAnimationSpeed).round()),
                               curve: Curves.decelerate,
-                              top: fixture.isHomeTeamBall ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2) : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
-                              left: fixture.isHomeTeamBall ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10 : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
+                              top: fixture.isHomeTeamBall
+                                  ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)
+                                  : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
+                              left: fixture.isHomeTeamBall
+                                  ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10
+                                  : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
                               child: Container(
                                 width: ballSize,
                                 height: ballSize,
@@ -335,7 +357,9 @@ class PlayerWidget extends StatelessWidget {
       decoration: BoxDecoration(
         border: player.hasBall
             ? Border.all(
-                color: C().colorDifference(Colors.black, color) < C().colorDifference(Colors.white, color) ? Colors.white : Colors.black,
+                color: C().colorDifference(Colors.black, color) < C().colorDifference(Colors.white, color)
+                    ? Colors.white
+                    : Colors.black,
                 width: 4,
               )
             : null,
@@ -346,7 +370,9 @@ class PlayerWidget extends StatelessWidget {
         child: Text(
           '${player.backNumber}',
           style: TextStyle(
-            color: C().colorDifference(Colors.black, color) < C().colorDifference(Colors.white, color) ? Colors.white : Colors.black,
+            color: C().colorDifference(Colors.black, color) < C().colorDifference(Colors.white, color)
+                ? Colors.white
+                : Colors.black,
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),

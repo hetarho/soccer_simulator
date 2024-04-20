@@ -123,10 +123,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     _roundStream = StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
 
     _roundSubscription?.cancel();
-    _roundSubscription = _roundStream.listen((event) {
-      if (event.time.inMinutes >= 90 && _isAutoPlay) {
+    _roundSubscription = _roundStream.listen((event) async {
+      if (event.isGameEnd && _isAutoPlay) {
         _finishedFixtureNum++;
         if (_finishedFixtureNum == 10) {
+          await Future.delayed(Duration(seconds: 0));
           _finishedFixtureNum = 0;
           _league.nextRound();
           _autoPlaying();
@@ -199,13 +200,13 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       if (_showTopScorerTable) _topScorer = _league.getTopScorers(20);
                     });
                   },
-                  child: const Text('test')),
-              // ElevatedButton(
-              //   onPressed: () async {
-              //     _autoPlaying();
-              //   },
-              //   child: const Text('한 시즌 자동 재생'),
-              // ),
+                  child: const Text('득점')),
+              ElevatedButton(
+                onPressed: () async {
+                  _autoPlaying();
+                },
+                child: const Text('자동'),
+              ),
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -243,68 +244,117 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           ),
                         ),
                       if (_showTopScorerTable)
-                        Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            children: _topScorer
-                                .map((player) => Row(
-                                      children: [Text('${player.name}(${player.overall})${player.seasonGoal}')],
-                                    ))
-                                .toList(),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              children: [
+                                Container(
+                                  decoration: const BoxDecoration(
+                                      border: Border(
+                                    bottom: BorderSide(color: Colors.black),
+                                  )),
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SizedBox(width: 200, child: Text('club')),
+                                      SizedBox(width: 100, child: Text('name')),
+                                      SizedBox(width: 35, child: Text('bn')),
+                                      SizedBox(width: 35, child: Text('ov')),
+                                      SizedBox(width: 35, child: Text('goal')),
+                                    ],
+                                  ),
+                                ),
+                                ..._topScorer
+                                    .map((player) => GestureDetector(
+                                          onTap: () {
+                                            ref.read(playerProvider.notifier).state = player;
+                                            context.push('/players/detail');
+                                          },
+                                          child: Container(
+                                            decoration: const BoxDecoration(
+                                                border: Border(
+                                              bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
+                                            )),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                SizedBox(
+                                                    width: 200,
+                                                    child: Text(_league.clubs
+                                                        .where((club) =>
+                                                            club.players.where((p) => p.id == player.id).isNotEmpty)
+                                                        .first
+                                                        .name)),
+                                                SizedBox(width: 100, child: Text(player.name)),
+                                                SizedBox(width: 35, child: Text('${player.backNumber}')),
+                                                SizedBox(width: 35, child: Text('${player.overall}')),
+                                                SizedBox(width: 35, child: Text('${player.seasonGoal}')),
+                                              ],
+                                            ),
+                                          ),
+                                        ))
+                                    .toList()
+                              ],
+                            ),
                           ),
                         ),
                       if (_showLeagueTable)
-                        Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            children: [
-                              Container(
-                                decoration: const BoxDecoration(
-                                    border: Border(
-                                  bottom: BorderSide(color: Colors.black),
-                                )),
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(width: 200, child: Text('name')),
-                                    SizedBox(width: 35, child: Text('pts')),
-                                    SizedBox(width: 35, child: Text('win')),
-                                    SizedBox(width: 35, child: Text('draw')),
-                                    SizedBox(width: 35, child: Text('lose')),
-                                    SizedBox(width: 35, child: Text('gf')),
-                                    SizedBox(width: 35, child: Text('ga')),
-                                    SizedBox(width: 35, child: Text('gd')),
-                                  ],
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              children: [
+                                Container(
+                                  decoration: const BoxDecoration(
+                                      border: Border(
+                                    bottom: BorderSide(color: Colors.black),
+                                  )),
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SizedBox(width: 200, child: Text('name')),
+                                      SizedBox(width: 35, child: Text('pts')),
+                                      SizedBox(width: 35, child: Text('win')),
+                                      SizedBox(width: 35, child: Text('draw')),
+                                      SizedBox(width: 35, child: Text('lose')),
+                                      SizedBox(width: 35, child: Text('gf')),
+                                      SizedBox(width: 35, child: Text('ga')),
+                                      SizedBox(width: 35, child: Text('gd')),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              ...[..._league.clubs..sort((a, b) => b.pts - a.pts)]
-                                  .map((club) => GestureDetector(
-                                        onTap: () {
-                                          ref.read(playerListProvider.notifier).state = club.startPlayers;
-                                          context.push('/players');
-                                        },
-                                        child: Container(
-                                          decoration: const BoxDecoration(
-                                              border: Border(
-                                            bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
-                                          )),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              SizedBox(width: 200, child: Text(club.name)),
-                                              SizedBox(width: 35, child: Text('${club.pts}')),
-                                              SizedBox(width: 35, child: Text('${club.won}')),
-                                              SizedBox(width: 35, child: Text('${club.drawn}')),
-                                              SizedBox(width: 35, child: Text('${club.lost}')),
-                                              SizedBox(width: 35, child: Text('${club.gf}')),
-                                              SizedBox(width: 35, child: Text('${club.ga}')),
-                                              SizedBox(width: 35, child: Text('${club.gd}')),
-                                            ],
+                                ...[..._league.clubs..sort((a, b) => b.pts - a.pts)]
+                                    .map((club) => GestureDetector(
+                                          onTap: () {
+                                            ref.read(playerListProvider.notifier).state = club.startPlayers;
+                                            context.push('/players');
+                                          },
+                                          child: Container(
+                                            decoration: const BoxDecoration(
+                                                border: Border(
+                                              bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
+                                            )),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                SizedBox(width: 200, child: Text(club.name)),
+                                                SizedBox(width: 35, child: Text('${club.pts}')),
+                                                SizedBox(width: 35, child: Text('${club.won}')),
+                                                SizedBox(width: 35, child: Text('${club.drawn}')),
+                                                SizedBox(width: 35, child: Text('${club.lost}')),
+                                                SizedBox(width: 35, child: Text('${club.gf}')),
+                                                SizedBox(width: 35, child: Text('${club.ga}')),
+                                                SizedBox(width: 35, child: Text('${club.gd}')),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ))
-                                  .toList()
-                            ],
+                                        ))
+                                    .toList()
+                              ],
+                            ),
                           ),
                         ),
                       const SizedBox(height: 8),
@@ -337,25 +387,26 @@ class ClubInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = TextStyle(
-      color: C().colorDifference(Colors.black, club.homeColor) < C().colorDifference(Colors.white, club.homeColor) ? Colors.white : Colors.black,
+      color: C().colorDifference(Colors.black, club.homeColor) < C().colorDifference(Colors.white, club.homeColor)
+          ? Colors.white
+          : Colors.black,
     );
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '${club.name} ${club.attOverall}/${club.midOverall}/${club.defOverall}',
-          style: textStyle,
-        ),
-        if (showWDL)
-          Row(
-            children: [
-              Text(
-                '${club.won}/${club.drawn}/${club.lost}',
-                style: textStyle,
-              )
-            ],
-          )
-      ],
+    return Container(
+      width: 120,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '${club.name} ',
+            style: textStyle,
+          ),
+          if (showWDL)
+            Text(
+              '${club.won}/${club.drawn}/${club.lost}',
+              style: textStyle,
+            )
+        ],
+      ),
     );
   }
 }
@@ -407,12 +458,16 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
                       children: [
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          width: constraints.maxWidth * ((widget.fixture.home.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          width: constraints.maxWidth *
+                              ((widget.fixture.home.goal + 1) /
+                                  (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
                           color: widget.fixture.home.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
                         ),
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          width: constraints.maxWidth * ((widget.fixture.away.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          width: constraints.maxWidth *
+                              ((widget.fixture.away.goal + 1) /
+                                  (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
                           color: widget.fixture.away.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
                         ),
                       ],
@@ -424,15 +479,16 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
                 ),
                 // const Center(child: Text('vs')),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ClubInfo(
                       club: widget.fixture.home.club,
                       showWDL: widget.showWDL,
                     ),
+                    Expanded(child: Container()),
                     Text('${widget.fixture.home.goal}'),
                     const Text('vs'),
                     Text('${widget.fixture.away.goal}'),
+                    Expanded(child: Container()),
                     ClubInfo(
                       club: widget.fixture.away.club,
                       showWDL: widget.showWDL,

@@ -14,12 +14,13 @@ import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/stat.dart';
 import 'package:soccer_simulator/entities/tactics.dart';
 import 'package:soccer_simulator/enum/national.dart';
+import 'package:soccer_simulator/utils/random.dart';
 
 Club arsenal = Club(
   name: 'Arsenal',
   homeColor: Colors.red,
   awayColor: Colors.yellow,
-  tactics: Tactics(pressDistance: 25),
+  tactics: Tactics(pressDistance: 30),
 )..players = List.generate(
     11,
     (index) => Player.random(
@@ -29,12 +30,12 @@ Club arsenal = Club(
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
           min: 80,
-          max: 130,
+          max: 135,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation433.positions[index].position,
             min: 80,
-            max: 130,
+            max: 135,
           ),
         )
           ..isStartingPlayer = true
@@ -59,6 +60,7 @@ Club manchesterCity = Club(
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation433.positions[index].position,
+            passSkill: 110 + R().getInt(max: 10),
             min: 100,
             max: 110,
           ),
@@ -71,7 +73,7 @@ Club liverfpool = Club(
   name: 'liverpool',
   homeColor: Colors.red[800]!,
   awayColor: Colors.blue[900]!,
-  tactics: Tactics(pressDistance: 25),
+  tactics: Tactics(pressDistance: 40),
 )..players = List.generate(
     11,
     (index) => Player.random(
@@ -80,13 +82,13 @@ Club liverfpool = Club(
           position: formation433.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 80,
-          max: 120,
-          tactics: Tactics.normal(),
+          min: 70,
+          max: 140,
+          tactics: Tactics(pressDistance: 5),
           stat: Stat.random(
             position: formation433.positions[index].position,
-            min: 80,
-            max: 120,
+            min: 70,
+            max: 140,
           ),
         )
           ..isStartingPlayer = true
@@ -97,7 +99,7 @@ Club astonVilla = Club(
   name: 'Aston Villa',
   homeColor: const Color.fromARGB(255, 135, 45, 88),
   awayColor: const Color.fromRGBO(140, 188, 229, 1),
-  tactics: Tactics(pressDistance: 25),
+  tactics: Tactics(pressDistance: 15),
 )..players = List.generate(
     11,
     (index) => Player.random(
@@ -106,13 +108,13 @@ Club astonVilla = Club(
           position: formation4222.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 70,
-          max: 100,
+          min: 60,
+          max: 105,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation4222.positions[index].position,
-            min: 70,
-            max: 100,
+            min: 60,
+            max: 105,
           ),
         )
           ..isStartingPlayer = true
@@ -123,7 +125,7 @@ Club tottenham = Club(
   name: 'Tottenham Hotspur',
   homeColor: Colors.white,
   awayColor: const Color.fromRGBO(19, 30, 72, 1),
-  tactics: Tactics(pressDistance: 25),
+  tactics: Tactics(pressDistance: 10),
 )..players = List.generate(
     11,
     (index) => Player.random(
@@ -132,12 +134,12 @@ Club tottenham = Club(
           position: formation532.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 70,
+          min: 65,
           max: 95,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation532.positions[index].position,
-            min: 70,
+            min: 65,
             max: 95,
           ),
         )
@@ -149,7 +151,7 @@ Club newcastle = Club(
   name: 'Newcastle United',
   homeColor: Colors.black,
   awayColor: Colors.white,
-  tactics: Tactics(pressDistance: 25),
+  tactics: Tactics(pressDistance: 35),
 )..players = List.generate(
     11,
     (index) => Player.random(
@@ -158,12 +160,12 @@ Club newcastle = Club(
           position: formation352.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 90,
+          min: 80,
           max: 120,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation352.positions[index].position,
-            min: 90,
+            min: 80,
             max: 120,
           ),
         )
@@ -185,12 +187,12 @@ Club manchesterUnited = Club(
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
           min: 70,
-          max: 90,
+          max: 80,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation4222.positions[index].position,
             min: 70,
-            max: 90,
+            max: 80,
           ),
         )
           ..isStartingPlayer = true
@@ -236,12 +238,12 @@ Club chelsea = Club(
           position: formation433.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 50,
+          min: 60,
           max: 90,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation433.positions[index].position,
-            min: 50,
+            min: 60,
             max: 90,
           ),
         )
@@ -262,12 +264,12 @@ Club brighton = Club(
           position: formation3241.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 50,
+          min: 55,
           max: 85,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation3241.positions[index].position,
-            min: 50,
+            min: 55,
             max: 85,
           ),
         )
@@ -288,12 +290,12 @@ Club wolverhampton = Club(
           position: formation442.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 50,
+          min: 55,
           max: 80,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation442.positions[index].position,
-            min: 50,
+            min: 55,
             max: 80,
           ),
         )
@@ -314,12 +316,12 @@ Club folham = Club(
           position: formation4141.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 50,
+          min: 55,
           max: 75,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation4141.positions[index].position,
-            min: 50,
+            min: 55,
             max: 75,
           ),
         )
@@ -340,12 +342,12 @@ Club bournemouth = Club(
           position: formation4222.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 50,
+          min: 55,
           max: 70,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation4222.positions[index].position,
-            min: 50,
+            min: 55,
             max: 70,
           ),
         )
@@ -366,12 +368,12 @@ Club crystalPalace = Club(
           position: formation352.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 50,
+          min: 55,
           max: 70,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation352.positions[index].position,
-            min: 50,
+            min: 55,
             max: 70,
           ),
         )
@@ -392,12 +394,12 @@ Club brentford = Club(
           position: formation41212.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 50,
+          min: 55,
           max: 70,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation41212.positions[index].position,
-            min: 50,
+            min: 55,
             max: 70,
           ),
         )
@@ -418,12 +420,12 @@ Club everton = Club(
           position: formation433.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 45,
+          min: 50,
           max: 70,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation433.positions[index].position,
-            min: 45,
+            min: 50,
             max: 70,
           ),
         )
@@ -444,12 +446,12 @@ Club nottingham = Club(
           position: formation4141.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 45,
+          min: 50,
           max: 65,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation4141.positions[index].position,
-            min: 45,
+            min: 50,
             max: 65,
           ),
         )
@@ -470,12 +472,12 @@ Club lutonTown = Club(
           position: formation3241.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 45,
+          min: 50,
           max: 65,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation3241.positions[index].position,
-            min: 45,
+            min: 50,
             max: 65,
           ),
         )
@@ -487,7 +489,7 @@ Club burnley = Club(
   name: 'Burnley',
   homeColor: const Color.fromARGB(255, 77, 5, 50),
   awayColor: const Color.fromRGBO(90, 100, 150, 1),
-  tactics: Tactics(pressDistance: 25),
+  tactics: Tactics(pressDistance: 5),
 )..players = List.generate(
     11,
     (index) => Player.random(
@@ -496,12 +498,12 @@ Club burnley = Club(
           position: formation352.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 45,
+          min: 50,
           max: 65,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation352.positions[index].position,
-            min: 45,
+            min: 50,
             max: 65,
           ),
         )
@@ -522,12 +524,12 @@ Club sheffield = Club(
           position: formation41212.positions[index].position,
           birthDay: DateTime(2002, 03, 01),
           national: National.england,
-          min: 45,
+          min: 50,
           max: 65,
           tactics: Tactics.normal(),
           stat: Stat.random(
             position: formation41212.positions[index].position,
-            min: 45,
+            min: 50,
             max: 65,
           ),
         )

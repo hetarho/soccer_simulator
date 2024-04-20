@@ -32,6 +32,8 @@ class League {
 
     allPlayers.sort((a, b) => b.seasonGoal - a.seasonGoal > 0 ? 1 : -1);
 
+    print(allPlayers);
+
     return allPlayers.sublist(0, length);
   }
 }
