@@ -1,5 +1,6 @@
 import 'dart:math' as m;
 
+import 'package:soccer_simulator/enum/national.dart';
 import 'package:soccer_simulator/enum/player.dart';
 
 class R {
@@ -25,5 +26,22 @@ class R {
       2 => BodyType.robust,
       _ => BodyType.normal,
     };
+  }
+
+  DateTime getDate({
+    int? year,
+    int? month,
+    int? day,
+  }) {
+    DateTime now = DateTime.now();
+    return DateTime(
+      year ?? getInt(min: now.year - 35, max: now.year - 15),
+      month ?? getInt(min: 1, max: 12),
+      day ?? getInt(min: 1, max: 28),
+    );
+  }
+
+  National getNational() {
+    return National.values[getInt(max: National.values.length - 1)];
   }
 }

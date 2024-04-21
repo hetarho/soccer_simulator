@@ -1,20 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:random_name_generator/random_name_generator.dart';
-import 'package:soccer_simulator/data/formations/formation3241.dart';
-import 'package:soccer_simulator/data/formations/formation352.dart';
-import 'package:soccer_simulator/data/formations/formation41212.dart';
-import 'package:soccer_simulator/data/formations/formation4141.dart';
-import 'package:soccer_simulator/data/formations/formation4222.dart';
-import 'package:soccer_simulator/data/formations/formation433.dart';
-import 'package:soccer_simulator/data/formations/formation442.dart';
-import 'package:soccer_simulator/data/formations/formation532.dart';
-import 'package:soccer_simulator/entities/club.dart';
-import 'package:soccer_simulator/entities/league.dart';
-import 'package:soccer_simulator/entities/player/player.dart';
-import 'package:soccer_simulator/entities/stat.dart';
-import 'package:soccer_simulator/entities/tactics/tactics.dart';
-import 'package:soccer_simulator/enum/national.dart';
-import 'package:soccer_simulator/utils/random.dart';
+// import 'package:flutter/material.dart';
+// import 'package:random_name_generator/random_name_generator.dart';
+// import 'package:soccer_simulator/entities/club.dart';
+// import 'package:soccer_simulator/entities/league.dart';
+// import 'package:soccer_simulator/entities/player/player.dart';
+// import 'package:soccer_simulator/entities/stat.dart';
+// import 'package:soccer_simulator/entities/tactics/tactics.dart';
+// import 'package:soccer_simulator/enum/national.dart';
+// import 'package:soccer_simulator/utils/random.dart';
 
 // Club arsenal = Club(
 //   name: 'Arsenal',

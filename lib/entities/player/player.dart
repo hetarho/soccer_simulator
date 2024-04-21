@@ -6,8 +6,10 @@ import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/player/vo/player_game_record.dart';
 import 'package:soccer_simulator/entities/tactics/tactics.dart';
+import 'package:soccer_simulator/enum/national.dart';
 import 'package:soccer_simulator/enum/player_action.dart';
 import 'package:soccer_simulator/utils/math.dart';
+import 'package:soccer_simulator/utils/function.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/entities/ball.dart';
@@ -94,12 +96,12 @@ class Player extends Member {
     this.tactics = tactics ?? Tactics(pressDistance: 15, freeLevel: PlayerFreeLevel.middle);
   }
 
-  Player.random({
+  Player.create({
     required super.name,
-    required super.birthDay,
-    required super.national,
+    DateTime? birthDay,
+    National? national,
     required this.backNumber,
-    required PlayerRole position,
+    required PlayerRole role,
     Stat? stat,
     int? potential,
     double? height,
@@ -108,20 +110,23 @@ class Player extends Member {
     int? reflex,
     int? flexibility,
     int? speed,
-    int? min,
-    int? max,
+    required int min,
+    required int max,
     Tactics? tactics,
     this.personalTrainingTypes = const [],
     this.teamTrainingTypePercent = 0.5,
-  }) {
+  }) : super(
+          birthDay: birthDay ?? R().getDate(),
+          national: national ?? R().getNational(),
+        ) {
     this.height = height ?? R().getDouble(min: 165, max: 210);
     this.bodyType = bodyType ?? R().getBodyType();
-    this.soccerIQ = soccerIQ ?? R().getInt(min: min ?? 30, max: max ?? 120);
-    this.reflex = reflex ?? R().getInt(min: min ?? 30, max: max ?? 120);
-    this.speed = speed ?? R().getInt(min: min ?? 30, max: max ?? 120);
-    this.flexibility = flexibility ?? R().getInt(min: min ?? 30, max: max ?? 120);
-    _potential = potential ?? R().getInt(min: min ?? 30, max: max ?? 120);
-    _stat = stat ?? Stat.random(position: position);
+    this.soccerIQ = soccerIQ ?? R().getInt(min: min, max: max);
+    this.reflex = reflex ?? R().getInt(min: min, max: max);
+    this.speed = speed ?? R().getInt(min: min, max: max);
+    this.flexibility = flexibility ?? R().getInt(min: min, max: max);
+    _potential = potential ?? R().getInt(min: min, max: max);
+    _stat = stat ?? Stat.create(role: role, min: min, max: max);
     _streamController = StreamController<PlayerActEvent>.broadcast();
     this.tactics = tactics ?? Tactics(pressDistance: 15, freeLevel: PlayerFreeLevel.middle);
   }
@@ -143,54 +148,7 @@ class Player extends Member {
   set startingPoxXY(PosXY newValue) {
     _startingPoxXY = newValue;
 
-    //fw
-    if (newValue.y > 70) {
-      if (newValue.x < 20) {
-        position = Position.lw;
-      } else if (newValue.x < 35) {
-        position = Position.lf;
-      } else if (newValue.x <= 55) {
-        if (newValue.y > 85) {
-          position = Position.st;
-        } else {
-          position = Position.cf;
-        }
-      } else if (newValue.x <= 80) {
-        position = Position.rf;
-      } else {
-        position = Position.rw;
-      }
-    }
-
-    //mf
-    else if (newValue.y > 30) {
-      if (newValue.x < 30) {
-        position = Position.lm;
-      } else if (newValue.x < 70) {
-        if (newValue.y > 60) {
-          position = Position.am;
-        } else if (newValue.y > 40) {
-          position = Position.cm;
-        } else {
-          position = Position.dm;
-        }
-      } else {
-        position = Position.rm;
-      }
-    }
-
-    //df
-    else if (newValue.y > 1) {
-      if (newValue.x < 30) {
-        position = Position.lb;
-      } else if (newValue.x < 70) {
-        position = Position.cb;
-      } else {
-        position = Position.rb;
-      }
-    } else {
-      position = Position.gk;
-    }
+    position = getPositionFromPosXY(newValue);
 
     posXY = newValue;
   }

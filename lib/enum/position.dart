@@ -29,3 +29,21 @@ enum Position {
   ///gk
   gk,
 }
+
+// switch (position) {
+//       Position.st => base,
+//       Position.cf => base,
+//       Position.lf => base,
+//       Position.rf => base,
+//       Position.lw => base,
+//       Position.rw => base,
+//       Position.lm => base,
+//       Position.rm => base,
+//       Position.cm => base,
+//       Position.am => base,
+//       Position.dm => base,
+//       Position.lb => base,
+//       Position.cb => base,
+//       Position.rb => base,
+//       Position.gk => base,
+//     }

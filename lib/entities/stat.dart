@@ -46,10 +46,10 @@ class Stat {
     composure = R().getInt(max: max + 10, min: min + 10);
   }
 
-  Stat.random({
-    int min = 15,
-    int max = 40,
-    required PlayerRole position,
+  Stat.create({
+    required int min,
+    required int max,
+    required PlayerRole role,
     int? stamina,
     int? strength,
     int? attSkill,
@@ -66,7 +66,7 @@ class Stat {
     this.composure = composure ?? R().getInt(max: max, min: min);
     this.teamwork = teamwork ?? R().getInt(max: max, min: min);
 
-    switch (position) {
+    switch (role) {
       case PlayerRole.forward:
         this.attSkill += 40;
         this.defSkill -= 40;

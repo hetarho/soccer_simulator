@@ -1,7 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:random_name_generator/random_name_generator.dart';
+import 'package:soccer_simulator/entities/formation/formation.dart';
 import 'package:soccer_simulator/entities/tactics/tactics.dart';
 import 'package:soccer_simulator/enum/position.dart';
+import 'package:soccer_simulator/utils/function.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/entities/player/player.dart';
@@ -24,6 +26,26 @@ class Club {
     this.homeColor = Colors.black,
     this.awayColor = Colors.black,
   });
+
+  void createStartingMembers({
+    required int min,
+    required int max,
+    required Formation formation,
+  }) {
+    int backNumber = 1;
+    players = formation.posXYList
+        .map((posXY) => Player.create(
+              name: RandomNames(Zone.us).name(),
+              backNumber: backNumber++,
+              role: getPlayerRoleFromPos(posXY),
+              min: 80,
+              max: 140,
+            )
+              ..isStartingPlayer = true
+              ..team = this
+              ..startingPoxXY = posXY)
+        .toList();
+  }
 
   final String id = const Uuid().v4();
   String name;
