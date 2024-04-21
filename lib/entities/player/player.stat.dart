@@ -74,9 +74,14 @@ extension PlayerStat on Player {
     return res.round();
   }
 
-  ///태클 - 축구지능 + 반응속도 + 체형 + 체력 + 기술 + 침착함
+  ///태클 - 축구지능 + 반응속도 + 체력 + 기술 + 침착함
   int get tackleStat {
-    return 1;
+    double res = soccerIQ * 0.2;
+    res = res + reflex * 0.1;
+    res = res + _currentStamina * 0.05;
+    res = res + stat.defSkill * 0.55;
+    res = res + stat.composure * 0.1;
+    return res.round();
   }
 
   ///인터셉트 - 축구지능 + 반응속도  + 체력

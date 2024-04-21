@@ -331,7 +331,7 @@ extension PlayerMove on Player {
   tackle(Player targetPlayer, ClubInFixture team) {
     double distanceBonus = targetPlayer.posXY.distance(reversePosXy) / 7;
 
-    if ((overall / (targetPlayer.overall * distanceBonus + overall)) > R().getDouble(max: 1)) {
+    if ((tackleStat / (targetPlayer.evadePressStat * distanceBonus + tackleStat)) > R().getDouble(max: 1)) {
       lastAction = PlayerAction.tackle;
       defSuccess++;
       targetPlayer.hasBall = false;

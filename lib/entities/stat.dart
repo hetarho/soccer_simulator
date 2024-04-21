@@ -68,13 +68,17 @@ class Stat {
 
     switch (position) {
       case PlayerRole.forward:
-        this.attSkill = attSkill ?? R().getInt(max: max + 30, min: min + 30);
+        this.attSkill += 40;
+        this.defSkill -= 40;
         break;
       case PlayerRole.midfielder:
-        this.passSkill = passSkill ?? R().getInt(max: max + 30, min: min + 30);
+        this.passSkill += 40;
+        this.defSkill -= 20;
+        this.attSkill -= 20;
         break;
       case PlayerRole.defender:
-        this.defSkill = defSkill ?? R().getInt(max: max + 30, min: min + 30);
+        this.defSkill += 40;
+        this.attSkill -= 40;
         break;
       default:
         break;

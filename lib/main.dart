@@ -918,7 +918,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                             child: Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                SizedBox(width: 200, child: Text(club.nickName)),
+                                                SizedBox(width: 200, child: Text('${club.nickName}(${club.overall})')),
                                                 SizedBox(width: 35, child: Text('${club.pts}')),
                                                 SizedBox(width: 35, child: Text('${club.won}')),
                                                 SizedBox(width: 35, child: Text('${club.drawn}')),
