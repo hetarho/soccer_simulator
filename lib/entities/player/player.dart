@@ -99,7 +99,7 @@ class Player extends Member {
     required super.birthDay,
     required super.national,
     required this.backNumber,
-    required Position position,
+    required PlayerRole position,
     Stat? stat,
     int? potential,
     double? height,
@@ -142,6 +142,56 @@ class Player extends Member {
 
   set startingPoxXY(PosXY newValue) {
     _startingPoxXY = newValue;
+
+    //fw
+    if (newValue.y > 70) {
+      if (newValue.x < 20) {
+        position = Position.lw;
+      } else if (newValue.x < 35) {
+        position = Position.lf;
+      } else if (newValue.x <= 55) {
+        if (newValue.y > 85) {
+          position = Position.st;
+        } else {
+          position = Position.cf;
+        }
+      } else if (newValue.x <= 80) {
+        position = Position.rf;
+      } else {
+        position = Position.rw;
+      }
+    }
+
+    //mf
+    else if (newValue.y > 30) {
+      if (newValue.x < 30) {
+        position = Position.lm;
+      } else if (newValue.x < 70) {
+        if (newValue.y > 60) {
+          position = Position.am;
+        } else if (newValue.y > 40) {
+          position = Position.cm;
+        } else {
+          position = Position.dm;
+        }
+      } else {
+        position = Position.rm;
+      }
+    }
+
+    //df
+    else if (newValue.y > 1) {
+      if (newValue.x < 30) {
+        position = Position.lb;
+      } else if (newValue.x < 70) {
+        position = Position.cb;
+      } else {
+        position = Position.rb;
+      }
+    } else {
+      position = Position.gk;
+    }
+
     posXY = newValue;
   }
 
@@ -198,6 +248,35 @@ class Player extends Member {
 
   ///경기에 출전할 포지션
   Position? position;
+
+  PlayerRole get role {
+    if ([
+      Position.st,
+      Position.cf,
+      Position.lf,
+      Position.rf,
+      Position.lw,
+      Position.rw,
+    ].contains(position)) {
+      return PlayerRole.forward;
+    } else if ([
+      Position.lm,
+      Position.rm,
+      Position.cm,
+      Position.am,
+      Position.dm,
+    ].contains(position)) {
+      return PlayerRole.midfielder;
+    } else if ([
+      Position.lb,
+      Position.cb,
+      Position.rb,
+    ].contains(position)) {
+      return PlayerRole.defender;
+    } else {
+      return PlayerRole.goalKeeper;
+    }
+  }
 
   ///선수의 컨디션
   double condition = 1;
@@ -295,46 +374,42 @@ class Player extends Member {
   double get _posXMinBoundary {
     return max(
         0,
-        switch (position) {
-          Position.goalKeeper => startingPoxXY.x - 15,
-          Position.defender => startingPoxXY.x - 15,
-          Position.midfielder => startingPoxXY.x - (isLeftWinger ? 10 : 15),
-          Position.forward => startingPoxXY.x - (isLeftWinger ? 15 : 25),
-          _ => min(startingPoxXY.x - 100, 0),
+        switch (role) {
+          PlayerRole.goalKeeper => startingPoxXY.x - 15,
+          PlayerRole.defender => startingPoxXY.x - 15,
+          PlayerRole.midfielder => startingPoxXY.x - (isLeftWinger ? 10 : 15),
+          PlayerRole.forward => startingPoxXY.x - (isLeftWinger ? 15 : 25),
         });
   }
 
   double get _posXMaxBoundary {
     return min(
         100,
-        switch (position) {
-          Position.goalKeeper => startingPoxXY.x + 15,
-          Position.defender => startingPoxXY.x + 15,
-          Position.midfielder => startingPoxXY.x + (isRightWinger ? 10 : 15),
-          Position.forward => startingPoxXY.x + (isRightWinger ? 15 : 25),
-          _ => min(startingPoxXY.x + 100, 100),
+        switch (role) {
+          PlayerRole.goalKeeper => startingPoxXY.x + 15,
+          PlayerRole.defender => startingPoxXY.x + 15,
+          PlayerRole.midfielder => startingPoxXY.x + (isRightWinger ? 10 : 15),
+          PlayerRole.forward => startingPoxXY.x + (isRightWinger ? 15 : 25),
         });
   }
 
   double get _posYMinBoundary {
     return max(
         0,
-        switch (position) {
-          Position.goalKeeper => startingPoxXY.y,
-          Position.defender => startingPoxXY.y - 10,
-          Position.midfielder => startingPoxXY.y - (isWinger ? 30 : 20),
-          Position.forward => startingPoxXY.y - (isWinger ? 50 : 30),
-          _ => min(startingPoxXY.y - 100, 0),
+        switch (role) {
+          PlayerRole.goalKeeper => startingPoxXY.y,
+          PlayerRole.defender => startingPoxXY.y - 10,
+          PlayerRole.midfielder => startingPoxXY.y - (isWinger ? 30 : 20),
+          PlayerRole.forward => startingPoxXY.y - (isWinger ? 50 : 30),
         });
   }
 
   double get _posYMaxBoundary {
-    return switch (position) {
-      Position.goalKeeper => startingPoxXY.y + 10,
-      Position.defender => startingPoxXY.y + (isWinger ? 140 : 30),
-      Position.midfielder => startingPoxXY.y + (isWinger ? 110 : 40),
-      Position.forward => startingPoxXY.y + (isWinger ? 100 : 90),
-      _ => min(startingPoxXY.y + 200, 200),
+    return switch (role) {
+      PlayerRole.goalKeeper => startingPoxXY.y + 10,
+      PlayerRole.defender => startingPoxXY.y + (isWinger ? 140 : 30),
+      PlayerRole.midfielder => startingPoxXY.y + (isWinger ? 110 : 40),
+      PlayerRole.forward => startingPoxXY.y + (isWinger ? 100 : 90),
     };
   }
 }

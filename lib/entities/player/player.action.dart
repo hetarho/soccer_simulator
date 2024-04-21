@@ -143,7 +143,7 @@ extension PlayerMove on Player {
         return;
       } else if (_actPoint < 25) {
         ///탈압박이 불가능 할 경우
-        if (pressureIntensity - evadePressStat > 0 && position != Position.goalKeeper && posXY.y < 175) {
+        if (pressureIntensity - evadePressStat > 0 && role != PlayerRole.goalKeeper && posXY.y < 175) {
           List<Player> behindPlayers = ourTeamPlayers.where((player) => player.posXY.y < posXY.y + 5).toList();
           Player target = getMostAttractivePlayer(behindPlayers, opponentPlayers);
           List<Player> nearOpponentAtTarget = opponentPlayers.where((opponent) => opponent.posXY.distance(target.reversePosXy) < 15).toList();
@@ -157,13 +157,13 @@ extension PlayerMove on Player {
       }
 
       if (posXY.y > 175 && (posXY.x > 35 || posXY.x < 65) && pressureIntensity - evadePressStat < 0) {
-        Player goalKeeper = opponentPlayers.firstWhere((player) => player.position == Position.goalKeeper);
+        Player goalKeeper = opponentPlayers.firstWhere((player) => player.role == PlayerRole.goalKeeper);
 
         _shoot(goalKeeper: goalKeeper, fixture: fixture, team: team, opponent: opponent);
       }
 
       //압박감이 0이하인데 포지션이 미드필더,공격수 일 경우 드리블
-      if (pressureIntensity - evadePressStat < 0 && ![Position.defender, Position.goalKeeper].contains(position)) {
+      if (pressureIntensity - evadePressStat < 0 && ![PlayerRole.defender, PlayerRole.goalKeeper].contains(role)) {
         dribble(team);
       }
 
@@ -171,14 +171,14 @@ extension PlayerMove on Player {
       int passPercent = 250;
 
       int dribbleBonus = (11 - opponentPlayers.where((opponent) => ((100 - opponent.posXY.x + 15) > posXY.x && (100 - opponent.posXY.x - 15) < posXY.x) || (200 - opponent.posXY.y - posXY.y) > 50).length);
-      int dribblePercent = position == Position.goalKeeper ? 0 : (50 + dribbleBonus * 100);
-      int stayPercent = position == Position.goalKeeper ? 0 : 250;
+      int dribblePercent = role == PlayerRole.goalKeeper ? 0 : (50 + dribbleBonus * 100);
+      int stayPercent = role == PlayerRole.goalKeeper ? 0 : 250;
       int ranNum = R().getInt(min: 0, max: shootPercent + passPercent + dribblePercent + stayPercent);
 
       bool canShoot = true;
 
       if (canShoot && (ranNum < shootPercent || (posXY.y > 180))) {
-        _shoot(fixture: fixture, team: team, opponent: opponent, goalKeeper: opponentPlayers.firstWhere((player) => player.position == Position.goalKeeper));
+        _shoot(fixture: fixture, team: team, opponent: opponent, goalKeeper: opponentPlayers.firstWhere((player) => player.role == PlayerRole.goalKeeper));
       } else if (ranNum < shootPercent + passPercent) {
         ///활용 가능한 선수들의 매력도를 판단
         Player target = getMostAttractivePlayer(visibleOurTeamPlayers, opponentPlayers);
@@ -213,7 +213,7 @@ extension PlayerMove on Player {
     required Ball ball,
     required Fixture fixture,
   }) {
-    bool isNotGoalKick = fixture.playerWithBall?.position != Position.goalKeeper;
+    bool isNotGoalKick = fixture.playerWithBall?.role != PlayerRole.goalKeeper;
 
     PosXY ballPos = PosXY(100 - ball.posXY.x, 200 - ball.posXY.y);
     bool canTackle = ballPos.distance(posXY) < 8 && isNotGoalKick && _actPoint > 30;
@@ -241,25 +241,25 @@ extension PlayerMove on Player {
 
   stay() {
     lastAction = PlayerAction.none;
-    _move(targetPosition: PosXY.random(posXY.x, posXY.y, 3));
+    _move(targetPosXY: PosXY.random(posXY.x, posXY.y, 3));
   }
 
   moveFront() {
     lastAction = PlayerAction.none;
-    double frontDistance = switch (position) {
-      Position.forward => 16,
-      Position.midfielder => 12,
-      Position.defender => isWinger ? 15 : 8,
+    double frontDistance = switch (role) {
+      PlayerRole.forward => 16,
+      PlayerRole.midfielder => 12,
+      PlayerRole.defender => isWinger ? 15 : 8,
       _ => 0,
     };
-    _move(targetPosition: PosXY.random(posXY.x, posXY.y + frontDistance, 3));
+    _move(targetPosXY: PosXY.random(posXY.x, posXY.y + frontDistance, 3));
   }
 
   moveBack() {
     lastAction = PlayerAction.none;
     double backDistance = -1 * min(10, (posXY.y - startingPoxXY.y * 0.8) * 0.2);
 
-    _move(targetPosition: PosXY.random(posXY.x, posXY.y + backDistance, 2));
+    _move(targetPosXY: PosXY.random(posXY.x, posXY.y + backDistance, 2));
   }
 
   dribble(ClubInFixture team) {
@@ -267,7 +267,7 @@ extension PlayerMove on Player {
     double addX = posXY.y > 180 ? maxDistance : 0;
     double addY = posXY.y <= 180 ? maxDistance : 0;
 
-    _move(targetPosition: PosXY.random(posXY.x + addX, posXY.y + addY, 5));
+    _move(targetPosXY: PosXY.random(posXY.x + addX, posXY.y + addY, 5));
     dribbleSuccess++;
     team.dribble++;
   }
@@ -340,21 +340,21 @@ extension PlayerMove on Player {
     } else {}
   }
 
-  press(PosXY ballPosition) {
-    double ballPositionX = 100 - ballPosition.x;
-    double ballPositionY = 200 - ballPosition.y;
+  press(PosXY ballPosXY) {
+    double ballPosX = 100 - ballPosXY.x;
+    double ballPosY = 200 - ballPosXY.y;
     lastAction = PlayerAction.press;
 
-    _move(targetPosition: PosXY(ballPositionX, ballPositionY));
+    _move(targetPosXY: PosXY(ballPosX, ballPosY));
   }
 
-  _move({required PosXY targetPosition}) {
+  _move({required PosXY targetPosXY}) {
     /// x,y 좌표의 차이를 각각 구하기
-    double deltaX = (targetPosition.x - posXY.x);
-    double deltaY = (targetPosition.y - posXY.y);
+    double deltaX = (targetPosXY.x - posXY.x);
+    double deltaY = (targetPosXY.y - posXY.y);
 
     /// 해당 타깃과의 거리 구하기
-    double distanceToTarget = PosXY(targetPosition.x, targetPosition.y).distance(posXY);
+    double distanceToTarget = PosXY(targetPosXY.x, targetPosXY.y).distance(posXY);
 
     /// 이동할 수 있는 최대 거리 구하기
     double distanceCanForward = min(distanceToTarget, maxDistance - (hasBall ? 3 : 0));

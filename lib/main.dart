@@ -118,7 +118,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 ),
               )
                 ..isStartingPlayer = true
-                ..position = formation433.positions[index + 1].position
                 ..team = arsenal
                 ..startingPoxXY = formation433.positions[index + 1].pos),
       Player.random(
@@ -137,7 +136,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         ),
       )
         ..isStartingPlayer = true
-        ..position = formation433.positions[0].position
         ..team = arsenal
         ..startingPoxXY = formation433.positions[0].pos
     ];
@@ -169,7 +167,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation433.positions[index].position
               ..team = manchesterCity
               ..startingPoxXY = formation433.positions[index].pos);
 
@@ -198,7 +195,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation433.positions[index].position
               ..team = liverfpool
               ..startingPoxXY = formation433.positions[index].pos);
 
@@ -227,7 +223,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation4222.positions[index].position
               ..team = astonVilla
               ..startingPoxXY = formation4222.positions[index].pos);
 
@@ -256,7 +251,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation532.positions[index].position
               ..team = tottenham
               ..startingPoxXY = formation532.positions[index].pos);
 
@@ -285,7 +279,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation352.positions[index].position
               ..team = newcastle
               ..startingPoxXY = formation352.positions[index].pos);
 
@@ -314,7 +307,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation4222.positions[index].position
               ..team = manchesterUnited
               ..startingPoxXY = formation4222.positions[index].pos);
 
@@ -343,7 +335,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation442.positions[index].position
               ..team = westHam
               ..startingPoxXY = formation442.positions[index].pos);
 
@@ -372,7 +363,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation433.positions[index].position
               ..team = chelsea
               ..startingPoxXY = formation433.positions[index].pos);
 
@@ -401,7 +391,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation3241.positions[index].position
               ..team = brighton
               ..startingPoxXY = formation3241.positions[index].pos);
 
@@ -430,7 +419,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation442.positions[index].position
               ..team = wolverhampton
               ..startingPoxXY = formation442.positions[index].pos);
 
@@ -459,7 +447,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation4141.positions[index].position
               ..team = folham
               ..startingPoxXY = formation4141.positions[index].pos);
 
@@ -488,7 +475,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation4222.positions[index].position
               ..team = bournemouth
               ..startingPoxXY = formation4222.positions[index].pos);
 
@@ -517,7 +503,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation352.positions[index].position
               ..team = crystalPalace
               ..startingPoxXY = formation352.positions[index].pos);
 
@@ -546,7 +531,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation41212.positions[index].position
               ..team = brentford
               ..startingPoxXY = formation41212.positions[index].pos);
 
@@ -575,7 +559,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation433.positions[index].position
               ..team = everton
               ..startingPoxXY = formation433.positions[index].pos);
 
@@ -604,7 +587,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation4141.positions[index].position
               ..team = nottingham
               ..startingPoxXY = formation4141.positions[index].pos);
 
@@ -633,7 +615,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation3241.positions[index].position
               ..team = lutonTown
               ..startingPoxXY = formation3241.positions[index].pos);
 
@@ -656,7 +637,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               tactics: Tactics.normal(),
             )
               ..isStartingPlayer = true
-              ..position = formation352.positions[index].position
               ..team = burnley
               ..startingPoxXY = formation352.positions[index].pos);
 
@@ -685,7 +665,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
             )
               ..isStartingPlayer = true
-              ..position = formation41212.positions[index].position
               ..team = sheffield
               ..startingPoxXY = formation41212.positions[index].pos);
 
@@ -1097,7 +1076,7 @@ class Formation {
 
 class PositionInFormation {
   final PosXY pos;
-  final Position position;
+  final PlayerRole position;
 
   PositionInFormation({required this.pos, required this.position});
 }

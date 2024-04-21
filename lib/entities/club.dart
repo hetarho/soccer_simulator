@@ -97,20 +97,20 @@ class Club {
     lost = 0;
   }
 
-  List<Player> get forwards => startPlayers.where((player) => player.position == Position.forward).toList();
-  List<Player> get midfielders => startPlayers.where((player) => player.position == Position.midfielder).toList();
-  List<Player> get defenders => startPlayers.where((player) => player.position == Position.defender || player.position == Position.goalKeeper).toList();
+  List<Player> get forwards => startPlayers.where((player) => player.role == PlayerRole.forward).toList();
+  List<Player> get midfielders => startPlayers.where((player) => player.role == PlayerRole.midfielder).toList();
+  List<Player> get defenders => startPlayers.where((player) => player.role == PlayerRole.defender || player.role == PlayerRole.goalKeeper).toList();
 
   int get attOverall {
-    return (forwards.fold(0, (pre, curr) => pre + curr.overall) / forwards.length).round();
+    return forwards.isEmpty ? 0 : (forwards.fold(0, (pre, curr) => pre + curr.overall) / forwards.length).round();
   }
 
   int get midOverall {
-    return (midfielders.fold(0, (pre, curr) => pre + curr.overall) / midfielders.length).round();
+    return midfielders.isEmpty ? 0 : (midfielders.fold(0, (pre, curr) => pre + curr.overall) / midfielders.length).round();
   }
 
   int get defOverall {
-    return (defenders.fold(0, (pre, curr) => pre + curr.overall) / defenders.length).round();
+    return defenders.isEmpty ? 0 : (defenders.fold(0, (pre, curr) => pre + curr.overall) / defenders.length).round();
   }
 
   int get overall {

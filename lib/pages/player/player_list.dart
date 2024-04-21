@@ -23,11 +23,11 @@ class PlayerListPage extends ConsumerWidget {
             },
             child: Container(
               padding: const EdgeInsets.all(8),
-              color: playerList[index].position == Position.goalKeeper
+              color: playerList[index].role == PlayerRole.goalKeeper
                   ? Colors.yellow
-                  : playerList[index].position == Position.forward
+                  : playerList[index].role == PlayerRole.forward
                       ? Colors.red
-                      : playerList[index].position == Position.midfielder
+                      : playerList[index].role == PlayerRole.midfielder
                           ? Colors.blue
                           : Colors.green,
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [

@@ -49,7 +49,7 @@ class Stat {
   Stat.random({
     int min = 15,
     int max = 40,
-    required Position position,
+    required PlayerRole position,
     int? stamina,
     int? strength,
     int? attSkill,
@@ -67,13 +67,13 @@ class Stat {
     this.teamwork = teamwork ?? R().getInt(max: max, min: min);
 
     switch (position) {
-      case Position.forward:
+      case PlayerRole.forward:
         this.attSkill = attSkill ?? R().getInt(max: max + 30, min: min + 30);
         break;
-      case Position.midfielder:
+      case PlayerRole.midfielder:
         this.passSkill = passSkill ?? R().getInt(max: max + 30, min: min + 30);
         break;
-      case Position.defender:
+      case PlayerRole.defender:
         this.defSkill = defSkill ?? R().getInt(max: max + 30, min: min + 30);
         break;
       default:
@@ -113,20 +113,20 @@ class Stat {
 
   ///게임 투입시 상승시킬 능력치
   Stat.playGame({
-    required Position position,
+    required PlayerRole role,
     required int point,
   }) {
-    switch (position) {
-      case Position.forward:
+    switch (role) {
+      case PlayerRole.forward:
         attSkill = R().getInt(max: 2, min: 0);
         passSkill = R().getInt(max: 2, min: 0);
         break;
-      case Position.midfielder:
+      case PlayerRole.midfielder:
         attSkill = R().getInt(max: 2, min: 0);
         passSkill = R().getInt(max: 2, min: 0);
         defSkill = R().getInt(max: 2, min: 0);
         break;
-      case Position.defender:
+      case PlayerRole.defender:
         passSkill = R().getInt(max: 2, min: 0);
         defSkill = R().getInt(max: 2, min: 0);
         break;
