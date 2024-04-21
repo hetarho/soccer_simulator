@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
+import 'package:soccer_simulator/main.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';
 import 'package:soccer_simulator/utils/color.dart';
 
@@ -16,9 +18,6 @@ class FixturePage extends ConsumerStatefulWidget {
 }
 
 class _FixturePageState extends ConsumerState<FixturePage> {
-  bool isFastMode = true;
-  bool showModal = false;
-  Player? _selectedPlayer;
   List<Player> actingPlayer = [];
   StreamSubscription<PlayerActEvent>? _playerStreamSubscription;
   late Fixture _fixture;
@@ -142,8 +141,8 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                                 child: GestureDetector(
                                   onTap: () {
                                     setState(() {
-                                      _selectedPlayer = player;
-                                      showModal = true;
+                                      ref.read(playerProvider.notifier).state = player;
+                                      context.push('/players/detail');
                                     });
                                   },
                                   child: PlayerWidget(
@@ -163,8 +162,8 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                                 child: GestureDetector(
                                   onTap: () {
                                     setState(() {
-                                      _selectedPlayer = player;
-                                      showModal = true;
+                                      ref.read(playerProvider.notifier).state = player;
+                                      context.push('/players/detail');
                                     });
                                   },
                                   child: PlayerWidget(
@@ -201,7 +200,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       child: const Text('play')),
                   Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [0, 100, 200, 500, 1000, 3000]
+                    children: [1, 100, 200, 500, 1000, 3000]
                         .map((speed) => ElevatedButton(
                               style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(0)),
                               onPressed: () {
@@ -239,96 +238,6 @@ class _FixturePageState extends ConsumerState<FixturePage> {
               ),
             ),
           ),
-          if (showModal)
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
-              padding: const EdgeInsets.all(20),
-              color: Colors.white,
-              child: Column(children: [
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        showModal = false;
-                        _selectedPlayer = null;
-                      });
-                    },
-                    child: const Text('x')),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('키'),
-                    Text('축구지능'),
-                    Text('반응속도'),
-                    Text('스피드'),
-                    Text('유연성'),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('${_selectedPlayer?.height.round()}'),
-                    Text('${_selectedPlayer?.soccerIQ}'),
-                    Text('${_selectedPlayer?.reflex}'),
-                    Text('${_selectedPlayer?.speed}'),
-                    Text('${_selectedPlayer?.flexibility}'),
-                  ],
-                ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('체력'),
-                    Text('근력'),
-                    Text('공격스킬'),
-                    Text('패스스킬'),
-                    Text('수비스킬'),
-                    Text('침착함'),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('${_selectedPlayer?.stat.stamina}'),
-                    Text('${_selectedPlayer?.stat.strength}'),
-                    Text('${_selectedPlayer?.stat.attSkill}'),
-                    Text('${_selectedPlayer?.stat.passSkill}'),
-                    Text('${_selectedPlayer?.stat.defSkill}'),
-                    Text('${_selectedPlayer?.stat.composure}'),
-                  ],
-                ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('슈팅'),
-                    Text('중거리'),
-                    Text('탈압박'),
-                    Text('압박'),
-                    Text('시야'),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('${_selectedPlayer?.shootingStat}'),
-                    Text('${_selectedPlayer?.midRangeShootStat}'),
-                    Text('${_selectedPlayer?.evadePressStat}'),
-                    Text('${_selectedPlayer?.pressureStat}'),
-                    Text('${_selectedPlayer?.visionStat}'),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const SizedBox(width: 120, child: Text('name')),
-                    Text(_selectedPlayer?.name ?? ''),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const SizedBox(width: 120, child: Text('goal')),
-                    Text(_selectedPlayer?.seasonGoal.toString() ?? ''),
-                  ],
-                ),
-              ]),
-            )
         ],
       ),
     );

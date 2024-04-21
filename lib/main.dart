@@ -69,6 +69,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   bool _showFixtures = true;
   bool _showLeagueTable = false;
   bool _showTopScorerTable = false;
+  Duration _timer = Duration(seconds: 0);
 
   @override
   void initState() {
@@ -84,8 +85,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: Colors.yellow,
       tactics: Tactics(pressDistance: 30, freeLevel: PlayerFreeLevel.hight),
     )..createStartingMembers(
-        min: 80,
-        max: 130,
+        min: 60,
+        max: 140,
         formation: Formation.create433(),
       );
 
@@ -96,7 +97,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: Colors.blue[800]!,
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.low),
     )..createStartingMembers(
-        min: 95,
+        min: 85,
         max: 115,
         formation: Formation.create433(),
       );
@@ -108,7 +109,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: Colors.blue[900]!,
       tactics: Tactics(pressDistance: 35, freeLevel: PlayerFreeLevel.hight),
     )..createStartingMembers(
-        min: 80,
+        min: 70,
         max: 130,
         formation: Formation.create433(),
       );
@@ -120,7 +121,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(140, 188, 229, 1),
       tactics: Tactics(pressDistance: 15, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 70,
+        min: 60,
         max: 120,
         formation: Formation.create433(),
       );
@@ -131,7 +132,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(19, 30, 72, 1),
       tactics: Tactics(pressDistance: 10, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 70,
+        min: 60,
         max: 120,
         formation: Formation.create433(),
       );
@@ -142,7 +143,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: Colors.white,
       tactics: Tactics(pressDistance: 35, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 70,
+        min: 60,
         max: 120,
         formation: Formation.create433(),
       );
@@ -154,7 +155,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: Colors.green[200]!,
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 60,
+        min: 50,
         max: 110,
         formation: Formation.create433(),
       );
@@ -166,7 +167,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(179, 110, 70, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 60,
+        min: 50,
         max: 110,
         formation: Formation.create433(),
       );
@@ -177,7 +178,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(80, 70, 85, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 60,
+        min: 50,
         max: 110,
         formation: Formation.create433(),
       );
@@ -190,7 +191,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
         min: 55,
-        max: 100,
+        max: 90,
         formation: Formation.create433(),
       );
     Club wolverhampton = Club(
@@ -201,7 +202,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
         min: 55,
-        max: 100,
+        max: 90,
         formation: Formation.create433(),
       );
 
@@ -213,7 +214,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
         min: 55,
-        max: 100,
+        max: 90,
         formation: Formation.create433(),
       );
     Club bournemouth = Club(
@@ -223,8 +224,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(120, 120, 120, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 80,
-        max: 140,
+        min: 55,
+        max: 90,
         formation: Formation.create433(),
       );
 
@@ -236,7 +237,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
         min: 55,
-        max: 100,
+        max: 90,
         formation: Formation.create433(),
       );
 
@@ -247,8 +248,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(70, 25, 25, 25),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 80,
-        max: 140,
+        min: 55,
+        max: 90,
         formation: Formation.create433(),
       );
 
@@ -259,7 +260,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(70, 15, 15, 15),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 55,
+        min: 45,
         max: 90,
         formation: Formation.create433(),
       );
@@ -271,7 +272,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(230, 230, 230, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 55,
+        min: 45,
         max: 90,
         formation: Formation.create433(),
       );
@@ -283,7 +284,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(90, 100, 150, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 55,
+        min: 45,
         max: 90,
         formation: Formation.create433(),
       );
@@ -294,7 +295,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(90, 100, 150, 1),
       tactics: Tactics(pressDistance: 5, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 55,
+        min: 45,
         max: 90,
         formation: Formation.create433(),
       );
@@ -306,7 +307,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(0, 0, 0, 1),
       tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
     )..createStartingMembers(
-        min: 55,
+        min: 45,
         max: 90,
         formation: Formation.create433(),
       );
@@ -350,6 +351,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
     _roundSubscription?.cancel();
     _roundSubscription = _roundStream.listen((event) async {
+      if (_isAutoPlay) {
+        _timer = event.time;
+      }
       if (event.isGameEnd && _isAutoPlay) {
         _finishedFixtureNum++;
         if (_finishedFixtureNum == 10) {
@@ -450,7 +454,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               )
             ],
           ),
-          Text('round : ${_league.round}'),
+          Text('round : ${_league.round} time:${_timer.inMinutes}'),
           Expanded(
             child: CustomScrollView(
               slivers: [

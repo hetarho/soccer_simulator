@@ -49,9 +49,11 @@ extension PlayerGrow on Player {
   void _growAfterPlay() {
     //남은 포텐셜이 0보다 커야 성장 가능, 30이상이면 경기시마다 항상 성장
     if (_potential / 30 > Random().nextDouble()) {
-      if (Random().nextDouble() > 0.7) _potential -= 1;
-      Stat newStat = Stat.playGame(role: role, point: Random().nextInt(2));
-      _stat.add(newStat);
+      if (Random().nextDouble() > 0.7) {
+        _potential -= 1;
+        Stat newStat = Stat.playGame(role: role, point: Random().nextInt(1));
+        _stat.add(newStat);
+      }
     }
   }
 

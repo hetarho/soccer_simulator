@@ -38,8 +38,8 @@ class Club {
               name: RandomNames(Zone.us).name(),
               backNumber: backNumber++,
               role: getPlayerRoleFromPos(posXY),
-              min: 80,
-              max: 140,
+              min: min,
+              max: max,
             )
               ..isStartingPlayer = true
               ..team = this
@@ -145,10 +145,24 @@ class Club {
   }
 }
 
-class StartingPlayer {
-  final Player player;
-  final double startingPosX;
-  final double startingPosY;
+class Uniform {
+  final Color mainColor;
+  final Color pantColor;
+  late final Color secondColor;
+  final UniformType type;
 
-  StartingPlayer({required this.player, required this.startingPosX, required this.startingPosY});
+  Uniform({
+    required this.mainColor,
+    Color? secondColor,
+    required this.pantColor,
+    required this.type,
+  }) {
+    this.secondColor = secondColor ?? mainColor;
+  }
+}
+
+enum UniformType {
+  plain,
+  stripe,
+  double,
 }

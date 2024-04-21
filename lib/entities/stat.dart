@@ -1,3 +1,4 @@
+import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/enum/training_type.dart';
 import 'package:soccer_simulator/utils/random.dart';
@@ -20,6 +21,7 @@ class Stat {
     int? attSkill,
     int? passSkill,
     int? defSkill,
+    int? gkSkill,
     int? composure,
     int? teamwork,
   }) {
@@ -28,6 +30,7 @@ class Stat {
     this.attSkill = attSkill ?? 0;
     this.passSkill = passSkill ?? 0;
     this.defSkill = defSkill ?? 0;
+    this.gkSkill = gkSkill ?? 0;
     this.composure = composure ?? 0;
     this.teamwork = teamwork ?? 0;
   }
@@ -35,15 +38,6 @@ class Stat {
   @override
   toString() {
     return '''TODO''';
-  }
-
-  Stat.createCBStat({required int min, required int max}) {
-    stamina = R().getInt(max: max, min: min);
-    strength = R().getInt(max: max + 10, min: min + 10);
-    attSkill = R().getInt(max: max - 20, min: min - 20);
-    passSkill = R().getInt(max: max - 20, min: min - 20);
-    defSkill = R().getInt(max: max + 20, min: min + 20);
-    composure = R().getInt(max: max + 10, min: min + 10);
   }
 
   Stat.create({
@@ -55,6 +49,7 @@ class Stat {
     int? attSkill,
     int? passSkill,
     int? defSkill,
+    int? gkSkill,
     int? composure,
     int? teamwork,
   }) {
@@ -63,6 +58,7 @@ class Stat {
     this.attSkill = attSkill ?? R().getInt(max: max, min: min);
     this.passSkill = passSkill ?? R().getInt(max: max, min: min);
     this.defSkill = defSkill ?? R().getInt(max: max, min: min);
+    this.gkSkill = gkSkill ?? R().getInt(max: max, min: min);
     this.composure = composure ?? R().getInt(max: max, min: min);
     this.teamwork = teamwork ?? R().getInt(max: max, min: min);
 
@@ -70,14 +66,23 @@ class Stat {
       case PlayerRole.forward:
         this.attSkill += 40;
         this.defSkill -= 40;
+        this.gkSkill -= 40;
         break;
       case PlayerRole.midfielder:
         this.passSkill += 40;
         this.defSkill -= 20;
         this.attSkill -= 20;
+        this.gkSkill -= 40;
         break;
       case PlayerRole.defender:
         this.defSkill += 40;
+        this.attSkill -= 40;
+        this.gkSkill -= 40;
+        break;
+      case PlayerRole.goalKeeper:
+        this.gkSkill += 40;
+        this.passSkill -= 20;
+        this.defSkill -= 20;
         this.attSkill -= 40;
         break;
       default:
@@ -104,6 +109,9 @@ class Stat {
       case TrainingType.passSkill:
         passSkill = R().getInt(max: 2, min: 1);
         break;
+      case TrainingType.gkSkill:
+        gkSkill = R().getInt(max: 2, min: 1);
+        break;
       case TrainingType.stamina:
         stamina = R().getInt(max: 2, min: 1);
         break;
@@ -122,21 +130,23 @@ class Stat {
   }) {
     switch (role) {
       case PlayerRole.forward:
-        attSkill = R().getInt(max: 2, min: 0);
-        passSkill = R().getInt(max: 2, min: 0);
+        attSkill = point + R().getInt(max: point, min: 0);
+        passSkill = point + R().getInt(max: point, min: 0);
         break;
       case PlayerRole.midfielder:
-        attSkill = R().getInt(max: 2, min: 0);
-        passSkill = R().getInt(max: 2, min: 0);
-        defSkill = R().getInt(max: 2, min: 0);
+        attSkill = point + R().getInt(max: point, min: 0);
+        passSkill = point + R().getInt(max: point, min: 0);
+        defSkill = point + R().getInt(max: point, min: 0);
         break;
       case PlayerRole.defender:
-        passSkill = R().getInt(max: 2, min: 0);
-        defSkill = R().getInt(max: 2, min: 0);
+        passSkill = point + R().getInt(max: point, min: 0);
+        defSkill = point + R().getInt(max: point, min: 0);
         break;
+      case PlayerRole.goalKeeper:
+        gkSkill = point + R().getInt(max: point, min: 0);
       default:
     }
-    teamwork = R().getInt(max: 2, min: 0);
+    teamwork = R().getInt(max: point, min: 0);
   }
 
   ///체력
@@ -154,6 +164,8 @@ class Stat {
   ///수비기술
   int defSkill = 0;
 
+  int gkSkill = 0;
+
   ///침착함
   int composure = 0;
 
@@ -167,11 +179,12 @@ class Stat {
     attSkill = attSkill + newStat.attSkill;
     passSkill = passSkill + newStat.passSkill;
     defSkill = defSkill + newStat.defSkill;
+    gkSkill = gkSkill + newStat.gkSkill;
     composure = composure + newStat.composure;
     teamwork = teamwork + newStat.teamwork;
   }
 
   int get average {
-    return ((stamina + strength + attSkill + passSkill + passSkill + defSkill + composure + teamwork) / 8).round();
+    return ((stamina + strength + attSkill + passSkill + passSkill + defSkill + gkSkill + composure + teamwork) / 9).round();
   }
 }

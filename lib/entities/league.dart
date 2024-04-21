@@ -83,6 +83,7 @@ class Season {
   }
 
   Season.create({required List<Club> clubs}) {
+    clubs.shuffle();
     for (var club in clubs) {
       club.startNewSeason();
     }
