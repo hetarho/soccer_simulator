@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
@@ -252,26 +253,49 @@ class PlayerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: playerSize,
-      height: playerSize,
-      decoration: BoxDecoration(
-        border: player.hasBall
-            ? Border.all(
-                color: C().colorDifference(Colors.black, color) < C().colorDifference(Colors.white, color) ? Colors.white : Colors.black,
-                width: 4,
-              )
-            : null,
-        color: color,
-        borderRadius: BorderRadius.circular(playerSize),
-      ),
-      child: Center(
-        child: Text(
-          '${player.backNumber}',
-          style: TextStyle(
-            color: C().colorDifference(Colors.black, color) < C().colorDifference(Colors.white, color) ? Colors.white : Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
+    Color textColor = C().colorDifference(Colors.black, color) < C().colorDifference(Colors.white, color) ? Colors.white : Colors.black;
+    return Transform.translate(
+      offset: Offset(playerSize / 2, playerSize / 2),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        transform: Matrix4.rotationZ(player.rotateDegree),
+        child: Transform.translate(
+          offset: Offset(-playerSize / 2, -playerSize / 2),
+          child: Column(
+            children: [
+              Container(
+                width: playerSize,
+                height: playerSize,
+                decoration: BoxDecoration(
+                  border: player.hasBall
+                      ? Border.all(
+                          color: textColor,
+                          width: 4,
+                        )
+                      : null,
+                  color: color,
+                  borderRadius: BorderRadius.circular(playerSize),
+                ),
+                child: Center(
+                  child: Text(
+                    '${player.position}',
+                    style: TextStyle(
+                      color: textColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              // Container(
+              //   width: playerSize,
+              //   alignment: Alignment.center,
+              //   child: Text(
+              //     '${player.backNumber}',
+              //     style: TextStyle(color: textColor),
+              //   ),
+              // )
+            ],
           ),
         ),
       ),

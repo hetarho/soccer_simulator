@@ -249,7 +249,7 @@ extension PlayerMove on Player {
     double frontDistance = switch (role) {
       PlayerRole.forward => 16,
       PlayerRole.midfielder => 12,
-      PlayerRole.defender => isWinger ? 15 : 8,
+      PlayerRole.defender => 8,
       _ => 0,
     };
     _move(targetPosXY: PosXY.random(posXY.x, posXY.y + frontDistance, 3));
@@ -272,7 +272,13 @@ extension PlayerMove on Player {
     team.dribble++;
   }
 
-  pass(Player target, ClubInFixture team, List<Player> nearOpponentAtTarget, Fixture fixture) {
+  turn(PosXY targetPosXY) {
+    rotateDegree = atan2(targetPosXY.y - posXY.y, targetPosXY.x - posXY.x);
+    _streamController.add(PlayerActEvent(player: this, action: PlayerAction.none));
+  }
+
+  pass(Player target, ClubInFixture team, List<Player> nearOpponentAtTarget, Fixture fixture) async {
+    turn(target.posXY);
     lastAction = PlayerAction.pass;
 
     ///현재 선수 위치와 패스받으려는 선수 위치의 차이 클수록 정확도 하락 최대 20

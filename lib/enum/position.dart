@@ -7,27 +7,33 @@ enum PlayerRole {
 
 enum Position {
   ///fw
-  st,
-  cf,
-  lf,
-  rf,
-  lw,
-  rw,
+  st('st'),
+  cf('cf'),
+  lf('lf'),
+  rf('rf'),
+  lw('lw'),
+  rw('rw'),
 
   ///mf
-  lm,
-  rm,
-  cm,
-  am,
-  dm,
+  lm('lm'),
+  rm('rm'),
+  cm('cm'),
+  am('am'),
+  dm('dm'),
 
   ///df
-  lb,
-  cb,
-  rb,
+  lb('lb'),
+  cb('cb'),
+  rb('rb'),
 
   ///gk
-  gk,
+  gk('gk');
+
+  final String text;
+  const Position(this.text);
+
+  @override
+  String toString() => text;
 }
 
 // switch (position) {

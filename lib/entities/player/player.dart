@@ -313,11 +313,7 @@ class Player extends Member {
     _hasBall = newVal;
   }
 
-  ///윙어인지 아닌지를 나타내는 변수
-  bool get isWinger => isLeftWinger || isRightWinger;
-
-  bool get isLeftWinger => startingPoxXY.x < 30;
-  bool get isRightWinger => startingPoxXY.x > 70;
+  double rotateDegree = 0;
 
   double get _posXMinBoundary {
     return max(
@@ -402,8 +398,8 @@ class Player extends Member {
               Position.lm => 60,
               Position.rm => 60,
               Position.cm => 60,
-              Position.am => 60,
-              Position.dm => 30,
+              Position.am => 80,
+              Position.dm => 40,
               Position.lb => 30,
               Position.cb => 30,
               Position.rb => 30,

@@ -87,7 +87,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 60,
         max: 140,
-        formation: Formation.create433(),
+        formation: Formation.create4231(),
       );
 
     Club manchesterCity = Club(
@@ -111,7 +111,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 70,
         max: 130,
-        formation: Formation.create433(),
+        formation: Formation.create442(),
       );
 
     Club astonVilla = Club(
@@ -123,7 +123,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 60,
         max: 120,
-        formation: Formation.create433(),
+        formation: Formation.create41212(),
       );
     Club tottenham = Club(
       name: 'Tottenham Hotspur',
@@ -145,7 +145,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 60,
         max: 120,
-        formation: Formation.create433(),
+        formation: Formation.create532(),
       );
 
     Club manchesterUnited = Club(
@@ -157,7 +157,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 50,
         max: 110,
-        formation: Formation.create433(),
+        formation: Formation.create4222(),
       );
 
     Club westHam = Club(
@@ -180,7 +180,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 50,
         max: 110,
-        formation: Formation.create433(),
+        formation: Formation.create3241(),
       );
 
     Club brighton = Club(
@@ -192,7 +192,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 55,
         max: 90,
-        formation: Formation.create433(),
+        formation: Formation.create352(),
       );
     Club wolverhampton = Club(
       name: 'Wolverhampton Wanderers',
@@ -203,7 +203,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 55,
         max: 90,
-        formation: Formation.create433(),
+        formation: Formation.create352(),
       );
 
     Club folham = Club(
@@ -215,7 +215,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 55,
         max: 90,
-        formation: Formation.create433(),
+        formation: Formation.create532(),
       );
     Club bournemouth = Club(
       name: 'Bournemouth',
@@ -226,7 +226,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 55,
         max: 90,
-        formation: Formation.create433(),
+        formation: Formation.create4141(),
       );
 
     Club crystalPalace = Club(
@@ -238,7 +238,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 55,
         max: 90,
-        formation: Formation.create433(),
+        formation: Formation.create41212(),
       );
 
     Club brentford = Club(
@@ -262,7 +262,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 45,
         max: 90,
-        formation: Formation.create433(),
+        formation: Formation.create442(),
       );
 
     Club nottingham = Club(
@@ -274,7 +274,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 45,
         max: 90,
-        formation: Formation.create433(),
+        formation: Formation.create442(),
       );
 
     Club lutonTown = Club(
@@ -286,7 +286,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 45,
         max: 90,
-        formation: Formation.create433(),
+        formation: Formation.create352(),
       );
     Club burnley = Club(
       name: 'Burnley',
@@ -297,7 +297,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 45,
         max: 90,
-        formation: Formation.create433(),
+        formation: Formation.create3241(),
       );
 
     Club sheffield = Club(
@@ -309,7 +309,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     )..createStartingMembers(
         min: 45,
         max: 90,
-        formation: Formation.create433(),
+        formation: Formation.create532(),
       );
 
     List<Club> clubs = [

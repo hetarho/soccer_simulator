@@ -30,7 +30,7 @@ Position getPositionFromPosXY(PosXY posXY) {
     } else if (posXY.x < 70) {
       if (posXY.y > 60) {
         position = Position.am;
-      } else if (posXY.y > 40) {
+      } else if (posXY.y > 45) {
         position = Position.cm;
       } else {
         position = Position.dm;
