@@ -207,10 +207,12 @@ extension PlayerMove on Player {
                 linePoint2: goalKeeper.reversePosXy,
                 point: opponent.reversePosXy,
               ) <
-              (20 - shootingStat ~/ 10))
+              (25 - shootingStat ~/ 10))
           .length;
 
-      if (opponentsNumNearShootRout < 3 + midRangeShootStat ~/ 20) {
+      double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy);
+
+      if (opponentsNumNearShootRout < shootingStat ~/ 20 && distanceToGoalPost < midRangeShootStat * 0.85) {
         _shoot(
             fixture: fixture,
             team: team,
@@ -357,8 +359,7 @@ extension PlayerMove on Player {
     double pressureIntensity = pressureOpponentPlayers.fold(0.0, (prev, opponent) {
       return _getPressure(target: posXY, pressurePlayer: opponent.reversePosXy, pressureStat: opponent.pressureStat);
     });
-
-    if ((pow(shootingStat, 0.8 + R().getDouble(max: 1))) > goalKeeper.keepingStat * distanceToGoalPost * min(1, pressureIntensity)) {
+    if ((pow(shootingStat, 1.45 + R().getDouble(max: 0.75))) > goalKeeper.keepingStat * distanceToGoalPost * max(1, pressureIntensity)) {
       goal++;
       fixture.scored(
         scoredClub: team,

@@ -27,7 +27,7 @@ Position getPositionFromPosXY(PosXY posXY) {
   else if (posXY.y > 30) {
     if (posXY.x < 30) {
       position = Position.lm;
-    } else if (posXY.x < 70) {
+    } else if (posXY.x <= 70) {
       if (posXY.y > 60) {
         position = Position.am;
       } else if (posXY.y > 45) {
@@ -45,7 +45,7 @@ Position getPositionFromPosXY(PosXY posXY) {
   else if (posXY.y > 1) {
     if (posXY.x < 30) {
       position = Position.lb;
-    } else if (posXY.x < 70) {
+    } else if (posXY.x <= 70) {
       position = Position.cb;
     } else {
       position = Position.rb;

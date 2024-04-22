@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/main.dart';
+import 'package:soccer_simulator/pages/fixture/fixture_page.dart';
 
 class PlayerListPage extends ConsumerWidget {
   const PlayerListPage({super.key});
@@ -14,27 +15,44 @@ class PlayerListPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Container(
-        child: ListView.builder(
-          itemCount: playerList.length,
-          itemBuilder: (context, index) => GestureDetector(
-            onTap: () {
-              ref.read(playerProvider.notifier).state = playerList[index];
-              context.push('/players/detail');
+        padding: const EdgeInsets.all(16),
+        color: Colors.green,
+        child: AspectRatio(
+          aspectRatio: 1.125,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final stadiumWidth = constraints.maxWidth;
+              final stadiumHeight = constraints.maxHeight;
+              double playerSize = stadiumWidth / 10;
+              return Stack(
+                clipBehavior: Clip.none,
+                children: playerList.map((player) {
+                  return AnimatedPositioned(
+                    duration: Duration(milliseconds: (player.playSpeed.inMilliseconds / 1).round()),
+                    curve: Curves.decelerate,
+                    top: stadiumHeight * (100 - player.posXY.y) / 100 - (playerSize),
+                    left: stadiumWidth * (player.posXY.x) / 100 - (playerSize / 2),
+                    child: GestureDetector(
+                      onTap: () {
+                        ref.read(playerProvider.notifier).state = player;
+                        context.push('/players/detail');
+                      },
+                      child: PlayerWidget(
+                        player: player,
+                        playerSize: playerSize,
+                        color: player.role == PlayerRole.goalKeeper
+                            ? Colors.yellow
+                            : player.role == PlayerRole.forward
+                                ? Colors.red
+                                : player.role == PlayerRole.midfielder
+                                    ? Colors.blue
+                                    : Colors.orange,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              );
             },
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              color: playerList[index].role == PlayerRole.goalKeeper
-                  ? Colors.yellow
-                  : playerList[index].role == PlayerRole.forward
-                      ? Colors.red
-                      : playerList[index].role == PlayerRole.midfielder
-                          ? Colors.blue
-                          : Colors.green,
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(playerList[index].name),
-                Text(playerList[index].overall.toString()),
-              ]),
-            ),
           ),
         ),
       ),

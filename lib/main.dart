@@ -432,7 +432,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   child: const Text('득점')),
               ElevatedButton(
                 onPressed: () async {
-                  _autoPlaying();
+                  if (_isAutoPlay) {
+                    _isAutoPlay = false;
+                  } else {
+                    _autoPlaying();
+                  }
                 },
                 child: const Text('자동'),
               ),
