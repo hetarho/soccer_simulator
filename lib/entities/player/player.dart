@@ -70,7 +70,7 @@ class Player extends Member {
   }
 
   Duration get playSpeed {
-    return Duration(milliseconds: (_playSpeed.inMilliseconds * 10 / sqrt(reflex / 2)).round());
+    return Duration(milliseconds: (_playSpeed.inMilliseconds * 10 / sqrt(reflex / 1.5)).round());
   }
 
   Player.create({
