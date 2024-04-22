@@ -178,8 +178,12 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                             AnimatedPositioned(
                               duration: Duration(milliseconds: (_ballAnimationSpeed).round()),
                               curve: Curves.decelerate,
-                              top: fixture.isHomeTeamBall ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2) : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
-                              left: fixture.isHomeTeamBall ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10 : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
+                              top: fixture.isHomeTeamBall
+                                  ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)
+                                  : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
+                              left: fixture.isHomeTeamBall
+                                  ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10
+                                  : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
                               child: Container(
                                 width: ballSize,
                                 height: ballSize,
@@ -254,23 +258,23 @@ class PlayerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color textColor = C().colorDifference(Colors.black, color) < C().colorDifference(Colors.white, color) ? Colors.white : Colors.black;
-    return Transform.translate(
-      offset: Offset(playerSize / 2, playerSize / 2),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
-        transform: Matrix4.rotationZ(player.rotateDegree),
-        child: Transform.translate(
-          offset: Offset(-playerSize / 2, -playerSize / 2),
-          child: Column(
-            children: [
-              Container(
+    return Column(
+      children: [
+        Transform.translate(
+          offset: Offset(playerSize / 2, playerSize / 2),
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 200),
+            transform: Matrix4.rotationZ(player.rotateDegree),
+            child: Transform.translate(
+              offset: Offset(-playerSize / 2, -playerSize / 2),
+              child: Container(
                 width: playerSize,
                 height: playerSize,
                 decoration: BoxDecoration(
                   border: player.hasBall
                       ? Border.all(
                           color: textColor,
-                          width: 4,
+                          width: playerSize / 10,
                         )
                       : null,
                   color: color,
@@ -282,23 +286,26 @@ class PlayerWidget extends StatelessWidget {
                     style: TextStyle(
                       color: textColor,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: playerSize / 2,
                     ),
                   ),
                 ),
               ),
-              // Container(
-              //   width: playerSize,
-              //   alignment: Alignment.center,
-              //   child: Text(
-              //     '${player.backNumber}',
-              //     style: TextStyle(color: textColor),
-              //   ),
-              // )
-            ],
+            ),
           ),
         ),
-      ),
+        Container(
+          width: playerSize,
+          alignment: Alignment.center,
+          child: Text(
+            '${player.backNumber}',
+            style: TextStyle(
+              color: textColor,
+              fontSize: playerSize / 2,
+            ),
+          ),
+        )
+      ],
     );
   }
 }

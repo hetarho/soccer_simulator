@@ -24,11 +24,11 @@ class Formation {
   Formation.create4231() {
     posXYList = [
       PosXY(50, 90),
-      PosXY(20, 60),
+      PosXY(20, 80),
       PosXY(50, 70),
-      PosXY(80, 60),
-      PosXY(40, 45),
-      PosXY(60, 45),
+      PosXY(80, 80),
+      PosXY(40, 50),
+      PosXY(60, 50),
       PosXY(15, 30),
       PosXY(40, 30),
       PosXY(60, 30),

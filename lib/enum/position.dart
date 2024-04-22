@@ -36,7 +36,24 @@ enum Position {
   String toString() => text;
 }
 
+// Position.st;
+// Position.cf;
+// Position.lf;
+// Position.rf;
+// Position.lw;
+// Position.rw;
+// Position.lm;
+// Position.rm;
+// Position.cm;
+// Position.am;
+// Position.dm;
+// Position.lb;
+// Position.cb;
+// Position.rb;
+// Position.gk;
+
 // switch (position) {
+
 //       Position.st => base,
 //       Position.cf => base,
 //       Position.lf => base,

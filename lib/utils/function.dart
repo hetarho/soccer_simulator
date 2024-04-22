@@ -10,7 +10,7 @@ Position getPositionFromPosXY(PosXY posXY) {
       position = Position.lw;
     } else if (posXY.x < 35) {
       position = Position.lf;
-    } else if (posXY.x <= 55) {
+    } else if (posXY.x <= 65) {
       if (posXY.y > 85) {
         position = Position.st;
       } else {

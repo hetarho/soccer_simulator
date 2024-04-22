@@ -540,7 +540,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                   child: const Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      SizedBox(width: 200, child: Text('name')),
+                                      SizedBox(width: 150, child: Text('name')),
                                       SizedBox(width: 35, child: Text('pts')),
                                       SizedBox(width: 35, child: Text('win')),
                                       SizedBox(width: 35, child: Text('draw')),
@@ -565,7 +565,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                             child: Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                SizedBox(width: 200, child: Text('${club.nickName}(${club.overall})')),
+                                                SizedBox(width: 150, child: Text('${club.nickName}(${club.overall})')),
                                                 SizedBox(width: 35, child: Text('${club.pts}')),
                                                 SizedBox(width: 35, child: Text('${club.won}')),
                                                 SizedBox(width: 35, child: Text('${club.drawn}')),
