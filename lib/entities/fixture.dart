@@ -235,6 +235,7 @@ class Fixture {
     }
 
     _streamSubscription?.cancel();
+    _streamSubscription = null;
     _timer?.cancel();
     _streamController.close();
   }

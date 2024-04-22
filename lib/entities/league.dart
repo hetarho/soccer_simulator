@@ -44,7 +44,13 @@ class League {
     List<Player> allPlayers = clubs.map((e) => e.players).expand((element) => element).toList();
     allPlayers.sort((a, b) => b.seasonGoal - a.seasonGoal > 0 ? 1 : -1);
 
-    print(allPlayers.sublist(0, 10));
+    return allPlayers;
+  }
+
+  List<Player> get topAssister {
+    List<Player> allPlayers = clubs.map((e) => e.players).expand((element) => element).toList();
+    allPlayers.sort((a, b) => b.seasonAssist - a.seasonAssist > 0 ? 1 : -1);
+
     return allPlayers;
   }
 }

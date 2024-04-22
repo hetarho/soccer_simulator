@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/enum/training_type.dart';
@@ -64,19 +66,19 @@ class Stat {
 
     switch (role) {
       case PlayerRole.forward:
-        this.attSkill += 40;
-        this.defSkill -= 40;
+        this.attSkill += 60;
+        this.defSkill = sqrt(this.defSkill).round();
         this.gkSkill -= 40;
         break;
       case PlayerRole.midfielder:
-        this.passSkill += 40;
-        this.defSkill -= 20;
-        this.attSkill -= 20;
+        this.passSkill += 60;
+        this.defSkill -= 40;
+        this.attSkill -= 40;
         this.gkSkill -= 40;
         break;
       case PlayerRole.defender:
-        this.defSkill += 40;
-        this.attSkill -= 40;
+        this.defSkill += 60;
+        this.attSkill = sqrt(this.attSkill).round();
         this.gkSkill -= 40;
         break;
       case PlayerRole.goalKeeper:

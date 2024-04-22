@@ -17,7 +17,7 @@ part of 'player.dart';
 /// 침착함
 /// 조직력
 extension PlayerStat on Player {
-  double get maxDistance => sqrt(speed) * 0.5 + 4;
+  double get maxDistance => sqrt(speed) * 0.6 + 5;
 
   /// 슛능력치 - 축구지능 + 기술 + 근력 + 침착함 + 체력
   int get shootingStat {
@@ -76,11 +76,11 @@ extension PlayerStat on Player {
 
   ///태클 - 축구지능 + 반응속도 + 체력 + 기술 + 침착함
   int get tackleStat {
-    double res = soccerIQ * 0.2;
+    double res = soccerIQ * 0.1;
     res = res + reflex * 0.1;
     res = res + _currentStamina * 0.05;
-    res = res + stat.defSkill * 0.55;
-    res = res + stat.composure * 0.1;
+    res = res + stat.defSkill * 0.7;
+    res = res + stat.composure * 0.05;
     return res.round();
   }
 

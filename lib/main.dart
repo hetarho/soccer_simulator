@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:async/async.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -69,7 +71,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   bool _showFixtures = true;
   bool _showLeagueTable = false;
   bool _showTopScorerTable = false;
-  Duration _timer = Duration(seconds: 0);
+  Duration _timer = const Duration(seconds: 0);
 
   @override
   void initState() {
@@ -481,52 +483,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           scrollDirection: Axis.horizontal,
                           child: Padding(
                             padding: const EdgeInsets.all(20),
-                            child: Column(
-                              children: [
-                                Container(
-                                  decoration: const BoxDecoration(
-                                      border: Border(
-                                    bottom: BorderSide(color: Colors.black),
-                                  )),
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SizedBox(width: 50, child: Text('club')),
-                                      SizedBox(width: 90, child: Text('name')),
-                                      SizedBox(width: 55, child: Text('number')),
-                                      SizedBox(width: 35, child: Text('ov')),
-                                      SizedBox(width: 35, child: Text('goal')),
-                                      SizedBox(width: 40, child: Text('assist')),
-                                    ],
-                                  ),
-                                ),
-                                ..._league.topScorers
-                                    .map((player) => GestureDetector(
-                                          onTap: () {
-                                            ref.read(playerProvider.notifier).state = player;
-                                            context.push('/players/detail');
-                                          },
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                                border: Border(
-                                              bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
-                                            )),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                SizedBox(width: 50, child: Text(player.team?.nickName ?? 'none')),
-                                                SizedBox(width: 90, child: Text(player.name)),
-                                                SizedBox(width: 55, child: Text('${player.backNumber}')),
-                                                SizedBox(width: 35, child: Text('${player.overall}')),
-                                                SizedBox(width: 35, child: Text('${player.seasonGoal}')),
-                                                SizedBox(width: 40, child: Text('${player.seasonAssist}')),
-                                              ],
-                                            ),
-                                          ),
-                                        ))
-                                    .toList()
-                              ],
-                            ),
+                            child: TableWidget(league: _league),
                           ),
                         ),
                       if (_showLeagueTable)
@@ -587,15 +544,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           ),
                         ),
                       const SizedBox(height: 8),
-                      // ...[..._league.seasons.last.rounds..sort((a, b) => a.number - b.number)]
-                      //     .map((round) => round.fixtures)
-                      //     .expand((list) => list)
-                      //     .where((fixture) => fixture.away.club.name == 'Arsenal' || fixture.home.club.name == 'Arsenal')
-                      //     .map((fixture) => FixtureInfo(
-                      //           fixture: fixture,
-                      //           showWDL: false,
-                      //         )),
-                      const SizedBox(height: 8),
                     ],
                   ),
                 )
@@ -608,17 +556,96 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 }
 
-class ClubInfo extends StatelessWidget {
+class TableWidget extends ConsumerStatefulWidget {
+  const TableWidget({super.key, required this.league});
+  final League league;
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _TableWidgetState();
+}
+
+class _TableWidgetState extends ConsumerState<TableWidget> {
+  bool sortByGoal = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTextStyle(
+      style: const TextStyle(
+        fontSize: 18,
+        color: Colors.black,
+      ),
+      child: Column(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+                border: Border(
+              bottom: BorderSide(color: Colors.black),
+            )),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(width: 50, child: Text('club')),
+                SizedBox(width: 90, child: Text('name')),
+                SizedBox(width: 55, child: Text('pos')),
+                SizedBox(width: 35, child: Text('ov')),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        sortByGoal = true;
+                      });
+                    },
+                    child: SizedBox(width: 50, child: Text('goal'))),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        sortByGoal = false;
+                      });
+                    },
+                    child: SizedBox(width: 55, child: Text('assist'))),
+              ],
+            ),
+          ),
+          ...(sortByGoal ? widget.league.topScorers : widget.league.topAssister)
+              .map((player) => GestureDetector(
+                    onTap: () {
+                      ref.read(playerProvider.notifier).state = player;
+                      context.push('/players/detail');
+                    },
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          border: Border(
+                        bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
+                      )),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(width: 50, child: Text(player.team?.nickName ?? 'none')),
+                          SizedBox(width: 90, child: Text(player.name)),
+                          SizedBox(width: 55, child: Text('${player.position}')),
+                          SizedBox(width: 35, child: Text('${player.overall}')),
+                          SizedBox(width: 50, child: Text('${player.seasonGoal}')),
+                          SizedBox(width: 55, child: Text('${player.seasonAssist}')),
+                        ],
+                      ),
+                    ),
+                  ))
+              .toList()
+        ],
+      ),
+    );
+  }
+}
+
+class ClubInfo extends ConsumerWidget {
   const ClubInfo({super.key, required this.club, required this.showWDL});
   final Club club;
   final bool showWDL;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     TextStyle textStyle = TextStyle(
       color: C().colorDifference(Colors.black, club.homeColor) < C().colorDifference(Colors.white, club.homeColor) ? Colors.white : Colors.black,
     );
-    return Container(
+    return SizedBox(
       width: 120,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -649,6 +676,13 @@ class FixtureInfo extends ConsumerStatefulWidget {
 class _FixtureInfoState extends ConsumerState<FixtureInfo> {
   StreamSubscription<FixtureRecord>? _streamSubscription;
   Color? _bgColor;
+
+  @override
+  void dispose() {
+    _streamSubscription?.cancel();
+    _streamSubscription = null;
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
