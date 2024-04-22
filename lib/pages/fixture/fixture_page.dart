@@ -205,7 +205,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       child: const Text('play')),
                   Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [1, 100, 200, 500, 1000, 3000]
+                    children: [1, 50, 100, 200, 1000]
                         .map((speed) => ElevatedButton(
                               style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(0)),
                               onPressed: () {

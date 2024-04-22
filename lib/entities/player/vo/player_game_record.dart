@@ -2,6 +2,7 @@
 class PlayerGameRecord {
   final int goal;
   final int assist;
+  final int pass;
   final int passSuccess;
   final int shooting;
   final int defSuccess;
@@ -10,6 +11,7 @@ class PlayerGameRecord {
   PlayerGameRecord({
     required this.goal,
     required this.assist,
+    required this.pass,
     required this.passSuccess,
     required this.shooting,
     required this.defSuccess,

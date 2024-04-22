@@ -146,6 +146,9 @@ class PlayerDetail extends ConsumerWidget {
               children: [
                 Text('골'),
                 Text('어시스트'),
+                Text('패스성공'),
+                Text('패스 성공률'),
+                Text('수비성공'),
               ],
             ),
             Row(
@@ -153,6 +156,9 @@ class PlayerDetail extends ConsumerWidget {
               children: [
                 Text('${player.seasonGoal}'),
                 Text('${player.seasonAssist}'),
+                Text('${player.seasonPassSuccess}'),
+                Text('${player.passTry == 0 ? 100 : (player.seasonPassSuccess * 100 / player.passTry).round()}%'),
+                Text('${player.seasonDefSuccess}'),
               ],
             ),
           ],

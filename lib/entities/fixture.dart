@@ -21,7 +21,6 @@ class Fixture {
             PlayerAction.goal,
             PlayerAction.assist,
             PlayerAction.shoot,
-            PlayerAction.tackle,
           ].contains(event.action) &&
           isGameStart) {
         records.add(FixtureRecord(

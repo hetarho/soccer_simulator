@@ -225,6 +225,9 @@ class Player extends Member {
   /// 어시스트
   int assist = 0;
 
+  ///패스 시도
+  int passTry = 0;
+
   ///성공한 패스
   int passSuccess = 0;
 
@@ -259,6 +262,8 @@ class Player extends Member {
 
   int get seasonGoal => gameRecord.fold(0, (prev, rec) => prev + rec.goal);
   int get seasonAssist => gameRecord.fold(0, (prev, rec) => prev + rec.assist);
+  int get seasonPassSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.passSuccess);
+  int get seasonDefSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.defSuccess);
 
   List<List<int>> seasonRecord = [];
 
@@ -315,95 +320,108 @@ class Player extends Member {
 
   double rotateDegree = 0;
 
+  double get teamFreeArea => switch (team?.tactics.freeLevel) {
+        PlayerFreeLevel.max => 1.2,
+        PlayerFreeLevel.hight => 1.1,
+        PlayerFreeLevel.middle => 1,
+        PlayerFreeLevel.low => 0.9,
+        PlayerFreeLevel.min => 0.8,
+        _ => 1,
+      };
+
   double get _posXMinBoundary {
     return max(
         0,
         startingPoxXY.x +
-            switch (position ?? wantPosition) {
-              Position.st => -10,
-              Position.cf => -20,
-              Position.lf => -20,
-              Position.rf => -25,
-              Position.lw => -15,
-              Position.rw => -5,
-              Position.lm => -10,
-              Position.rm => -10,
-              Position.cm => -10,
-              Position.am => -20,
-              Position.dm => -35,
-              Position.lb => -25,
-              Position.cb => -5,
-              Position.rb => -5,
-              Position.gk => -5,
-            });
+            teamFreeArea *
+                switch (position ?? wantPosition) {
+                  Position.st => -10,
+                  Position.cf => -20,
+                  Position.lf => -20,
+                  Position.rf => -25,
+                  Position.lw => -15,
+                  Position.rw => -5,
+                  Position.lm => -10,
+                  Position.rm => -10,
+                  Position.cm => -10,
+                  Position.am => -20,
+                  Position.dm => -35,
+                  Position.lb => -25,
+                  Position.cb => -5,
+                  Position.rb => -5,
+                  Position.gk => -5,
+                });
   }
 
   double get _posXMaxBoundary {
     return min(
         100,
         startingPoxXY.x +
-            switch (position ?? wantPosition) {
-              Position.st => 10,
-              Position.cf => 20,
-              Position.lf => 25,
-              Position.rf => 20,
-              Position.lw => 5,
-              Position.rw => 15,
-              Position.lm => 10,
-              Position.rm => 10,
-              Position.cm => 10,
-              Position.am => 20,
-              Position.dm => 35,
-              Position.lb => 5,
-              Position.cb => 5,
-              Position.rb => 25,
-              Position.gk => 5,
-            });
+            teamFreeArea *
+                switch (position ?? wantPosition) {
+                  Position.st => 10,
+                  Position.cf => 20,
+                  Position.lf => 25,
+                  Position.rf => 20,
+                  Position.lw => 5,
+                  Position.rw => 15,
+                  Position.lm => 10,
+                  Position.rm => 10,
+                  Position.cm => 10,
+                  Position.am => 20,
+                  Position.dm => 35,
+                  Position.lb => 5,
+                  Position.cb => 5,
+                  Position.rb => 25,
+                  Position.gk => 5,
+                });
   }
 
   double get _posYMinBoundary {
     return max(
         0,
         startingPoxXY.y +
-            switch (position ?? wantPosition) {
-              Position.st => -15,
-              Position.cf => -25,
-              Position.lf => -25,
-              Position.rf => -25,
-              Position.lw => -40,
-              Position.rw => -40,
-              Position.lm => -30,
-              Position.rm => -30,
-              Position.cm => -30,
-              Position.am => -30,
-              Position.dm => -30,
-              Position.lb => -20,
-              Position.cb => -20,
-              Position.rb => -20,
-              Position.gk => -20,
-            });
+            teamFreeArea *
+                switch (position ?? wantPosition) {
+                  Position.st => -15,
+                  Position.cf => -25,
+                  Position.lf => -25,
+                  Position.rf => -25,
+                  Position.lw => -40,
+                  Position.rw => -40,
+                  Position.lm => -30,
+                  Position.rm => -30,
+                  Position.cm => -30,
+                  Position.am => -30,
+                  Position.dm => -30,
+                  Position.lb => -20,
+                  Position.cb => -20,
+                  Position.rb => -20,
+                  Position.gk => -20,
+                });
   }
 
   double get _posYMaxBoundary {
     return min(
         200,
         startingPoxXY.y +
-            switch (position ?? wantPosition) {
-              Position.st => 90,
-              Position.cf => 90,
-              Position.lf => 110,
-              Position.rf => 110,
-              Position.lw => 110,
-              Position.rw => 110,
-              Position.lm => 130,
-              Position.rm => 130,
-              Position.cm => 60,
-              Position.am => 110,
-              Position.dm => 40,
-              Position.lb => 140,
-              Position.cb => 30,
-              Position.rb => 140,
-              Position.gk => 5,
-            });
+            teamFreeArea *
+                switch (position ?? wantPosition) {
+                  Position.st => 90,
+                  Position.cf => 90,
+                  Position.lf => 110,
+                  Position.rf => 110,
+                  Position.lw => 110,
+                  Position.rw => 110,
+                  Position.lm => 130,
+                  Position.rm => 130,
+                  Position.cm => 90,
+                  Position.am => 110,
+                  Position.dm => 70,
+                  Position.lb => 140,
+                  Position.cb => 60,
+                  Position.rb => 140,
+                  Position.gk => 5,
+                });
   }
 }
