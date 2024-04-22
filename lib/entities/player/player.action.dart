@@ -273,7 +273,10 @@ extension PlayerMove on Player {
   }
 
   turn(PosXY targetPosXY) {
-    rotateDegree = atan2(targetPosXY.y - posXY.y, targetPosXY.x - posXY.x);
+    double radian = atan2(targetPosXY.y - posXY.y, targetPosXY.x - posXY.x);
+    // radian = radian > pi ? 2 * pi - radian : radian;
+
+    rotateDegree = radian;
     _streamController.add(PlayerActEvent(player: this, action: PlayerAction.none));
   }
 
@@ -386,6 +389,7 @@ extension PlayerMove on Player {
       _currentStamina *= 0.95;
     }
 
+    if (moveDistance > 5) turn(newPos);
     posXY = newPos;
   }
 }
