@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:math';
 
 import 'package:soccer_simulator/entities/club.dart';
@@ -71,7 +70,7 @@ class Player extends Member {
   }
 
   Duration get playSpeed {
-    return Duration(microseconds: (_playSpeed.inMicroseconds / (reflex ~/ 10)).round());
+    return Duration(microseconds: (_playSpeed.inMicroseconds * 10 / sqrt(reflex / 1.5)).round());
   }
 
   Player.create({
