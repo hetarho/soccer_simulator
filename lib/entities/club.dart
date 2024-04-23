@@ -27,6 +27,19 @@ class Club {
     this.awayColor = Colors.black,
   });
 
+  Club.copy(Club club) {
+    players = club.players;
+    nickName = club.nickName;
+    homeColor = club.homeColor;
+    awayColor = club.awayColor;
+    name = club.name;
+    won = club.won;
+    drawn = club.drawn;
+    lost = club.lost;
+    gf = club.gf;
+    ga = club.ga;
+  }
+
   void createStartingMembers({
     required int min,
     required int max,
@@ -48,11 +61,11 @@ class Club {
   }
 
   final String id = const Uuid().v4();
-  String name;
-  String nickName;
+  late String name;
+  late String nickName;
   late Color color;
-  final Color homeColor;
-  final Color awayColor;
+  late Color homeColor;
+  late Color awayColor;
   late Tactics tactics;
 
   bool hasBall = false;

@@ -2,21 +2,20 @@ class Tactics {
   Tactics({
     required this.pressDistance,
     required this.freeLevel,
-  });
-  Tactics.none({
-    this.pressDistance = 0,
-    this.freeLevel = PlayerFreeLevel.middle,
+    required this.attackLevel,
   });
   Tactics.normal({
     this.pressDistance = 10,
-    this.freeLevel = PlayerFreeLevel.middle,
+    this.freeLevel = PlayLevel.middle,
+    this.attackLevel = PlayLevel.middle,
   });
 
   final double pressDistance;
-  final PlayerFreeLevel freeLevel;
+  final PlayLevel freeLevel;
+  final PlayLevel attackLevel;
 }
 
-enum PlayerFreeLevel {
+enum PlayLevel {
   min,
   low,
   middle,

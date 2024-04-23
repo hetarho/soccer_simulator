@@ -13,6 +13,7 @@ import 'package:soccer_simulator/entities/formation/formation.dart';
 import 'package:soccer_simulator/entities/league.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/tactics/tactics.dart';
+import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';
 import 'package:soccer_simulator/router/routes.dart';
 import 'package:soccer_simulator/utils/color.dart';
@@ -85,19 +86,23 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'ARS',
       homeColor: Colors.red,
       awayColor: Colors.yellow,
-      tactics: Tactics(pressDistance: 35, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 35, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max),
     )..createStartingMembers(
         min: 60,
         max: 140,
         formation: Formation.create4231(),
       );
 
+    for (var p in arsenal.players) {
+      if (p.role == PlayerRole.forward) p.tactics = Tactics(pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max);
+    }
+
     Club manchesterCity = Club(
       name: 'manchesterCity',
       nickName: 'MAC',
       homeColor: Colors.blue[100]!,
       awayColor: Colors.blue[800]!,
-      tactics: Tactics(pressDistance: 20, freeLevel: PlayerFreeLevel.hight),
+      tactics: Tactics(pressDistance: 20, freeLevel: PlayLevel.hight, attackLevel: PlayLevel.min),
     )..createStartingMembers(
         min: 85,
         max: 115,
@@ -109,7 +114,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'LIV',
       homeColor: Colors.red[800]!,
       awayColor: Colors.blue[900]!,
-      tactics: Tactics(pressDistance: 45, freeLevel: PlayerFreeLevel.hight),
+      tactics: Tactics(pressDistance: 45, freeLevel: PlayLevel.hight, attackLevel: PlayLevel.max),
     )..createStartingMembers(
         min: 50,
         max: 150,
@@ -121,7 +126,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'AV',
       homeColor: const Color.fromARGB(255, 135, 45, 88),
       awayColor: const Color.fromRGBO(140, 188, 229, 1),
-      tactics: Tactics(pressDistance: 15, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 15, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 60,
         max: 120,
@@ -132,10 +137,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'TOT',
       homeColor: Colors.white,
       awayColor: const Color.fromRGBO(19, 30, 72, 1),
-      tactics: Tactics(pressDistance: 10, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 10, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
-        min: 50,
-        max: 110,
+        min: 60,
+        max: 120,
         formation: Formation.create433(),
       );
     Club newcastle = Club(
@@ -143,10 +148,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'NEW',
       homeColor: Colors.black,
       awayColor: Colors.white,
-      tactics: Tactics(pressDistance: 35, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 35, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
-        min: 50,
-        max: 110,
+        min: 60,
+        max: 120,
         formation: Formation.create532(),
       );
 
@@ -155,10 +160,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'MU',
       homeColor: Colors.red,
       awayColor: Colors.green[200]!,
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
-        min: 45,
-        max: 105,
+        min: 60,
+        max: 120,
         formation: Formation.create4222(),
       );
 
@@ -167,10 +172,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'WHU',
       homeColor: const Color.fromARGB(255, 112, 45, 52),
       awayColor: const Color.fromRGBO(179, 110, 70, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
-        min: 45,
-        max: 105,
+        min: 60,
+        max: 120,
         formation: Formation.create433(),
       );
     Club chelsea = Club(
@@ -178,19 +183,23 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'CHE',
       homeColor: const Color.fromARGB(255, 0, 27, 123),
       awayColor: const Color.fromRGBO(80, 70, 85, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.low),
     )..createStartingMembers(
-        min: 45,
-        max: 105,
+        min: 60,
+        max: 120,
         formation: Formation.create3241(),
       );
+
+    for (var p in chelsea.players) {
+      p.tactics = Tactics(pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.low);
+    }
 
     Club brighton = Club(
       name: 'Brighton And Hov Albion',
       nickName: 'BRH',
       homeColor: const Color.fromARGB(255, 0, 77, 152),
       awayColor: const Color.fromRGBO(80, 255, 255, 255),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 45,
         max: 90,
@@ -201,7 +210,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'WOV',
       homeColor: const Color.fromARGB(255, 250, 174, 40),
       awayColor: const Color.fromRGBO(27, 27, 27, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 45,
         max: 90,
@@ -213,7 +222,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'FUL',
       homeColor: const Color.fromARGB(255, 15, 15, 15),
       awayColor: const Color.fromRGBO(150, 27, 27, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 45,
         max: 90,
@@ -224,7 +233,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'BOU',
       homeColor: const Color.fromARGB(255, 200, 6, 20),
       awayColor: const Color.fromRGBO(120, 120, 120, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 45,
         max: 90,
@@ -236,7 +245,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'CP',
       homeColor: const Color.fromARGB(255, 15, 45, 115),
       awayColor: const Color.fromRGBO(70, 5, 30, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 45,
         max: 90,
@@ -248,7 +257,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'BFD',
       homeColor: const Color.fromARGB(255, 180, 0, 15),
       awayColor: const Color.fromRGBO(70, 25, 25, 25),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 45,
         max: 90,
@@ -260,7 +269,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'EVT',
       homeColor: const Color.fromARGB(255, 0, 60, 140),
       awayColor: const Color.fromRGBO(70, 15, 15, 15),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayerFreeLevel.middle),
+      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 45,
         max: 80,
@@ -272,7 +281,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'NOF',
       homeColor: const Color.fromARGB(255, 230, 35, 55),
       awayColor: const Color.fromRGBO(230, 230, 230, 1),
-      tactics: Tactics(pressDistance: 5, freeLevel: PlayerFreeLevel.max),
+      tactics: Tactics(pressDistance: 5, freeLevel: PlayLevel.max, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 45,
         max: 80,
@@ -284,18 +293,22 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'LT',
       homeColor: const Color.fromARGB(255, 130, 130, 110),
       awayColor: const Color.fromRGBO(90, 100, 150, 1),
-      tactics: Tactics(pressDistance: 60, freeLevel: PlayerFreeLevel.max),
+      tactics: Tactics(pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max),
     )..createStartingMembers(
         min: 45,
         max: 80,
         formation: Formation.create3241(),
       );
+
+    for (var p in lutonTown.players) {
+      if (p.role == PlayerRole.forward) p.tactics = Tactics(pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max);
+    }
     Club burnley = Club(
       name: 'Burnley',
       nickName: 'BUN',
       homeColor: const Color.fromARGB(255, 77, 5, 50),
       awayColor: const Color.fromRGBO(90, 100, 150, 1),
-      tactics: Tactics(pressDistance: 5, freeLevel: PlayerFreeLevel.min),
+      tactics: Tactics(pressDistance: 5, freeLevel: PlayLevel.min, attackLevel: PlayLevel.min),
     )..createStartingMembers(
         min: 45,
         max: 80,
@@ -307,7 +320,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'SHU',
       homeColor: const Color.fromARGB(255, 223, 22, 35),
       awayColor: const Color.fromRGBO(0, 0, 0, 1),
-      tactics: Tactics(pressDistance: 60, freeLevel: PlayerFreeLevel.min),
+      tactics: Tactics(pressDistance: 60, freeLevel: PlayLevel.min, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 45,
         max: 80,
@@ -359,6 +372,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       if (event.isGameEnd && _isAutoPlay) {
         _finishedFixtureNum++;
         if (_finishedFixtureNum == 10) {
+          if (_league.round == 38) _league.startNewSeason();
           await Future.delayed(const Duration(seconds: 0));
           _finishedFixtureNum = 0;
           _league.nextRound();
@@ -483,7 +497,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           scrollDirection: Axis.horizontal,
                           child: Padding(
                             padding: const EdgeInsets.all(20),
-                            child: TableWidget(league: _league),
+                            child: PlayerTableWidget(league: _league),
                           ),
                         ),
                       if (_showLeagueTable)
@@ -491,59 +505,24 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           scrollDirection: Axis.horizontal,
                           child: Padding(
                             padding: const EdgeInsets.all(20),
-                            child: Column(
-                              children: [
-                                Container(
-                                  decoration: const BoxDecoration(
-                                      border: Border(
-                                    bottom: BorderSide(color: Colors.black),
-                                  )),
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SizedBox(width: 150, child: Text('name')),
-                                      SizedBox(width: 35, child: Text('pts')),
-                                      SizedBox(width: 35, child: Text('win')),
-                                      SizedBox(width: 35, child: Text('draw')),
-                                      SizedBox(width: 35, child: Text('lose')),
-                                      SizedBox(width: 35, child: Text('gf')),
-                                      SizedBox(width: 35, child: Text('ga')),
-                                      SizedBox(width: 35, child: Text('gd')),
-                                    ],
-                                  ),
-                                ),
-                                ..._league.table
-                                    .map((club) => GestureDetector(
-                                          onTap: () {
-                                            ref.read(playerListProvider.notifier).state = club.startPlayers;
-                                            context.push('/players');
-                                          },
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                                border: Border(
-                                              bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
-                                            )),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                SizedBox(width: 150, child: Text('${club.nickName}(${club.overall})')),
-                                                SizedBox(width: 35, child: Text('${club.pts}')),
-                                                SizedBox(width: 35, child: Text('${club.won}')),
-                                                SizedBox(width: 35, child: Text('${club.drawn}')),
-                                                SizedBox(width: 35, child: Text('${club.lost}')),
-                                                SizedBox(width: 35, child: Text('${club.gf}')),
-                                                SizedBox(width: 35, child: Text('${club.ga}')),
-                                                SizedBox(width: 35, child: Text('${club.gd}')),
-                                              ],
-                                            ),
-                                          ),
-                                        ))
-                                    .toList()
-                              ],
-                            ),
+                            child: LeagueTableWidget(clubs: _league.table),
                           ),
                         ),
                       const SizedBox(height: 8),
+                      ..._league.seasons.map(
+                        (season) => Column(
+                          children: [
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: LeagueTableWidget(clubs: season.seasonRecords),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 )
@@ -556,14 +535,73 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 }
 
-class TableWidget extends ConsumerStatefulWidget {
-  const TableWidget({super.key, required this.league});
+class LeagueTableWidget extends ConsumerWidget {
+  const LeagueTableWidget({super.key, required this.clubs});
+  final List<Club> clubs;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+              border: Border(
+            bottom: BorderSide(color: Colors.black),
+          )),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(width: 150, child: Text('name')),
+              SizedBox(width: 35, child: Text('pts')),
+              SizedBox(width: 35, child: Text('win')),
+              SizedBox(width: 35, child: Text('draw')),
+              SizedBox(width: 35, child: Text('lose')),
+              SizedBox(width: 35, child: Text('gf')),
+              SizedBox(width: 35, child: Text('ga')),
+              SizedBox(width: 35, child: Text('gd')),
+            ],
+          ),
+        ),
+        ...clubs
+            .map((club) => GestureDetector(
+                  onTap: () {
+                    ref.read(playerListProvider.notifier).state = club.startPlayers;
+                    context.push('/players');
+                  },
+                  child: Container(
+                    decoration: const BoxDecoration(
+                        border: Border(
+                      bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
+                    )),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(width: 150, child: Text('${club.nickName}(${club.overall})')),
+                        SizedBox(width: 35, child: Text('${club.pts}')),
+                        SizedBox(width: 35, child: Text('${club.won}')),
+                        SizedBox(width: 35, child: Text('${club.drawn}')),
+                        SizedBox(width: 35, child: Text('${club.lost}')),
+                        SizedBox(width: 35, child: Text('${club.gf}')),
+                        SizedBox(width: 35, child: Text('${club.ga}')),
+                        SizedBox(width: 35, child: Text('${club.gd}')),
+                      ],
+                    ),
+                  ),
+                ))
+            .toList(),
+      ],
+    );
+  }
+}
+
+class PlayerTableWidget extends ConsumerStatefulWidget {
+  const PlayerTableWidget({super.key, required this.league});
   final League league;
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _TableWidgetState();
 }
 
-class _TableWidgetState extends ConsumerState<TableWidget> {
+class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
   String sortBy = 'goal';
 
   @override

@@ -15,6 +15,7 @@ class League {
   }
 
   startNewSeason() {
+    _currentSeason.seasonEnd(table.map((club) => Club.copy(club)).toList());
     _currentSeason = Season.create(clubs: clubs);
     seasons.add(_currentSeason);
   }
@@ -83,8 +84,12 @@ class Round {
 class Season {
   late List<Round> rounds;
   int _roundNumber = 1;
-  late StreamController<bool> _streamController;
-  Stream<bool> get gameStream => _streamController.stream;
+  List<Club> seasonRecords = [];
+
+  seasonEnd(List<Club> clubs) {
+    seasonRecords = clubs;
+    rounds = [];
+  }
 
   int get roundNumber {
     return _roundNumber;
@@ -98,7 +103,7 @@ class Season {
     return rounds.firstWhere((round) => round.number == _roundNumber);
   }
 
-  bool get seasonEnd {
+  bool get isEndSeason {
     return _roundNumber == rounds.length;
   }
 

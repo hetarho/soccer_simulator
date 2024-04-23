@@ -105,7 +105,7 @@ class Player extends Member {
     _potential = potential ?? R().getInt(min: min, max: max);
     _stat = stat ?? Stat.create(role: role, min: min, max: max);
     _streamController = StreamController<PlayerActEvent>.broadcast();
-    this.tactics = tactics ?? Tactics(pressDistance: 15, freeLevel: PlayerFreeLevel.middle);
+    this.tactics = tactics ?? Tactics.normal();
   }
 
   final String id = const Uuid().v4();
@@ -321,11 +321,54 @@ class Player extends Member {
   double rotateDegree = 0;
 
   double get teamFreeArea => switch (team?.tactics.freeLevel) {
-        PlayerFreeLevel.max => 1.2,
-        PlayerFreeLevel.hight => 1.1,
-        PlayerFreeLevel.middle => 1,
-        PlayerFreeLevel.low => 0.9,
-        PlayerFreeLevel.min => 0.8,
+        PlayLevel.max => 1.3,
+        PlayLevel.hight => 1.15,
+        PlayLevel.middle => 1,
+        PlayLevel.low => 0.9,
+        PlayLevel.min => 0.8,
+        _ => 1,
+      };
+
+  double get personalFreeArea => switch (tactics?.freeLevel) {
+        PlayLevel.max => 1.3,
+        PlayLevel.hight => 1.15,
+        PlayLevel.middle => 1,
+        PlayLevel.low => 0.9,
+        PlayLevel.min => 0.8,
+        _ => 1,
+      };
+
+  double get teamAttackArea => switch (team?.tactics.attackLevel) {
+        PlayLevel.max => 1.3,
+        PlayLevel.hight => 1.15,
+        PlayLevel.middle => 1,
+        PlayLevel.low => 0.9,
+        PlayLevel.min => 0.8,
+        _ => 1,
+      };
+  double get personalAttackArea => switch (tactics?.attackLevel) {
+        PlayLevel.max => 1.3,
+        PlayLevel.hight => 1.15,
+        PlayLevel.middle => 1,
+        PlayLevel.low => 0.9,
+        PlayLevel.min => 0.8,
+        _ => 1,
+      };
+
+  double get teamDefenseArea => switch (team?.tactics.attackLevel) {
+        PlayLevel.max => 0.8,
+        PlayLevel.hight => 0.9,
+        PlayLevel.middle => 1,
+        PlayLevel.low => 1.15,
+        PlayLevel.min => 1.3,
+        _ => 1,
+      };
+  double get personalDefenseArea => switch (tactics?.attackLevel) {
+        PlayLevel.max => 0.8,
+        PlayLevel.hight => 0.9,
+        PlayLevel.middle => 1,
+        PlayLevel.low => 1.15,
+        PlayLevel.min => 1.3,
         _ => 1,
       };
 
@@ -334,6 +377,7 @@ class Player extends Member {
         0,
         startingPoxXY.x +
             teamFreeArea *
+                personalFreeArea *
                 switch (position ?? wantPosition) {
                   Position.st => -10,
                   Position.cf => -20,
@@ -358,6 +402,7 @@ class Player extends Member {
         100,
         startingPoxXY.x +
             teamFreeArea *
+                personalFreeArea *
                 switch (position ?? wantPosition) {
                   Position.st => 10,
                   Position.cf => 20,
@@ -381,14 +426,15 @@ class Player extends Member {
     return max(
         0,
         startingPoxXY.y +
-            teamFreeArea *
+            teamDefenseArea *
+                personalDefenseArea *
                 switch (position ?? wantPosition) {
-                  Position.st => -25,
-                  Position.cf => -35,
-                  Position.lf => -45,
-                  Position.rf => -45,
-                  Position.lw => -45,
-                  Position.rw => -45,
+                  Position.st => -15,
+                  Position.cf => -25,
+                  Position.lf => -35,
+                  Position.rf => -35,
+                  Position.lw => -35,
+                  Position.rw => -35,
                   Position.lm => -45,
                   Position.rm => -45,
                   Position.cm => -45,
@@ -405,22 +451,23 @@ class Player extends Member {
     return min(
         200,
         startingPoxXY.y +
-            teamFreeArea *
+            teamAttackArea *
+                personalAttackArea *
                 switch (position ?? wantPosition) {
-                  Position.st => 90,
-                  Position.cf => 90,
-                  Position.lf => 110,
-                  Position.rf => 110,
-                  Position.lw => 110,
-                  Position.rw => 110,
-                  Position.lm => 130,
-                  Position.rm => 130,
+                  Position.st => 100,
+                  Position.cf => 100,
+                  Position.lf => 100,
+                  Position.rf => 100,
+                  Position.lw => 100,
+                  Position.rw => 100,
+                  Position.lm => 100,
+                  Position.rm => 100,
                   Position.cm => 90,
-                  Position.am => 110,
-                  Position.dm => 70,
-                  Position.lb => 140,
-                  Position.cb => 60,
-                  Position.rb => 140,
+                  Position.am => 100,
+                  Position.dm => 80,
+                  Position.lb => 130,
+                  Position.cb => 70,
+                  Position.rb => 130,
                   Position.gk => 5,
                 });
   }

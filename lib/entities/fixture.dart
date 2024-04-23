@@ -16,39 +16,44 @@ class Fixture {
     _streamController = StreamController<FixtureRecord>.broadcast();
   }
 
+  bool _isReady = false;
+
   ready() {
-    playerStream = StreamGroup.merge(allPlayers.map((e) => e.playerStream).toList()).asBroadcastStream();
+    if (!_isReady) {
+      _isReady = true;
+      playerStream = StreamGroup.merge(allPlayers.map((e) => e.playerStream).toList()).asBroadcastStream();
 
-    _streamSubscription = playerStream.listen((event) {
-      if ([
-            PlayerAction.goal,
-            PlayerAction.assist,
-            PlayerAction.shoot,
-          ].contains(event.action) &&
-          isGameStart) {
-        records.add(FixtureRecord(
-          time: playTime,
-          club: home.club.players.where((element) => element.id == event.player.id).isEmpty ? away.club : home.club,
-          player: event.player,
-          action: event.action,
-          isGameEnd: isGameEnd,
-        ));
+      _streamSubscription = playerStream.listen((event) {
+        if ([
+              PlayerAction.goal,
+              PlayerAction.assist,
+              PlayerAction.shoot,
+            ].contains(event.action) &&
+            isGameStart) {
+          records.add(FixtureRecord(
+            time: playTime,
+            club: home.club.players.where((element) => element.id == event.player.id).isEmpty ? away.club : home.club,
+            player: event.player,
+            action: event.action,
+            isGameEnd: isGameEnd,
+          ));
+        }
+        _setBallPos();
+      });
+
+      ///홈팀 유니폼 홈유니폼으로 설정
+      home.club.color = home.club.homeColor;
+
+      double homeDiff = C().colorDifference(home.club.homeColor, away.club.homeColor);
+      double awayDiff = C().colorDifference(home.club.homeColor, away.club.awayColor);
+
+      ///어웨이 유니폼 홈유니폼으로 설정
+      ///
+      if (homeDiff < 100) {
+        away.club.color = homeDiff > awayDiff ? away.club.homeColor : away.club.awayColor;
+      } else {
+        away.club.color = away.club.homeColor;
       }
-      _setBallPos();
-    });
-
-    ///홈팀 유니폼 홈유니폼으로 설정
-    home.club.color = home.club.homeColor;
-
-    double homeDiff = C().colorDifference(home.club.homeColor, away.club.homeColor);
-    double awayDiff = C().colorDifference(home.club.homeColor, away.club.awayColor);
-
-    ///어웨이 유니폼 홈유니폼으로 설정
-    ///
-    if (homeDiff < 100) {
-      away.club.color = homeDiff > awayDiff ? away.club.homeColor : away.club.awayColor;
-    } else {
-      away.club.color = away.club.homeColor;
     }
   }
 
