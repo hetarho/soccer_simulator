@@ -564,7 +564,7 @@ class TableWidget extends ConsumerStatefulWidget {
 }
 
 class _TableWidgetState extends ConsumerState<TableWidget> {
-  bool sortByGoal = true;
+  String sortBy = 'goal';
 
   @override
   Widget build(BuildContext context) {
@@ -583,28 +583,48 @@ class _TableWidgetState extends ConsumerState<TableWidget> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(width: 50, child: Text('club')),
-                SizedBox(width: 90, child: Text('name')),
-                SizedBox(width: 55, child: Text('pos')),
-                SizedBox(width: 35, child: Text('ov')),
+                const SizedBox(width: 50, child: Text('club')),
+                const SizedBox(width: 90, child: Text('name')),
+                const SizedBox(width: 55, child: Text('pos')),
+                const SizedBox(width: 35, child: Text('ov')),
                 GestureDetector(
                     onTap: () {
                       setState(() {
-                        sortByGoal = true;
+                        sortBy = 'goal';
                       });
                     },
-                    child: SizedBox(width: 50, child: Text('goal'))),
+                    child: const SizedBox(width: 50, child: Text('goal'))),
                 GestureDetector(
                     onTap: () {
                       setState(() {
-                        sortByGoal = false;
+                        sortBy = 'assist';
                       });
                     },
-                    child: SizedBox(width: 55, child: Text('assist'))),
+                    child: const SizedBox(width: 55, child: Text('assist'))),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        sortBy = 'pass';
+                      });
+                    },
+                    child: const SizedBox(width: 55, child: Text('pass'))),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        sortBy = 'def';
+                      });
+                    },
+                    child: const SizedBox(width: 55, child: Text('def'))),
               ],
             ),
           ),
-          ...(sortByGoal ? widget.league.topScorers : widget.league.topAssister)
+          ...(sortBy == 'goal'
+                  ? widget.league.topScorers
+                  : sortBy == 'assist'
+                      ? widget.league.topAssister
+                      : sortBy == 'pass'
+                          ? widget.league.topPasser
+                          : widget.league.topDefender)
               .map((player) => GestureDetector(
                     onTap: () {
                       ref.read(playerProvider.notifier).state = player;
@@ -624,6 +644,8 @@ class _TableWidgetState extends ConsumerState<TableWidget> {
                           SizedBox(width: 35, child: Text('${player.overall}')),
                           SizedBox(width: 50, child: Text('${player.seasonGoal}')),
                           SizedBox(width: 55, child: Text('${player.seasonAssist}')),
+                          SizedBox(width: 55, child: Text('${player.seasonPassSuccess}')),
+                          SizedBox(width: 55, child: Text('${player.seasonDefSuccess}')),
                         ],
                       ),
                     ),

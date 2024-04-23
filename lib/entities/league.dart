@@ -53,6 +53,20 @@ class League {
 
     return allPlayers;
   }
+
+  List<Player> get topDefender {
+    List<Player> allPlayers = clubs.map((e) => e.players).expand((element) => element).toList();
+    allPlayers.sort((a, b) => b.seasonDefSuccess - a.seasonDefSuccess > 0 ? 1 : -1);
+
+    return allPlayers;
+  }
+
+  List<Player> get topPasser {
+    List<Player> allPlayers = clubs.map((e) => e.players).expand((element) => element).toList();
+    allPlayers.sort((a, b) => b.seasonPassSuccess - a.seasonPassSuccess > 0 ? 1 : -1);
+
+    return allPlayers;
+  }
 }
 
 class Round {
