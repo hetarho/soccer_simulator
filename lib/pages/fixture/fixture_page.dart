@@ -38,9 +38,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
     _fixture.ready();
     _playerStreamSubscription = _fixture.playerStream.listen((event) {
       if (mounted) {
-        setState(() {
-          _fixture.setBallPos();
-        });
+        setState(() {});
       }
     });
     _fixture.isSimulation = false;
@@ -205,7 +203,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       child: const Text('play')),
                   Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [1, 50, 100, 200, 1000]
+                    children: [1, 50, 100, 200, 3000]
                         .map((speed) => ElevatedButton(
                               style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(0)),
                               onPressed: () {
@@ -298,7 +296,7 @@ class PlayerWidget extends StatelessWidget {
           width: playerSize,
           alignment: Alignment.center,
           child: Text(
-            '${player.backNumber}',
+            '${player.attractive.round()}',
             style: TextStyle(
               color: textColor,
               fontSize: playerSize / 2,

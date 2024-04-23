@@ -14,6 +14,9 @@ import 'package:soccer_simulator/utils/color.dart';
 class Fixture {
   Fixture({required this.home, required this.away}) {
     _streamController = StreamController<FixtureRecord>.broadcast();
+  }
+
+  ready() {
     playerStream = StreamGroup.merge(allPlayers.map((e) => e.playerStream).toList()).asBroadcastStream();
 
     _streamSubscription = playerStream.listen((event) {
@@ -31,10 +34,9 @@ class Fixture {
           isGameEnd: isGameEnd,
         ));
       }
+      _setBallPos();
     });
-  }
 
-  ready() {
     ///홈팀 유니폼 홈유니폼으로 설정
     home.club.color = home.club.homeColor;
 
@@ -116,7 +118,7 @@ class Fixture {
     return [...home.club.players, ...away.club.players, null].firstWhere((player) => player?.hasBall ?? true);
   }
 
-  setBallPos() {
+  _setBallPos() {
     if (playerWithBall != null) _ball.posXY = playerWithBall!.posXY;
   }
 

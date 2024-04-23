@@ -57,49 +57,101 @@ extension PlayerMove on Player {
     return isClosePosX && isClosePosY;
   }
 
-  Player getMostAttractivePlayer(List<Player> players, List<Player> opponentPlayers) {
+  bool _checkBoundary({
+    required PosXY targetPos,
+    required PosXY otherPos,
+    double? sideBoundary,
+    double? frontBoundary,
+    double? backBoundary,
+    double? distance,
+  }) {
+    bool isInSideBoundary = sideBoundary == null ? true : (targetPos.x - otherPos.x).abs() <= sideBoundary;
+    bool isInFrontBoundary = frontBoundary == null ? true : otherPos.y - targetPos.y <= frontBoundary;
+    bool isInBackBoundary = backBoundary == null ? true : targetPos.y - otherPos.y <= backBoundary;
+    bool isInDistance = distance == null ? true : targetPos.distance(otherPos) <= distance;
+    return isInSideBoundary && isInDistance && isInFrontBoundary && isInBackBoundary;
+  }
+
+  ///선수의 좌표의 매력도를 측정하는 함수
+  double _getPosAttractive(Player player, List<Player> opponents) {
+    int index = 0;
+    return opponents.fold(100, (prev, opponent) {
+      bool isInBoundary = _checkBoundary(
+        targetPos: player.posXY,
+        otherPos: opponent.reversePosXy,
+        sideBoundary: 15,
+        frontBoundary: 30,
+        backBoundary: 5,
+        distance: 15,
+      );
+
+      if (isInBoundary && prev > 0) {
+        return prev + player.evadePressStat * pow(0.9, index++) - opponent.pressureStat;
+      } else {
+        return prev;
+      }
+    });
+  }
+
+  Player _getMostAttractivePlayer(List<Player> players, List<Player> opponents) {
     ///활용 가능한 선수들의 매력도를 판단
-    List<Player> judgedTeamPlayer = players.map((player) {
+    for (var player in players) {
+      bool canPass = true;
+
       ///매력도를 0으로 초기화
       player.attractive = 0;
 
-      ///선수가 앞쪽에 있을 수록 매력도 상승
-      player.attractive += (pow(player.posXY.y, 1.4) + pow(posXY.y, 1.9));
-      // print('선수가 앞쪽에 있을 수록 매력도 상승${player.attractive}');
-
-      ///선수의 능력치가 높을 수록 매력도 상승
-      player.attractive += player.overall;
-      // print('선수의 능력치가 높을 수록 매력도 상승${player.attractive}');
-
-      ///선수와의 거리가 가까울수록 매력도 상승
-      player.attractive += pow(20 / player.posXY.distance(posXY), 2);
-      // print('선수와의 거리가 가까울수록 매력도 상승${player.attractive}');
-
-      ///상대편 선수들과 해당 선수의 거리를 비교
-      for (var opponent in opponentPlayers) {
-        ///해당 선수에게 패스시 패스길과 적의 거리
+      ///해당 선수한테 패스하는 길목에 상대편 선수가 있다면 패스 시도 불가능
+      for (var opponent in opponents) {
+        ///패스 길과 해당 선수와의 거리
         double distanceToPathRoute = M().getDistanceFromPointToLine(linePoint1: posXY, linePoint2: player.posXY, point: opponent.reversePosXy);
 
-        ///해당 선수에게 패스시 패스길과 특정 거리 이내 매력도 하락
-        double unit = 15.0;
-        if (distanceToPathRoute < unit) {
-          player.attractive -= distanceToPathRoute * unit;
+        double baselineStat = 0;
+        if (player.posXY.y > 180) {
+          if (player.posXY.distance(posXY) < 50) {
+            baselineStat = sqrt(keyPassStat * shortPassStat);
+          } else {
+            baselineStat = sqrt(keyPassStat * longPassStat);
+          }
+        } else {
+          if (player.posXY.distance(posXY) < 50) {
+            baselineStat = shortPassStat.toDouble();
+          } else {
+            baselineStat = longPassStat.toDouble();
+          }
         }
-        // print('당 선수에게 패스시 패스길과 특정 거리 이내 매력도 하락${player.attractive}');
 
-        ///해당 선수에게 압박 가능한 선수들이 많을수록 매력도 하락
-        if (_isCanPressure(player.posXY, opponent.reversePosXy)) {
-          player.attractive -= _getDefensePoint(target: player.posXY, pressurePlayer: opponent.reversePosXy, stat: opponent.pressureStat);
+        if (distanceToPathRoute < baselineStat / 10) {
+          canPass = false;
+          break;
         }
-        // print('해당 선수에게 압박 가능한 선수들이 많을수록 매력도 하락${player.attractive}');
       }
 
-      return player;
-    }).toList();
+      if (canPass) {
+        ///선수가 앞쪽에 있을 수록 매력도 상승
+        player.attractive += sqrt(player.posXY.y * posXY.y) / 4;
+        // print('선수가 앞쪽에 있을 수록 매력도 상승${player.attractive}');
 
-    judgedTeamPlayer.sort((a, b) => b.attractive - a.attractive > 0 ? 1 : -1);
+        ///선수의 능력치가 높을 수록 매력도 상승
+        player.attractive += player.overall / 10;
+        // print('선수의 능력치가 높을 수록 매력도 상승${player.attractive}');
 
-    return judgedTeamPlayer.first;
+        ///선수가 위치한 좌표의 매력도추가 0~100점
+        player.attractive += _getPosAttractive(player, opponents);
+
+        ///선수와의 거리가 가까울수록 매력도 상승 ~100점
+        if (player.posXY.distance(posXY) > 0) {
+          player.attractive += max(100, pow(100 / player.posXY.distance(posXY), 2));
+        } else {
+          player.attractive += 100;
+        }
+        // print('선수와의 거리가 가까울수록 매력도 상승${player.attractive}');
+      }
+    }
+
+    players.sort((a, b) => b.attractive - a.attractive > 0 ? 1 : -1);
+
+    return players.first;
   }
 
   _getDefensePoint({required PosXY target, required PosXY pressurePlayer, required int stat}) {
@@ -135,6 +187,9 @@ extension PlayerMove on Player {
 
     ///현재 내가 공을 잡은 상태인 경우
     if (hasBall) {
+      ///TODO 매력도 테스트용
+      _getMostAttractivePlayer(ourTeamPlayers, opponentPlayers);
+
       ///압박을 고려한 식별 가능한 거리
       double canVisibleDistance = visionStat * evadePressStat - max(0, pressureIntensity);
 
@@ -165,7 +220,7 @@ extension PlayerMove on Player {
         ///탈압박이 불가능 할 경우
         if (pressureIntensity - evadePressStat > 0 && role != PlayerRole.goalKeeper && posXY.y < 175) {
           List<Player> behindPlayers = ourTeamPlayers.where((player) => player.posXY.y < posXY.y + 5).toList();
-          Player target = getMostAttractivePlayer(behindPlayers, opponentPlayers);
+          Player target = _getMostAttractivePlayer(behindPlayers, opponentPlayers);
           List<Player> nearOpponentAtTarget = opponentPlayers.where((opponent) => opponent.posXY.distance(target.reversePosXy) < 15).toList();
           pass(target, team, nearOpponentAtTarget, fixture);
 
@@ -225,14 +280,22 @@ extension PlayerMove on Player {
             ));
         return;
       } else {
-        Player target = getMostAttractivePlayer(visibleOurTeamPlayers, opponentPlayers);
+        Player target = _getMostAttractivePlayer(visibleOurTeamPlayers, opponentPlayers);
         List<Player> nearOpponentAtTarget = opponentPlayers.where((opponent) => opponent.posXY.distance(target.reversePosXy) < 15).toList();
 
         pass(target, team, nearOpponentAtTarget, fixture);
         return;
       }
     } else {
-      List<Player> nearBallPlayers = team.club.players.where((player) => player.posXY.distance(ball.posXY) < 25).toList();
+      List<Player> nearBallPlayers = team.club.players
+          .where((player) => _checkBoundary(
+                targetPos: ball.posXY,
+                otherPos: player.posXY,
+                frontBoundary: 50,
+                backBoundary: -10,
+                distance: 50,
+              ))
+          .toList();
       if (nearBallPlayers.isEmpty) {
         moveToBall(ball.posXY);
         return;
@@ -259,7 +322,11 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
-    bool canPress = ((tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(posXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && _actPoint > 10 && closerPlayerAtBall < 3;
+    bool canPress = ((tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(posXY)) &&
+        isNotGoalKick &&
+        !(ballPos.x == posXY.x && ballPos.y == posXY.y) &&
+        _actPoint > 10 &&
+        closerPlayerAtBall < 3;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);
@@ -279,7 +346,7 @@ extension PlayerMove on Player {
 
   moveFront() {
     lastAction = PlayerAction.none;
-    _move(targetPosXY: PosXY.random(posXY.x, posXY.y + maxDistance, 2));
+    _move(targetPosXY: PosXY.random(posXY.x, posXY.y + maxDistance / 2, 4));
   }
 
   moveBack() {
