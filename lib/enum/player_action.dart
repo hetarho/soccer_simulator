@@ -1,5 +1,6 @@
 enum PlayerAction {
   none('none'),
+  move('move'),
   shoot('shoot'),
   tackle('tackle'),
   pass('pass'),

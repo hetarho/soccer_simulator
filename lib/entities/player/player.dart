@@ -383,21 +383,21 @@ class Player extends Member {
         startingPoxXY.y +
             teamFreeArea *
                 switch (position ?? wantPosition) {
-                  Position.st => -15,
-                  Position.cf => -25,
-                  Position.lf => -25,
-                  Position.rf => -25,
-                  Position.lw => -40,
-                  Position.rw => -40,
-                  Position.lm => -30,
-                  Position.rm => -30,
-                  Position.cm => -30,
-                  Position.am => -30,
-                  Position.dm => -30,
-                  Position.lb => -20,
-                  Position.cb => -20,
-                  Position.rb => -20,
-                  Position.gk => -20,
+                  Position.st => -25,
+                  Position.cf => -35,
+                  Position.lf => -45,
+                  Position.rf => -45,
+                  Position.lw => -45,
+                  Position.rw => -45,
+                  Position.lm => -45,
+                  Position.rm => -45,
+                  Position.cm => -45,
+                  Position.am => -45,
+                  Position.dm => -45,
+                  Position.lb => -25,
+                  Position.cb => -25,
+                  Position.rb => -25,
+                  Position.gk => -5,
                 });
   }
 
