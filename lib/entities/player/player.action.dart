@@ -50,13 +50,6 @@ extension PlayerMove on Player {
     _timer?.cancel();
   }
 
-  ///상대방의 위치가 특정 포지션을 압박할 수 있는지를 리턴해주는 함수
-  bool _isCanPressure(PosXY targetPos, PosXY opponentPos) {
-    bool isClosePosX = opponentPos.x < targetPos.x + 20 && opponentPos.x > targetPos.x - 20;
-    bool isClosePosY = opponentPos.y > targetPos.y && opponentPos.y - 5 < targetPos.y + 25;
-    return isClosePosX && isClosePosY;
-  }
-
   bool _checkBoundary({
     required PosXY targetPos,
     required PosXY otherPos,
@@ -128,11 +121,14 @@ extension PlayerMove on Player {
 
       if (canPass) {
         ///선수가 앞쪽에 있을 수록 매력도 상승
-        player.attractive += sqrt(player.posXY.y * posXY.y) / 2;
+        player.attractive += sqrt(player.posXY.y * posXY.y) * 0.65;
         // print('선수가 앞쪽에 있을 수록 매력도 상승${player.attractive}');
 
+        ///선수가 경기장 중앙에있을 수록 매력도 상승
+        player.attractive += sqrt(player.posXY.x > 50 ? 100 - player.posXY.x : player.posXY.x) * 0.95;
+
         ///선수의 능력치가 높을 수록 매력도 상승
-        player.attractive += player.overall / 5;
+        player.attractive += player.overall * 0.25;
         // print('선수의 능력치가 높을 수록 매력도 상승${player.attractive}');
 
         ///선수가 위치한 압박 극복 점수 추가
@@ -140,12 +136,12 @@ extension PlayerMove on Player {
 
         ///선수와의 거리가 가까울수록 매력도 상승 ~100점
         player.attractive += switch (player.posXY.distance(posXY)) {
-              < 30 => 50,
-              < 60 => 30,
-              < 100 => 10,
+              < 50 => 50,
+              < 80 => 30,
+              < 130 => 10,
               _ => 0,
             } *
-            (posXY.y > 100 ? 0.2 : 1);
+            (posXY.y > 110 ? 0.2 : 1);
 
         // print('선수와의 거리가 가까울수록 매력도 상승${player.attractive}');
       }
@@ -229,11 +225,6 @@ extension PlayerMove on Player {
         return;
       }
 
-      if (evadePressurePoint > 100) {
-        dribble(team);
-        return;
-      }
-
       ///슛을 했을 때 일정경로 이내에 있는 선수의 수 - 슛스텟이 높아질수록 정교해짐
       int opponentsNumNearShootRout = fixture.allPlayers
           .where((opponent) =>
@@ -258,6 +249,11 @@ extension PlayerMove on Player {
             ));
         return;
       } else {
+        ///TODO 드리블
+        // if (evadePressurePoint == 100 && role != PlayerRole.goalKeeper) {
+        //   dribble(team);
+        //   return;
+        // }
         Player target = _getMostAttractivePlayer(visibleOurTeamPlayers, opponentPlayers);
         List<Player> nearOpponentAtTarget = opponentPlayers.where((opponent) => opponent.posXY.distance(target.reversePosXy) < 15).toList();
 
@@ -265,6 +261,7 @@ extension PlayerMove on Player {
         return;
       }
     } else {
+      ///공격중인데 공이 없을 경우
       List<Player> nearBallPlayers = ourTeamPlayers
           .where((player) => _checkBoundary(
                 targetPos: ball.posXY,
@@ -308,7 +305,7 @@ extension PlayerMove on Player {
         isNotGoalKick &&
         !(ballPos.x == posXY.x && ballPos.y == posXY.y) &&
         _actPoint > 10 &&
-        closerPlayerAtBall < 3;
+        closerPlayerAtBall < 2;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);
@@ -419,7 +416,7 @@ extension PlayerMove on Player {
 
   _tackle(Player targetPlayer, ClubInFixture team) {
     _actPoint = 0;
-    if (pow(tackleStat, 1.7) / (targetPlayer.reversePosXy.distance(posXY)) > pow(targetPlayer.evadePressStat, 1.35)) {
+    if (pow(tackleStat, 1.75) / (targetPlayer.reversePosXy.distance(posXY)) > pow(targetPlayer.evadePressStat, 1.15)) {
       lastAction = PlayerAction.tackle;
       defSuccess++;
       targetPlayer.hasBall = false;
