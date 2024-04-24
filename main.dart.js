@@ -81154,7 +81154,7 @@ this.cx=A.R(new A.M(s,new A.a14(q,this,c,b),r),!0,r.h("aq.E"))},
 guo(){var s=this.w
 return new A.ai(s,new A.a1c(),A.K(s).h("ai<1>")).gD(0)},
 gGx(){var s=this.w
-return B.c.aF(B.b.dB(s,0,new A.a1a())/s.length)},
+return B.c.aF(B.b.dB(s,0,new A.a1a())/Math.max(1,s.length))},
 UA(){var s=this;++s.y;++s.as;++s.at
 s.ay=s.ax=0},
 SC(){var s=this;++s.Q;++s.ay;++s.ax
