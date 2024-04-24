@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:random_name_generator/random_name_generator.dart';
 import 'package:soccer_simulator/entities/formation/formation.dart';
@@ -97,7 +99,7 @@ class Club {
 
   int get winner => clubRecord.where((record) => record.ranking == 0).length;
 
-  int get ptsAverage => (clubRecord.fold(0, (curr, record) => curr + record.pts) / clubRecord.length).round();
+  int get ptsAverage => (clubRecord.fold(0, (curr, record) => curr + record.pts) / max(1, clubRecord.length)).round();
 
   startNewSeason(int season, int ranking) {
     if (season != 0) {
