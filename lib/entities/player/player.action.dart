@@ -171,7 +171,7 @@ extension PlayerMove on Player {
             } *
             (posXY.y > 110 ? 0.2 : 1);
 
-        if (posXY.y > 70 && player.role == PlayerRole.goalKeeper) {
+        if (posXY.y > 80 && player.role == PlayerRole.goalKeeper) {
           player.attractive -= 100;
         }
       }
@@ -231,10 +231,13 @@ extension PlayerMove on Player {
         return;
       } else if (_actPoint < 25) {
         ///탈압박이 불가능 할 경우
-        if (evadePressurePoint < 30 && role != PlayerRole.goalKeeper && posXY.y < 175) {
-          List<Player> behindPlayers = ourTeamPlayers.where((player) => player.posXY.y < posXY.y + 5).toList();
-          Player target = _getMostAttractivePlayer(behindPlayers, opponentPlayers);
-          _pass(target, team, opponentPlayers, fixture);
+        if (evadePressurePoint < 30 && role != PlayerRole.goalKeeper) {
+          ///본인 진영일 경우 일단 걷어내기
+          if (posXY.y < 50) {
+            _clearance(opponent: opponent, team: team);
+          } else {
+            moveBack();
+          }
 
           ///탈압박이 가능한경우 일단 대기
         } else {
@@ -401,6 +404,28 @@ extension PlayerMove on Player {
     _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.none));
   }
 
+  _clearance({
+    required ClubInFixture team,
+    required ClubInFixture opponent,
+  }) {
+    Player receivedPlayer = _findClosetPlayer(
+        PosXY(
+          R().getDouble(min: 0, max: 100),
+          R().getDouble(min: 150, max: 200),
+        ),
+        [...team.club.players],
+        [...opponent.club.players]);
+    hasBall = false;
+    receivedPlayer.hasBall = true;
+  }
+
+  Player _findClosetPlayer(PosXY targetPos, List<Player> team, List<Player> opponents) {
+    team.sort((a, b) => a.posXY.distance(targetPos) - b.posXY.distance(targetPos) > 0 ? 1 : -1);
+    opponents.sort((a, b) => a.reversePosXy.distance(targetPos) - b.reversePosXy.distance(targetPos) > 0 ? 1 : -1);
+
+    return team.first.posXY.distance(targetPos) < opponents.first.reversePosXy.distance(targetPos) ? team.first : opponents.first;
+  }
+
   _pass(Player target, ClubInFixture team, List<Player> opponents, Fixture fixture) async {
     passTry++;
     turn(target.posXY);
@@ -416,19 +441,16 @@ extension PlayerMove on Player {
 
     PosXY ballLandingPos = PosXY.random(target.posXY.x, target.posXY.y, ballLandingAccuracy);
 
-    List sortedOpponents = [...opponents];
-
-    sortedOpponents.sort((a, b) => a.posXY.distance(PosXY(100 - ballLandingPos.x, 200 - ballLandingPos.y)) - b.posXY.distance(PosXY(100 - ballLandingPos.x, 200 - ballLandingPos.y)) > 0 ? 1 : -1);
-
-    double targetDistance = target.posXY.distance(ballLandingPos);
     hasBall = false;
-    if (targetDistance < sortedOpponents.first.posXY.distance(PosXY(100 - ballLandingPos.x, 200 - ballLandingPos.y))) {
+
+    Player receivedPlayer = _findClosetPlayer(ballLandingPos, [target], [...opponents]);
+    if (receivedPlayer.id == target.id) {
       passSuccess++;
       target.passedPlayer = this;
       target.hasBall = true;
       team.pass += 1;
     } else {
-      sortedOpponents.first.hasBall = true;
+      receivedPlayer.hasBall = true;
     }
   }
 
@@ -462,7 +484,7 @@ extension PlayerMove on Player {
 
   _tackle(Player targetPlayer, ClubInFixture team) {
     _actPoint = 0;
-    if (pow(tackleStat, 2.3) / (targetPlayer.reversePosXy.distance(posXY)) > pow(targetPlayer.evadePressStat, 2.1)) {
+    if (pow(tackleStat, 2 + R().getDouble(max: 0.6)) / (targetPlayer.reversePosXy.distance(posXY)) > pow(targetPlayer.evadePressStat, 2.1)) {
       lastAction = PlayerAction.tackle;
       defSuccess++;
       targetPlayer.hasBall = false;
