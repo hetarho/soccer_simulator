@@ -81915,7 +81915,7 @@ s.r=r
 r=new A.bF().cu(e,f)
 s.w=r
 switch(h.a){case 0:s.c+=60
-s.e=B.c.aG(Math.sqrt(s.e))
+s.e=B.c.aG(Math.sqrt(s.e))+40
 s.f-=40
 break
 case 1:s.d+=60
@@ -81924,7 +81924,7 @@ s.c-=40
 s.f-=40
 break
 case 2:s.e+=60
-s.c=B.c.aG(Math.sqrt(s.c))
+s.c=B.c.aG(Math.sqrt(s.c))+40
 s.f-=40
 break
 case 3:s.f+=40
