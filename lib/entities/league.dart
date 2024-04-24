@@ -18,6 +18,7 @@ class League {
 
   startNewSeason() {
     _currentSeason.seasonEnd(table.map((club) => Club.copy(club)).toList());
+    clubs.map((club) => club.players.map((player) => player.newSeason()));
     _currentSeason = Season.create(clubs: clubs);
     seasons.add(_currentSeason);
   }

@@ -211,6 +211,7 @@ class Player extends Member {
     }
   }
 
+  ///========================= 경기마다 초기화 ==========================
   ///선수의 컨디션
   double condition = 1;
 
@@ -256,6 +257,7 @@ class Player extends Member {
         .round();
   }
 
+  ///========================= 시즌마다 초기화 ==========================
   List<PlayerGameRecord> gameRecord = [];
 
   int get seasonGoal => gameRecord.fold(0, (prev, rec) => prev + rec.goal);
@@ -263,7 +265,7 @@ class Player extends Member {
   int get seasonPassSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.passSuccess);
   int get seasonDefSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.defSuccess);
 
-  List<List<int>> seasonRecord = [];
+  List<List<PlayerGameRecord>> seasonRecord = [];
 
   Position get wantPosition => _getWantedPositionFromStat(stat);
 
@@ -278,7 +280,10 @@ class Player extends Member {
   }
 
   //시즌 데이터 저장
-  _saveSeason() {}
+  _saveSeason() {
+    seasonRecord.add(gameRecord);
+    gameRecord = [];
+  }
 
   newSeason() {
     _saveSeason();

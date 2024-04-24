@@ -135,7 +135,8 @@ extension PlayerMove on Player {
       if (canPass) {
         ///선수가 앞쪽에 있을 수록 매력도 상승
         player.attractive += sqrt(player.posXY.y * posXY.y) *
-            0.65 *
+            30 /
+            max(10, _posYMaxBoundary - posXY.y) *
             switch (tactics?.attackLevel) {
               PlayLevel.max => 2,
               PlayLevel.hight => 1.7,
@@ -152,11 +153,11 @@ extension PlayerMove on Player {
               PlayerRole.forward => 1.2,
             };
 
-        ///선수가 경기장 중앙에있을 수록 매력도 상승
-        player.attractive += sqrt(player.posXY.x > 50 ? 100 - player.posXY.x : player.posXY.x) * 0.95;
+        ///선수가 경기장 앞쪽 중앙에있을 수록 매력도 상승
+        player.attractive += sqrt((player.posXY.x > 50 ? 100 - player.posXY.x : player.posXY.x) * player.posXY.y) * 0.95;
 
         ///선수의 능력치가 높을 수록 매력도 상승
-        player.attractive += player.overall * 0.25;
+        player.attractive += player.overall * 0.2;
 
         ///선수가 위치한 압박 극복 점수 추가
         player.attractive += _getEvadePressurePoint(player, opponents);
@@ -243,7 +244,7 @@ extension PlayerMove on Player {
       }
 
       ///상대 골대 중앙에있으면 슈팅
-      if (posXY.y > 175 && (posXY.x > 35 || posXY.x < 65) && evadePressurePoint > 5) {
+      if (posXY.y > 170 && (posXY.x > 35 && posXY.x < 65)) {
         _shoot(goalKeeper: goalKeeper, fixture: fixture, team: team, opponent: opponent, evadePressurePoint: evadePressurePoint);
         return;
       }
@@ -446,7 +447,7 @@ extension PlayerMove on Player {
 
     double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy) - sqrt(midRangeShootStat);
 
-    if ((pow(shootingStat * 0.55 + R().getInt(min: 60, max: 105), 0.5 + R().getDouble(max: 1.75))) + evadePressurePoint > goalKeeper.keepingStat * distanceToGoalPost) {
+    if ((pow(shootingStat * 0.65 + R().getInt(min: 45, max: 105), 0.37 + R().getDouble(max: 1.65))) + evadePressurePoint > goalKeeper.keepingStat * distanceToGoalPost) {
       goal++;
       _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.goal));
       if (passedPlayer != null) _streamController?.add(PlayerActEvent(player: passedPlayer!, action: PlayerAction.assist));
