@@ -14,6 +14,8 @@ class League {
     return _currentSeason.roundNumber;
   }
 
+  Season get currentSeason => _currentSeason;
+
   startNewSeason() {
     _currentSeason.seasonEnd(table.map((club) => Club.copy(club)).toList());
     _currentSeason = Season.create(clubs: clubs);

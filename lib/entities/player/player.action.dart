@@ -1,6 +1,11 @@
 part of 'player.dart';
 
 extension PlayerMove on Player {
+  ready(Duration gameSpeed) {
+    _streamController ??= StreamController<PlayerActEvent>.broadcast();
+    updatePlaySpeed(gameSpeed);
+  }
+
   gameStart({
     required Fixture fixture,
     required ClubInFixture team,
@@ -22,7 +27,7 @@ extension PlayerMove on Player {
         defend(team: team, opponent: opposite, ball: ball, fixture: fixture);
       }
 
-      if (lastAction != null) _streamController.add(PlayerActEvent(player: this, action: lastAction!));
+      if (lastAction != null) _streamController?.add(PlayerActEvent(player: this, action: lastAction!));
     });
   }
 
@@ -37,6 +42,8 @@ extension PlayerMove on Player {
       saveSuccess: saveSuccess,
       dribbleSuccess: dribbleSuccess,
     ));
+    _streamController?.close();
+    _streamController = null;
     goal = 0;
     assist = 0;
     passSuccess = 0;
@@ -339,7 +346,8 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
-    bool canPress = ((tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(posXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < 3;
+    bool canPress =
+        ((tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(posXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < 3;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);
@@ -389,7 +397,7 @@ extension PlayerMove on Player {
     double radian = atan2(targetPosXY.y - posXY.y, targetPosXY.x - posXY.x);
 
     rotateDegree = radian;
-    _streamController.add(PlayerActEvent(player: this, action: PlayerAction.none));
+    _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.none));
   }
 
   _pass(Player target, ClubInFixture team, List<Player> opponents, Fixture fixture) async {
@@ -440,8 +448,8 @@ extension PlayerMove on Player {
 
     if ((pow(shootingStat * 0.9 + R().getInt(min: 10, max: 60), 0.45 + R().getDouble(max: 1.6))) > goalKeeper.keepingStat * distanceToGoalPost) {
       goal++;
-      _streamController.add(PlayerActEvent(player: this, action: PlayerAction.goal));
-      if (passedPlayer != null) _streamController.add(PlayerActEvent(player: passedPlayer!, action: PlayerAction.assist));
+      _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.goal));
+      if (passedPlayer != null) _streamController?.add(PlayerActEvent(player: passedPlayer!, action: PlayerAction.assist));
       fixture.scored(
         scoredClub: team,
         concedeClub: opponent,

@@ -27,8 +27,8 @@ part 'player.grow.dart';
 part 'player.stat.dart';
 
 class Player extends Member {
-  late StreamController<PlayerActEvent> _streamController;
-  Stream<PlayerActEvent> get playerStream => _streamController.stream;
+  StreamController<PlayerActEvent>? _streamController;
+  Stream<PlayerActEvent>? get playerStream => _streamController?.stream;
   Player({
     required super.name,
     required super.birthDay,
@@ -50,7 +50,6 @@ class Player extends Member {
 
     //포텐셜을 지정해주지 않으면 랜덤으로 책정
     _potential = potential ?? R().getInt(min: 30, max: 120);
-    _streamController = StreamController<PlayerActEvent>.broadcast();
   }
 
   @override
@@ -65,7 +64,7 @@ class Player extends Member {
   ///현재 경기 시간
   Duration playTime = const Duration(seconds: 0);
 
-  void updateTimeSpeed(Duration newTimeSpeed) {
+  void updatePlaySpeed(Duration newTimeSpeed) {
     _playSpeed = newTimeSpeed;
   }
 
@@ -104,7 +103,6 @@ class Player extends Member {
     this.flexibility = flexibility ?? R().getInt(min: min, max: max);
     _potential = potential ?? R().getInt(min: min, max: max);
     _stat = stat ?? Stat.create(role: role, min: min, max: max);
-    _streamController = StreamController<PlayerActEvent>.broadcast();
     this.tactics = tactics ?? Tactics.normal();
   }
 
@@ -260,10 +258,14 @@ class Player extends Member {
 
   List<PlayerGameRecord> gameRecord = [];
 
-  int get seasonGoal => gameRecord.fold(0, (prev, rec) => prev + rec.goal);
-  int get seasonAssist => gameRecord.fold(0, (prev, rec) => prev + rec.assist);
-  int get seasonPassSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.passSuccess);
-  int get seasonDefSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.defSuccess);
+  // int get seasonGoal => gameRecord.fold(0, (prev, rec) => prev + rec.goal);
+  // int get seasonAssist => gameRecord.fold(0, (prev, rec) => prev + rec.assist);
+  // int get seasonPassSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.passSuccess);
+  // int get seasonDefSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.defSuccess);
+  int get seasonGoal => 1;
+  int get seasonAssist => 1;
+  int get seasonPassSuccess => 1;
+  int get seasonDefSuccess => 1;
 
   List<List<int>> seasonRecord = [];
 
@@ -313,7 +315,7 @@ class Player extends Member {
     ///공을 얻거나 잃으면 활동 포인트 초기화
     _actPoint = 0;
     if (newVal) {
-      _streamController.add(PlayerActEvent(player: this, action: PlayerAction.none));
+      _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.none));
     }
     _hasBall = newVal;
   }

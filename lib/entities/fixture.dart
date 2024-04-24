@@ -21,9 +21,13 @@ class Fixture {
   ready() {
     if (!_isReady) {
       _isReady = true;
-      playerStream = StreamGroup.merge(allPlayers.map((e) => e.playerStream).toList()).asBroadcastStream();
+      for (var player in allPlayers) {
+        player.ready(_playSpeed);
+      }
 
-      _streamSubscription = playerStream.listen((event) {
+      playerStream = StreamGroup.merge(allPlayers.map((e) => e.playerStream!).toList()).asBroadcastStream();
+
+      _streamSubscription = playerStream?.listen((event) {
         if ([
               PlayerAction.goal,
               PlayerAction.assist,
@@ -74,7 +78,7 @@ class Fixture {
 
   Stream<FixtureRecord> get gameStream => _streamController.stream;
 
-  late Stream<PlayerActEvent> playerStream;
+  late Stream<PlayerActEvent>? playerStream;
 
   ///현재 경기 시간
   Duration playTime = const Duration(seconds: 0);
@@ -100,7 +104,7 @@ class Fixture {
     return _playSpeed;
   }
 
-  Duration _playSpeed = const Duration(milliseconds: 1);
+  Duration _playSpeed = const Duration(microseconds: 1000);
   final _playTimeAmount = 10;
 
   final Ball _ball = Ball();
@@ -210,15 +214,16 @@ class Fixture {
       _timer?.cancel();
       _timer = Timer.periodic(_playSpeed, (timer) async {
         if (isGameEnd) {
-          for (var player in allPlayers) {
-            player.gameEnd();
-          }
           gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
         } else {
           isSimulation ? updateGameInSimulate() : updateGame();
           if (isGameEnd) {
             playerWithBall?.hasBall = false;
             _ball.posXY = PosXY(50, 100);
+
+            for (var player in allPlayers) {
+              player.gameEnd();
+            }
           }
           _streamController.add(FixtureRecord(
             time: playTime,
@@ -243,6 +248,7 @@ class Fixture {
 
     _streamSubscription?.cancel();
     _streamSubscription = null;
+    playerStream = null;
     _timer?.cancel();
     _streamController.close();
   }
@@ -251,7 +257,7 @@ class Fixture {
     _playSpeed = newTimeSpeed;
 
     for (var player in allPlayers) {
-      player.updateTimeSpeed(newTimeSpeed);
+      player.updatePlaySpeed(newTimeSpeed);
     }
 
     if (_timer?.isActive ?? false) {
