@@ -87,7 +87,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'ARS',
       homeColor: Colors.red,
       awayColor: Colors.yellow,
-      tactics: Tactics(pressDistance: 35, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 35, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max),
     )..createStartingMembers(
         min: 60,
         max: 120,
@@ -95,7 +95,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       );
 
     for (var p in arsenal.players) {
-      if (p.role == PlayerRole.forward) p.tactics = Tactics(pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max);
+      p.tactics = Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max);
     }
 
     Club manchesterCity = Club(
@@ -103,19 +103,22 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'MAC',
       homeColor: Colors.blue[100]!,
       awayColor: Colors.blue[800]!,
-      tactics: Tactics(pressDistance: 20, freeLevel: PlayLevel.min, attackLevel: PlayLevel.hight),
+      tactics: Tactics(shortPassLevel: PlayLevel.max, pressDistance: 20, freeLevel: PlayLevel.min, attackLevel: PlayLevel.hight),
     )..createStartingMembers(
         min: 80,
         max: 100,
         formation: Formation.create433(),
       );
 
+    for (var p in arsenal.players) {
+      p.tactics = Tactics(shortPassLevel: PlayLevel.max, pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max);
+    }
     Club liverfpool = Club(
       name: 'liverpool',
       nickName: 'LIV',
       homeColor: Colors.red[800]!,
       awayColor: Colors.blue[900]!,
-      tactics: Tactics(pressDistance: 45, freeLevel: PlayLevel.hight, attackLevel: PlayLevel.max),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 45, freeLevel: PlayLevel.hight, attackLevel: PlayLevel.max),
     )..createStartingMembers(
         min: 40,
         max: 140,
@@ -127,7 +130,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'AV',
       homeColor: const Color.fromARGB(255, 135, 45, 88),
       awayColor: const Color.fromRGBO(140, 188, 229, 1),
-      tactics: Tactics(pressDistance: 15, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 15, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 60,
         max: 100,
@@ -138,7 +141,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'TOT',
       homeColor: Colors.white,
       awayColor: const Color.fromRGBO(19, 30, 72, 1),
-      tactics: Tactics(pressDistance: 10, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 10, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 60,
         max: 100,
@@ -149,7 +152,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'NEW',
       homeColor: Colors.black,
       awayColor: Colors.white,
-      tactics: Tactics(pressDistance: 35, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 35, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 60,
         max: 100,
@@ -161,7 +164,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'MU',
       homeColor: Colors.red,
       awayColor: Colors.green[200]!,
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 60,
         max: 100,
@@ -173,7 +176,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'WHU',
       homeColor: const Color.fromARGB(255, 112, 45, 52),
       awayColor: const Color.fromRGBO(179, 110, 70, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 60,
         max: 100,
@@ -184,7 +187,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'CHE',
       homeColor: const Color.fromARGB(255, 0, 27, 123),
       awayColor: const Color.fromRGBO(80, 70, 85, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.low),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.low),
     )..createStartingMembers(
         min: 60,
         max: 100,
@@ -192,7 +195,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       );
 
     for (var p in chelsea.players) {
-      p.tactics = Tactics(pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.low);
+      p.tactics = Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.low);
     }
 
     Club brighton = Club(
@@ -200,7 +203,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'BRH',
       homeColor: const Color.fromARGB(255, 0, 77, 152),
       awayColor: const Color.fromRGBO(80, 255, 255, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 60,
         max: 80,
@@ -211,7 +214,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'WOV',
       homeColor: const Color.fromARGB(255, 250, 174, 40),
       awayColor: const Color.fromRGBO(27, 27, 27, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 60,
         max: 80,
@@ -223,7 +226,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'FUL',
       homeColor: const Color.fromARGB(255, 15, 15, 15),
       awayColor: const Color.fromRGBO(150, 27, 27, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 60,
         max: 80,
@@ -234,7 +237,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'BOU',
       homeColor: const Color.fromARGB(255, 200, 6, 20),
       awayColor: const Color.fromRGBO(120, 120, 120, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 60,
         max: 80,
@@ -246,7 +249,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'CP',
       homeColor: const Color.fromARGB(255, 15, 45, 115),
       awayColor: const Color.fromRGBO(70, 5, 30, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 60,
         max: 80,
@@ -258,7 +261,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'BFD',
       homeColor: const Color.fromARGB(255, 180, 0, 15),
       awayColor: const Color.fromRGBO(70, 25, 25, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 60,
         max: 80,
@@ -270,7 +273,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'EVT',
       homeColor: const Color.fromARGB(255, 0, 60, 140),
       awayColor: const Color.fromRGBO(70, 15, 15, 1),
-      tactics: Tactics(pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 25, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 50,
         max: 70,
@@ -282,7 +285,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'NOF',
       homeColor: const Color.fromARGB(255, 230, 35, 55),
       awayColor: const Color.fromRGBO(230, 230, 230, 1),
-      tactics: Tactics(pressDistance: 5, freeLevel: PlayLevel.max, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 5, freeLevel: PlayLevel.max, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 50,
         max: 70,
@@ -294,7 +297,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'LT',
       homeColor: const Color.fromARGB(255, 130, 130, 110),
       awayColor: const Color.fromRGBO(90, 100, 150, 1),
-      tactics: Tactics(pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max),
     )..createStartingMembers(
         min: 50,
         max: 70,
@@ -302,14 +305,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       );
 
     for (var p in lutonTown.players) {
-      p.tactics = Tactics(pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max);
+      p.tactics = Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max);
     }
     Club burnley = Club(
       name: 'Burnley',
       nickName: 'BUN',
       homeColor: const Color.fromARGB(255, 77, 5, 50),
       awayColor: const Color.fromRGBO(90, 100, 150, 1),
-      tactics: Tactics(pressDistance: 40, freeLevel: PlayLevel.max, attackLevel: PlayLevel.min),
+      tactics: Tactics(shortPassLevel: PlayLevel.min, pressDistance: 40, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.min),
     )..createStartingMembers(
         min: 50,
         max: 70,
@@ -317,14 +320,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       );
 
     for (var p in burnley.players) {
-      p.tactics = Tactics(pressDistance: 40, freeLevel: PlayLevel.max, attackLevel: PlayLevel.min);
+      p.tactics = Tactics(shortPassLevel: PlayLevel.min, pressDistance: 40, freeLevel: PlayLevel.middle, attackLevel: PlayLevel.min);
     }
     Club sheffield = Club(
       name: 'Sheffield United',
       nickName: 'SHU',
       homeColor: const Color.fromARGB(255, 223, 22, 35),
       awayColor: const Color.fromRGBO(0, 0, 0, 1),
-      tactics: Tactics(pressDistance: 60, freeLevel: PlayLevel.min, attackLevel: PlayLevel.middle),
+      tactics: Tactics(shortPassLevel: PlayLevel.middle, pressDistance: 60, freeLevel: PlayLevel.min, attackLevel: PlayLevel.middle),
     )..createStartingMembers(
         min: 50,
         max: 70,
@@ -382,6 +385,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             _stopwatch.reset();
           }
           if (_league.round == 38 && _isAutoPlaySeason) _league.startNewSeason();
+          await Future.delayed(Duration.zero);
           _finishedFixtureNum = 0;
           _league.nextRound();
           _autoPlaying();
@@ -647,6 +651,10 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                   'assist' => b.seasonAssist,
                   'pass' => b.seasonPassSuccess,
                   'def' => b.seasonDefSuccess,
+                  'shoot' => b.seasonShooting,
+                  'passT' => b.seasonPassTry,
+                  'passS' => b.seasonPassSuccessPercent,
+                  'drib' => b.seasonDribbleSuccess,
                   _ => b.seasonGoal,
                 } -
                 switch (sortBy) {
@@ -654,6 +662,10 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                   'assist' => a.seasonAssist,
                   'pass' => a.seasonPassSuccess,
                   'def' => a.seasonDefSuccess,
+                  'shoot' => a.seasonShooting,
+                  'passT' => a.seasonPassTry,
+                  'passS' => a.seasonPassSuccessPercent,
+                  'drib' => a.seasonDribbleSuccess,
                   _ => a.seasonGoal,
                 } >
             0
@@ -698,6 +710,13 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                 GestureDetector(
                     onTap: () {
                       setState(() {
+                        _changeSort('shoot');
+                      });
+                    },
+                    child: const SizedBox(width: 55, child: Text('shoot'))),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
                         _changeSort('assist');
                       });
                     },
@@ -712,10 +731,31 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                 GestureDetector(
                     onTap: () {
                       setState(() {
+                        _changeSort('passT');
+                      });
+                    },
+                    child: const SizedBox(width: 55, child: Text('passT'))),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _changeSort('passS');
+                      });
+                    },
+                    child: const SizedBox(width: 55, child: Text('passS'))),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
                         _changeSort('def');
                       });
                     },
                     child: const SizedBox(width: 55, child: Text('def'))),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _changeSort('drib');
+                      });
+                    },
+                    child: const SizedBox(width: 55, child: Text('drib'))),
               ],
             ),
           ),
@@ -738,9 +778,13 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                           SizedBox(width: 55, child: Text('${player.position}')),
                           SizedBox(width: 35, child: Text('${player.overall}')),
                           SizedBox(width: 50, child: Text('${player.seasonGoal}')),
+                          SizedBox(width: 55, child: Text('${player.seasonShooting}')),
                           SizedBox(width: 55, child: Text('${player.seasonAssist}')),
                           SizedBox(width: 55, child: Text('${player.seasonPassSuccess}')),
+                          SizedBox(width: 55, child: Text('${player.seasonPassTry}')),
+                          SizedBox(width: 55, child: Text('${player.seasonPassSuccessPercent}')),
                           SizedBox(width: 55, child: Text('${player.seasonDefSuccess}')),
+                          SizedBox(width: 55, child: Text('${player.seasonDribbleSuccess}')),
                         ],
                       ),
                     ),

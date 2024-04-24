@@ -47,6 +47,7 @@ extension PlayerMove on Player {
     goal = 0;
     assist = 0;
     passSuccess = 0;
+    passTry = 0;
     shooting = 0;
     defSuccess = 0;
     saveSuccess = 0;
@@ -143,7 +144,15 @@ extension PlayerMove on Player {
               PlayLevel.middle => 1,
               PlayLevel.low => 0.7,
               PlayLevel.min => 0.5,
-              _ => 0,
+              _ => 1,
+            } *
+            switch (team?.tactics.attackLevel) {
+              PlayLevel.max => 2,
+              PlayLevel.hight => 1.7,
+              PlayLevel.middle => 1,
+              PlayLevel.low => 0.7,
+              PlayLevel.min => 0.5,
+              _ => 1,
             } *
             switch (role) {
               PlayerRole.goalKeeper => 0.5,
@@ -169,7 +178,24 @@ extension PlayerMove on Player {
               < 130 => 10,
               _ => 0,
             } *
-            (posXY.y > 110 ? 0.2 : 1);
+            (posXY.y > 100 ? 0.5 : 1) *
+            (posXY.y > 150 ? 0.5 : 1) *
+            switch (tactics?.shortPassLevel) {
+              PlayLevel.max => 2,
+              PlayLevel.hight => 1.7,
+              PlayLevel.middle => 1,
+              PlayLevel.low => 0.7,
+              PlayLevel.min => 0.5,
+              _ => 1,
+            } *
+            switch (team?.tactics.shortPassLevel) {
+              PlayLevel.max => 2,
+              PlayLevel.hight => 1.7,
+              PlayLevel.middle => 1,
+              PlayLevel.low => 0.7,
+              PlayLevel.min => 0.5,
+              _ => 1,
+            };
 
         if (posXY.y > 80 && player.role == PlayerRole.goalKeeper) {
           player.attractive -= 100;
@@ -213,7 +239,7 @@ extension PlayerMove on Player {
       ///주변에 활용 가능한 선수가 안보일 때
       if (visibleOurTeamPlayers.isEmpty) {
         if (evadePressurePoint > 30) {
-          _dribble(team);
+          _dribble(team, evadePressurePoint);
         } else {
           moveBack();
         }
@@ -276,9 +302,13 @@ extension PlayerMove on Player {
         return;
       } else {
         bool isMaxY = (_posYMaxBoundary - posXY.y).abs() > 10;
+        bool isMaxX = (_posXMaxBoundary - posXY.x).abs() > 5 && (_posXMinBoundary - posXY.x).abs() > 5;
 
-        if (sqrt(evadePressurePoint) * sqrt(posXY.y) > 50 && isMaxY) {
-          _dribble(team);
+        bool canEvadePressureAndMoveFront = sqrt(evadePressurePoint) * sqrt(posXY.y) > 50 && isMaxY;
+        bool nearByGoalPost = (posXY.y > 170 && !(posXY.x > 35 && posXY.x < 65)) && isMaxX;
+
+        if (canEvadePressureAndMoveFront || nearByGoalPost) {
+          _dribble(team, evadePressurePoint);
         } else {
           Player target = _getMostAttractivePlayer(visibleOurTeamPlayers, opponentPlayers);
 
@@ -387,14 +417,16 @@ extension PlayerMove on Player {
     _move(targetPosXY: PosXY.random(posXY.x, posXY.y + backDistance, 2));
   }
 
-  _dribble(ClubInFixture team) {
-    lastAction = PlayerAction.dribble;
-    double addX = posXY.y > 165 ? maxDistance : 0;
+  _dribble(ClubInFixture team, double evadePressurePoint) {
+    if (evadePressurePoint * evadePressStat > 5000) {
+      lastAction = PlayerAction.dribble;
+      dribbleSuccess++;
+      team.dribble++;
+    }
+    double addX = (posXY.x < 50 ? 1 : -1) * (posXY.y > 165 ? maxDistance : 0);
     double addY = posXY.y <= 165 ? maxDistance : 0;
 
     _move(targetPosXY: PosXY.random(posXY.x + addX, posXY.y + addY, 2));
-    dribbleSuccess++;
-    team.dribble++;
   }
 
   turn(PosXY targetPosXY) {
