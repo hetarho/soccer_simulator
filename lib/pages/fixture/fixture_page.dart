@@ -36,7 +36,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
     super.initState();
     _fixture = ref.read(fixtureProvider) ?? Fixture.empty();
     _fixture.ready();
-    _playerStreamSubscription = _fixture.playerStream.listen((event) {
+    _playerStreamSubscription = _fixture.playerStream?.listen((event) {
       if (mounted) {
         setState(() {});
       }

@@ -69,8 +69,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   late Stream<FixtureRecord> _roundStream;
   StreamSubscription<FixtureRecord>? _roundSubscription;
   int _finishedFixtureNum = 0;
-  bool _showFixtures = true;
+  bool _showFixtures = false;
   bool _showLeagueTable = false;
+  bool _showBeforeLeagueTable = false;
   bool _showTopScorerTable = false;
   Duration _timer = const Duration(seconds: 0);
 
@@ -357,14 +358,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     _initFixture();
   }
 
-  _initFixture() {
+  _initFixture() async {
     _fixtures = _league.getNextFixtures();
     for (var fixture in _fixtures) {
       fixture.ready();
     }
     _roundStream = StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
 
-    _roundSubscription?.cancel();
+    await _roundSubscription?.cancel();
     _roundSubscription = _roundStream.listen((event) async {
       if (_isAutoPlay) {
         _timer = event.time;
@@ -373,7 +374,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         _finishedFixtureNum++;
         if (_finishedFixtureNum == 10) {
           if (_league.round == 38) _league.startNewSeason();
-          await Future.delayed(const Duration(seconds: 0));
           _finishedFixtureNum = 0;
           _league.nextRound();
           _autoPlaying();
@@ -403,76 +403,91 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       body: Column(
         children: [
           const SizedBox(height: 64),
-          Row(
-            children: [
-              ElevatedButton(
-                  onPressed: () {
-                    if (mounted) {
-                      setState(() {
-                        init();
-                      });
-                    }
-                  },
-                  child: const Text('리셋')),
-              ElevatedButton(
-                onPressed: () async {
-                  _startAllFixtures();
-                },
-                child: const Text('game start'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  _league.nextRound();
-                  _initFixture();
-                  if (mounted) setState(() {});
-                },
-                child: const Text('다음경기로'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  _league.startNewSeason();
-                  if (mounted) setState(() {});
-                },
-                child: const Text('다음시즌'),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _showTopScorerTable = !_showTopScorerTable;
-                    });
-                  },
-                  child: const Text('득점')),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_isAutoPlay) {
-                    _isAutoPlay = false;
-                  } else {
-                    _autoPlaying();
-                  }
-                },
-                child: const Text('자동'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _showFixtures = !_showFixtures;
-                  });
-                },
-                child: const Text('경기들 보기'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _showLeagueTable = !_showLeagueTable;
-                  });
-                },
-                child: const Text('순위 보기'),
-              )
-            ],
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          if (mounted) {
+                            setState(() {
+                              init();
+                            });
+                          }
+                        },
+                        child: const Text('리셋')),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _startAllFixtures();
+                      },
+                      child: const Text('game start'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _league.nextRound();
+                        _initFixture();
+                        if (mounted) setState(() {});
+                      },
+                      child: const Text('다음경기로'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _league.startNewSeason();
+                        if (mounted) setState(() {});
+                      },
+                      child: const Text('다음시즌'),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _showTopScorerTable = !_showTopScorerTable;
+                          });
+                        },
+                        child: const Text('득점')),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_isAutoPlay) {
+                          _isAutoPlay = false;
+                        } else {
+                          _autoPlaying();
+                        }
+                      },
+                      child: const Text('자동'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showFixtures = !_showFixtures;
+                        });
+                      },
+                      child: const Text('경기들 보기'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showLeagueTable = !_showLeagueTable;
+                        });
+                      },
+                      child: const Text('순위 보기'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showBeforeLeagueTable = !_showBeforeLeagueTable;
+                        });
+                      },
+                      child: const Text('지난 순위 보기'),
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
           Text('round : ${_league.round} time:${_timer.inMinutes}'),
           Expanded(
@@ -509,20 +524,21 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           ),
                         ),
                       const SizedBox(height: 8),
-                      ..._league.seasons.map(
-                        (season) => Column(
-                          children: [
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: LeagueTableWidget(clubs: season.seasonRecords),
+                      if (_showBeforeLeagueTable)
+                        ..._league.seasons.map(
+                          (season) => Column(
+                            children: [
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: LeagueTableWidget(clubs: season.seasonRecords),
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                          ],
+                              const SizedBox(height: 8),
+                            ],
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 )
