@@ -63,6 +63,7 @@ final playerProvider = StateProvider<Player?>((_) => null);
 final selectedClubProvider = StateProvider<Club?>((_) => null);
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
+  Stopwatch _stopwatch = Stopwatch();
   late List<Fixture> _fixtures;
   bool _isAutoPlay = false;
   late League _league;
@@ -373,6 +374,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       if (event.isGameEnd && _isAutoPlay) {
         _finishedFixtureNum++;
         if (_finishedFixtureNum == 10) {
+          if (_stopwatch.isRunning) {
+            _stopwatch.stop();
+            print('season${_league.seasons.length} / round:${_league.currentSeason.roundNumber} - ${_stopwatch.elapsed}');
+            _stopwatch.reset();
+          }
           if (_league.round == 38) _league.startNewSeason();
           _finishedFixtureNum = 0;
           _league.nextRound();
@@ -386,6 +392,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 
   _startAllFixtures() {
+    _stopwatch.start();
     for (var e in _fixtures) {
       e.gameStart();
     }
