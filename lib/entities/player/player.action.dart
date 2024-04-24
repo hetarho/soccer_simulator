@@ -31,7 +31,7 @@ extension PlayerMove on Player {
     });
   }
 
-  gameEnd() {
+  gameEnd() async {
     gameRecord.add(PlayerGameRecord(
       goal: goal,
       assist: assist,
@@ -42,7 +42,8 @@ extension PlayerMove on Player {
       saveSuccess: saveSuccess,
       dribbleSuccess: dribbleSuccess,
     ));
-    _streamController?.close();
+    _timer?.cancel();
+    await _streamController?.close();
     _streamController = null;
     goal = 0;
     assist = 0;
@@ -55,7 +56,6 @@ extension PlayerMove on Player {
     _currentStamina = 100;
     resetPosXY();
     _growAfterPlay();
-    _timer?.cancel();
   }
 
   bool _checkBoundary({
@@ -380,10 +380,7 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
-    bool canPress = ((tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(posXY)) &&
-        isNotGoalKick &&
-        !(ballPos.x == posXY.x && ballPos.y == posXY.y) &&
-        closerPlayerAtBall < 3;
+    bool canPress = ((tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(posXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < 3;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);
@@ -503,16 +500,11 @@ extension PlayerMove on Player {
 
     double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy);
 
-    double stat = distanceToGoalPost < 20
-        ? shootingStat.toDouble()
-        : shootingStat * ((100 - distanceToGoalPost) / 100) + midRangeShootStat * (distanceToGoalPost / 100);
+    double stat = distanceToGoalPost < 20 ? shootingStat.toDouble() : shootingStat * ((100 - distanceToGoalPost) / 100) + midRangeShootStat * (distanceToGoalPost / 100);
 
     double finalShootStat = pow(stat + evadePressurePoint, 0.2 + R().getDouble(max: 1)).toDouble();
 
     double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.7, max: 1.4);
-
-    print('finalShootStat:$finalShootStat');
-    print('finalKeepingStat:$finalKeepingStat');
 
     if (finalShootStat > finalKeepingStat) {
       goal++;
@@ -575,8 +567,7 @@ extension PlayerMove on Player {
     double travelY = distanceCanForward * sine;
 
     ///최종 이동할 좌표
-    PosXY newPos =
-        PosXY((posXY.x + travelX).clamp(_posXMinBoundary, _posXMaxBoundary), (posXY.y + travelY).clamp(_posYMinBoundary, _posYMaxBoundary));
+    PosXY newPos = PosXY((posXY.x + travelX).clamp(_posXMinBoundary, _posXMaxBoundary), (posXY.y + travelY).clamp(_posYMinBoundary, _posYMaxBoundary));
 
     ///실제 이동 거리
     double moveDistance = newPos.distance(posXY);

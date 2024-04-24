@@ -213,10 +213,13 @@ class Fixture {
       }
       _timer?.cancel();
       _timer = Timer.periodic(_playSpeed, (timer) async {
+        _streamController.add(FixtureRecord(
+          time: playTime,
+          isGameEnd: isGameEnd,
+        ));
         if (isGameEnd) {
-          gameEnd(); // 스트림과 타이머를 종료하는 메소드 호출
-        } else {
-          isSimulation ? updateGameInSimulate() : updateGame();
+          gameEnd();
+
           if (isGameEnd) {
             playerWithBall?.hasBall = false;
             _ball.posXY = PosXY(50, 100);
@@ -225,16 +228,14 @@ class Fixture {
               player.gameEnd();
             }
           }
-          _streamController.add(FixtureRecord(
-            time: playTime,
-            isGameEnd: isGameEnd,
-          ));
+        } else {
+          isSimulation ? updateGameInSimulate() : updateGame();
         }
       });
     }
   }
 
-  void gameEnd() {
+  void gameEnd() async {
     if (home.goal == away.goal) {
       home.club.draw();
       away.club.draw();
@@ -246,11 +247,11 @@ class Fixture {
       home.club.lose();
     }
 
-    _streamSubscription?.cancel();
+    await _streamController.close();
+    await _streamSubscription?.cancel();
     _streamSubscription = null;
     playerStream = null;
     _timer?.cancel();
-    _streamController.close();
   }
 
   void updateTimeSpeed(Duration newTimeSpeed) {

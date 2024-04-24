@@ -67,6 +67,7 @@ class Club {
   late Color homeColor;
   late Color awayColor;
   late Tactics tactics;
+  List<ClubRecord> clubRecord = [];
 
   bool hasBall = false;
 
@@ -94,7 +95,21 @@ class Club {
     return won * 3 + drawn;
   }
 
-  startNewSeason() {
+  int get winner => clubRecord.where((record) => record.ranking == 0).length;
+
+  int get ptsAverage => (clubRecord.fold(0, (curr, record) => curr + record.pts) / clubRecord.length).round();
+
+  startNewSeason(int season, int ranking) {
+    if (season != 0) {
+      clubRecord.add(ClubRecord(
+        season: season,
+        pts: pts,
+        gf: gf,
+        ga: ga,
+        gd: gd,
+        ranking: ranking,
+      ));
+    }
     won = 0;
     drawn = 0;
     lost = 0;
@@ -178,4 +193,15 @@ enum UniformType {
   plain,
   stripe,
   double,
+}
+
+class ClubRecord {
+  final int season;
+  final int pts;
+  final int gf;
+  final int ga;
+  final int gd;
+  final int ranking;
+
+  ClubRecord({required this.season, required this.pts, required this.gf, required this.ga, required this.gd, required this.ranking});
 }

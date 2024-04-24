@@ -73,6 +73,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   bool _showLeagueTable = false;
   bool _showBeforeLeagueTable = false;
   bool _showTopScorerTable = false;
+  bool _showDetailHistory = false;
   Duration _timer = const Duration(seconds: 0);
 
   @override
@@ -378,13 +379,13 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       }
       if (event.isGameEnd && _isAutoPlay) {
         _finishedFixtureNum++;
-        if (_finishedFixtureNum == 10) {
+        if (_finishedFixtureNum == _league.clubs.length / 2) {
           if (_stopwatch.isRunning) {
             _stopwatch.stop();
             print('season${_league.seasons.length} / round:${_league.currentSeason.roundNumber} - ${_stopwatch.elapsed}');
             _stopwatch.reset();
           }
-          if (_league.round == 38 && _isAutoPlaySeason) _league.startNewSeason();
+          if (_league.round == (_league.clubs.length - 1) * 2 && _isAutoPlaySeason) _league.startNewSeason();
           await Future.delayed(Duration.zero);
           _finishedFixtureNum = 0;
           _league.nextRound();
@@ -502,7 +503,15 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         });
                       },
                       child: const Text('지난 순위 보기'),
-                    )
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showDetailHistory = !_showDetailHistory;
+                        });
+                      },
+                      child: const Text('역사'),
+                    ),
                   ],
                 ),
               ],
@@ -557,6 +566,20 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                               const SizedBox(height: 8),
                             ],
                           ),
+                        ),
+                      if (_showDetailHistory)
+                        Column(
+                          children: [
+                            ...[
+                              ...[..._league.clubs]..sort(
+                                  (a, b) => a.winner == b.winner ? b.ptsAverage - a.ptsAverage : b.winner - a.winner,
+                                )
+                            ].map((club) => Row(
+                                  children: [
+                                    Text('${club.name}: 우승${club.winner}회 평균 승점:${club.ptsAverage}'),
+                                  ],
+                                ))
+                          ],
                         ),
                     ],
                   ),
@@ -846,12 +869,19 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (_streamSubscription != null) _streamSubscription!.cancel();
+  void initState() {
+    super.initState();
+  }
+
+  init() async {
+    if (_streamSubscription != null) await _streamSubscription!.cancel();
     _streamSubscription = widget.fixture.gameStream.listen((event) {
       if (mounted) setState(() {});
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Text('time:${widget.fixture.playTime}'),

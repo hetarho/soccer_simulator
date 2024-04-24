@@ -18,7 +18,13 @@ class League {
 
   startNewSeason() {
     _currentSeason.seasonEnd(table.map((club) => Club.copy(club)).toList());
-    clubs.map((club) => club.players.map((player) => player.newSeason()));
+    int ranking = 0;
+    for (var club in clubs) {
+      club.startNewSeason(seasons.length, ranking++);
+      for (var player in club.players) {
+        player.newSeason();
+      }
+    }
     _currentSeason = Season.create(clubs: clubs);
     seasons.add(_currentSeason);
   }
@@ -37,9 +43,9 @@ class League {
         return b.pts - a.pts;
       } else if (a.gd != b.gd) {
         return b.gd - a.gd;
-      } else if(a.gf != b.gf){
+      } else if (a.gf != b.gf) {
         return b.gf - a.gf;
-      }else{
+      } else {
         return a.name.compareTo(b.name);
       }
     });
@@ -47,34 +53,6 @@ class League {
   }
 
   List<Player> get allPlayer => clubs.map((e) => e.players).expand((element) => element).toList();
-
-  List<Player> get topScorers {
-    List<Player> allPlayers = clubs.map((e) => e.players).expand((element) => element).toList();
-    allPlayers.sort((a, b) => b.seasonGoal - a.seasonGoal > 0 ? 1 : -1);
-
-    return allPlayers;
-  }
-
-  List<Player> get topAssister {
-    List<Player> allPlayers = clubs.map((e) => e.players).expand((element) => element).toList();
-    allPlayers.sort((a, b) => b.seasonAssist - a.seasonAssist > 0 ? 1 : -1);
-
-    return allPlayers;
-  }
-
-  List<Player> get topDefender {
-    List<Player> allPlayers = clubs.map((e) => e.players).expand((element) => element).toList();
-    allPlayers.sort((a, b) => b.seasonDefSuccess - a.seasonDefSuccess > 0 ? 1 : -1);
-
-    return allPlayers;
-  }
-
-  List<Player> get topPasser {
-    List<Player> allPlayers = clubs.map((e) => e.players).expand((element) => element).toList();
-    allPlayers.sort((a, b) => b.seasonPassSuccess - a.seasonPassSuccess > 0 ? 1 : -1);
-
-    return allPlayers;
-  }
 }
 
 class Round {
@@ -116,9 +94,6 @@ class Season {
 
   Season.create({required List<Club> clubs}) {
     clubs.shuffle();
-    for (var club in clubs) {
-      club.startNewSeason();
-    }
     List<Round> newRounds = [];
     int n = clubs.length;
     // 각 클럽의 마지막 홈 경기 여부를 추적하는 맵
