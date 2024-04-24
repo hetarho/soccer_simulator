@@ -44,6 +44,8 @@ class League {
     return clubs;
   }
 
+  List<Player> get allPlayer => clubs.map((e) => e.players).expand((element) => element).toList();
+
   List<Player> get topScorers {
     List<Player> allPlayers = clubs.map((e) => e.players).expand((element) => element).toList();
     allPlayers.sort((a, b) => b.seasonGoal - a.seasonGoal > 0 ? 1 : -1);

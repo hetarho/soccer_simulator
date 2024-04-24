@@ -633,7 +633,33 @@ class PlayerTableWidget extends ConsumerStatefulWidget {
 }
 
 class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
-  String sortBy = 'goal';
+  List<Player> _allPlayer = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _allPlayer = widget.league.allPlayer;
+  }
+
+  _changeSort(String sortBy) {
+    _allPlayer.sort((a, b) => switch (sortBy) {
+                  'ov' => b.overall,
+                  'assist' => b.seasonAssist,
+                  'pass' => b.seasonPassSuccess,
+                  'def' => b.seasonDefSuccess,
+                  _ => b.seasonGoal,
+                } -
+                switch (sortBy) {
+                  'ov' => a.overall,
+                  'assist' => a.seasonAssist,
+                  'pass' => a.seasonPassSuccess,
+                  'def' => a.seasonDefSuccess,
+                  _ => a.seasonGoal,
+                } >
+            0
+        ? 1
+        : -1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -655,45 +681,45 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                 const SizedBox(width: 50, child: Text('club')),
                 const SizedBox(width: 90, child: Text('name')),
                 const SizedBox(width: 55, child: Text('pos')),
-                const SizedBox(width: 35, child: Text('ov')),
                 GestureDetector(
                     onTap: () {
                       setState(() {
-                        sortBy = 'goal';
+                        _changeSort('ov');
+                      });
+                    },
+                    child: const SizedBox(width: 50, child: Text('ov'))),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _changeSort('goal');
                       });
                     },
                     child: const SizedBox(width: 50, child: Text('goal'))),
                 GestureDetector(
                     onTap: () {
                       setState(() {
-                        sortBy = 'assist';
+                        _changeSort('assist');
                       });
                     },
                     child: const SizedBox(width: 55, child: Text('assist'))),
                 GestureDetector(
                     onTap: () {
                       setState(() {
-                        sortBy = 'pass';
+                        _changeSort('pass');
                       });
                     },
                     child: const SizedBox(width: 55, child: Text('pass'))),
                 GestureDetector(
                     onTap: () {
                       setState(() {
-                        sortBy = 'def';
+                        _changeSort('def');
                       });
                     },
                     child: const SizedBox(width: 55, child: Text('def'))),
               ],
             ),
           ),
-          ...(sortBy == 'goal'
-                  ? widget.league.topScorers
-                  : sortBy == 'assist'
-                      ? widget.league.topAssister
-                      : sortBy == 'pass'
-                          ? widget.league.topPasser
-                          : widget.league.topDefender)
+          ..._allPlayer
               .map((player) => GestureDetector(
                     onTap: () {
                       ref.read(playerProvider.notifier).state = player;
