@@ -37,8 +37,10 @@ class League {
         return b.pts - a.pts;
       } else if (a.gd != b.gd) {
         return b.gd - a.gd;
-      } else {
+      } else if(a.gf != b.gf){
         return b.gf - a.gf;
+      }else{
+        return a.name.compareTo(b.name);
       }
     });
     return clubs;

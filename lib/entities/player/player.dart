@@ -266,7 +266,7 @@ class Player extends Member {
   int get seasonDefSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.defSuccess);
   int get seasonDribbleSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.dribbleSuccess);
   int get seasonPassTry => gameRecord.fold(0, (prev, rec) => prev + rec.pass);
-  int get seasonPassSuccessPercent => (seasonPassSuccess * 100 / seasonPassTry).round();
+  int get seasonPassSuccessPercent => (seasonPassSuccess * 100 / max(1,seasonPassTry)).round();
   int get seasonShooting => gameRecord.fold(0, (prev, rec) => prev + rec.shooting);
 
   List<List<PlayerGameRecord>> seasonRecord = [];

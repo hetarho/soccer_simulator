@@ -380,8 +380,10 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
-    bool canPress =
-        ((tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(posXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < 3;
+    bool canPress = ((tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(posXY)) &&
+        isNotGoalKick &&
+        !(ballPos.x == posXY.x && ballPos.y == posXY.y) &&
+        closerPlayerAtBall < 3;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);
@@ -499,12 +501,24 @@ extension PlayerMove on Player {
     team.shoot += 1;
     shooting++;
 
-    double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy) - sqrt(midRangeShootStat);
+    double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy);
 
-    if ((pow(shootingStat * 0.65 + R().getInt(min: 45, max: 105), 0.37 + R().getDouble(max: 1.65))) + evadePressurePoint > goalKeeper.keepingStat * distanceToGoalPost) {
+    double stat = distanceToGoalPost < 20
+        ? shootingStat.toDouble()
+        : shootingStat * ((100 - distanceToGoalPost) / 100) + midRangeShootStat * (distanceToGoalPost / 100);
+
+    double finalShootStat = pow(stat + evadePressurePoint, 0.2 + R().getDouble(max: 1)).toDouble();
+
+    double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.7, max: 1.4);
+
+    print('finalShootStat:$finalShootStat');
+    print('finalKeepingStat:$finalKeepingStat');
+
+    if (finalShootStat > finalKeepingStat) {
       goal++;
       _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.goal));
       if (passedPlayer != null) _streamController?.add(PlayerActEvent(player: passedPlayer!, action: PlayerAction.assist));
+
       fixture.scored(
         scoredClub: team,
         concedeClub: opponent,
@@ -561,7 +575,8 @@ extension PlayerMove on Player {
     double travelY = distanceCanForward * sine;
 
     ///최종 이동할 좌표
-    PosXY newPos = PosXY((posXY.x + travelX).clamp(_posXMinBoundary, _posXMaxBoundary), (posXY.y + travelY).clamp(_posYMinBoundary, _posYMaxBoundary));
+    PosXY newPos =
+        PosXY((posXY.x + travelX).clamp(_posXMinBoundary, _posXMaxBoundary), (posXY.y + travelY).clamp(_posYMinBoundary, _posYMaxBoundary));
 
     ///실제 이동 거리
     double moveDistance = newPos.distance(posXY);
