@@ -261,7 +261,7 @@ extension PlayerMove on Player {
 
       double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy);
 
-      if (opponentsNumNearShootRout < sqrt(shootingStat * 1.1) && distanceToGoalPost < midRangeShootStat && (posXY.x > 30 || posXY.x < 70)) {
+      if (opponentsNumNearShootRout < sqrt(shootingStat * 1.1) && distanceToGoalPost < midRangeShootStat / 3 && (posXY.x > 30 || posXY.x < 70)) {
         _shoot(
           fixture: fixture,
           team: team,
@@ -446,7 +446,7 @@ extension PlayerMove on Player {
 
     double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy) - sqrt(midRangeShootStat);
 
-    if ((pow(shootingStat * 0.9 + R().getInt(min: 10, max: 60), 0.45 + R().getDouble(max: 1.6))) > goalKeeper.keepingStat * distanceToGoalPost) {
+    if ((pow(shootingStat * 0.55 + R().getInt(min: 60, max: 105), 0.5 + R().getDouble(max: 1.75))) + evadePressurePoint > goalKeeper.keepingStat * distanceToGoalPost) {
       goal++;
       _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.goal));
       if (passedPlayer != null) _streamController?.add(PlayerActEvent(player: passedPlayer!, action: PlayerAction.assist));

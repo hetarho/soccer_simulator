@@ -258,14 +258,10 @@ class Player extends Member {
 
   List<PlayerGameRecord> gameRecord = [];
 
-  // int get seasonGoal => gameRecord.fold(0, (prev, rec) => prev + rec.goal);
-  // int get seasonAssist => gameRecord.fold(0, (prev, rec) => prev + rec.assist);
-  // int get seasonPassSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.passSuccess);
-  // int get seasonDefSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.defSuccess);
-  int get seasonGoal => 1;
-  int get seasonAssist => 1;
-  int get seasonPassSuccess => 1;
-  int get seasonDefSuccess => 1;
+  int get seasonGoal => gameRecord.fold(0, (prev, rec) => prev + rec.goal);
+  int get seasonAssist => gameRecord.fold(0, (prev, rec) => prev + rec.assist);
+  int get seasonPassSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.passSuccess);
+  int get seasonDefSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.defSuccess);
 
   List<List<int>> seasonRecord = [];
 

@@ -104,7 +104,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       nickName: 'MAC',
       homeColor: Colors.blue[100]!,
       awayColor: Colors.blue[800]!,
-      tactics: Tactics(pressDistance: 20, freeLevel: PlayLevel.hight, attackLevel: PlayLevel.min),
+      tactics: Tactics(pressDistance: 20, freeLevel: PlayLevel.min, attackLevel: PlayLevel.hight),
     )..createStartingMembers(
         min: 85,
         max: 115,
@@ -303,20 +303,23 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       );
 
     for (var p in lutonTown.players) {
-      if (p.role == PlayerRole.forward) p.tactics = Tactics(pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max);
+      p.tactics = Tactics(pressDistance: 60, freeLevel: PlayLevel.max, attackLevel: PlayLevel.max);
     }
     Club burnley = Club(
       name: 'Burnley',
       nickName: 'BUN',
       homeColor: const Color.fromARGB(255, 77, 5, 50),
       awayColor: const Color.fromRGBO(90, 100, 150, 1),
-      tactics: Tactics(pressDistance: 5, freeLevel: PlayLevel.min, attackLevel: PlayLevel.min),
+      tactics: Tactics(pressDistance: 40, freeLevel: PlayLevel.max, attackLevel: PlayLevel.min),
     )..createStartingMembers(
         min: 45,
         max: 80,
-        formation: Formation.create3241(),
+        formation: Formation.create433(),
       );
 
+    for (var p in burnley.players) {
+      p.tactics = Tactics(pressDistance: 40, freeLevel: PlayLevel.max, attackLevel: PlayLevel.min);
+    }
     Club sheffield = Club(
       name: 'Sheffield United',
       nickName: 'SHU',
