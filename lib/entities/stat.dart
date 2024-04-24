@@ -67,7 +67,7 @@ class Stat {
     switch (role) {
       case PlayerRole.forward:
         this.attSkill += 60;
-        this.defSkill = sqrt(this.defSkill).round();
+        this.defSkill = sqrt(this.defSkill).round() + 40;
         this.gkSkill -= 40;
         break;
       case PlayerRole.midfielder:
@@ -78,7 +78,7 @@ class Stat {
         break;
       case PlayerRole.defender:
         this.defSkill += 60;
-        this.attSkill = sqrt(this.attSkill).round();
+        this.attSkill = sqrt(this.attSkill).round() + 40;
         this.gkSkill -= 40;
         break;
       case PlayerRole.goalKeeper:
