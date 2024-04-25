@@ -6,11 +6,18 @@ import 'package:soccer_simulator/enum/national.dart';
 import 'package:soccer_simulator/enum/player.dart';
 import 'package:soccer_simulator/main.dart';
 
-class PlayerDetail extends ConsumerWidget {
+class PlayerDetail extends ConsumerStatefulWidget {
   const PlayerDetail({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _PlayerDetailState();
+}
+
+class _PlayerDetailState extends ConsumerState<PlayerDetail> {
+  int plusMinus = 1;
+
+  @override
+  Widget build(BuildContext context) {
     Player player = ref.read(playerProvider) ??
         Player(
           name: '',
@@ -32,15 +39,51 @@ class PlayerDetail extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('축구지능'),
-                Text('반응속도'),
-                Text('스피드'),
-                Text('유연성'),
-                Text('체력'),
-                Text('잠재력'),
+                StatButton(
+                    text: '축구지능',
+                    onClick: () {
+                      setState(() {
+                        player.soccerIQ += plusMinus * 1;
+                      });
+                    }),
+                StatButton(
+                    text: '반응속도',
+                    onClick: () {
+                      setState(() {
+                        player.reflex += plusMinus * 1;
+                      });
+                    }),
+                StatButton(
+                    text: '스피드',
+                    onClick: () {
+                      setState(() {
+                        player.speed += plusMinus * 1;
+                      });
+                    }),
+                StatButton(
+                    text: '유연성',
+                    onClick: () {
+                      setState(() {
+                        player.flexibility += plusMinus * 1;
+                      });
+                    }),
+                StatButton(
+                    text: '체력',
+                    onClick: () {
+                      setState(() {
+                        player.stat.add(Stat(stamina: plusMinus * 1));
+                      });
+                    }),
+                StatButton(
+                    text: '잠재력',
+                    onClick: () {
+                      setState(() {
+                        player.potential += 1;
+                      });
+                    }),
               ],
             ),
             Row(
@@ -55,15 +98,51 @@ class PlayerDetail extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 16),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('근력'),
-                Text('공격스킬'),
-                Text('패스스킬'),
-                Text('수비스킬'),
-                Text('키핑스킬'),
-                Text('침착함'),
+                StatButton(
+                    text: '근력',
+                    onClick: () {
+                      setState(() {
+                        player.stat.add(Stat(strength: plusMinus * 1));
+                      });
+                    }),
+                StatButton(
+                    text: '공격스킬',
+                    onClick: () {
+                      setState(() {
+                        player.stat.add(Stat(attSkill: plusMinus * 1));
+                      });
+                    }),
+                StatButton(
+                    text: '패스스킬',
+                    onClick: () {
+                      setState(() {
+                        player.stat.add(Stat(passSkill: plusMinus * 1));
+                      });
+                    }),
+                StatButton(
+                    text: '수비스킬',
+                    onClick: () {
+                      setState(() {
+                        player.stat.add(Stat(defSkill: plusMinus * 1));
+                      });
+                    }),
+                StatButton(
+                    text: '키핑스킬',
+                    onClick: () {
+                      setState(() {
+                        player.stat.add(Stat(gkSkill: plusMinus * 1));
+                      });
+                    }),
+                StatButton(
+                    text: '침착함',
+                    onClick: () {
+                      setState(() {
+                        player.stat.add(Stat(composure: plusMinus * 1));
+                      });
+                    }),
               ],
             ),
             Row(
@@ -161,9 +240,36 @@ class PlayerDetail extends ConsumerWidget {
                 Text('${player.seasonDefSuccess}'),
               ],
             ),
+            ElevatedButton(
+                onPressed: () {
+                  plusMinus = -1 * plusMinus;
+                },
+                child: Text('추가 제거 변경'))
           ],
         ),
       ),
+    );
+  }
+}
+
+class StatButton extends StatelessWidget {
+  const StatButton({Key? key, required this.text, required this.onClick}) : super(key: key);
+  final String text;
+  final Function onClick;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(0)),
+      onPressed: () {
+        onClick();
+      },
+      onLongPress: () {
+        List.generate(10, (index) {
+          onClick();
+        });
+      },
+      child: Text(text),
     );
   }
 }

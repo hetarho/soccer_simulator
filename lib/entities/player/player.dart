@@ -142,6 +142,10 @@ class Player extends Member {
     return _potential;
   }
 
+  set potential(newVal) {
+    _potential = newVal;
+  }
+
   ///등번호
   int? backNumber;
 
@@ -380,107 +384,6 @@ class Player extends Member {
         _ => 1,
       };
 
-  // double get _posXMinBoundary {
-  //   return max(
-  //       0,
-  //       startingPoxXY.x +
-  //           teamFreeArea *
-  //               personalFreeArea *
-  //               switch (position ?? wantPosition) {
-  //                 Position.st => -10,
-  //                 Position.cf => -20,
-  //                 Position.lf => -20,
-  //                 Position.rf => -25,
-  //                 Position.lw => -15,
-  //                 Position.rw => -5,
-  //                 Position.lm => -10,
-  //                 Position.rm => -10,
-  //                 Position.cm => -10,
-  //                 Position.am => -20,
-  //                 Position.dm => -35,
-  //                 Position.lb => -25,
-  //                 Position.cb => -5,
-  //                 Position.rb => -5,
-  //                 Position.gk => -5,
-  //               });
-  // }
-
-  // double get _posXMaxBoundary {
-  //   return min(
-  //       100,
-  //       startingPoxXY.x +
-  //           teamFreeArea *
-  //               personalFreeArea *
-  //               switch (position ?? wantPosition) {
-  //                 Position.st => 10,
-  //                 Position.cf => 20,
-  //                 Position.lf => 25,
-  //                 Position.rf => 20,
-  //                 Position.lw => 5,
-  //                 Position.rw => 15,
-  //                 Position.lm => 10,
-  //                 Position.rm => 10,
-  //                 Position.cm => 10,
-  //                 Position.am => 20,
-  //                 Position.dm => 35,
-  //                 Position.lb => 5,
-  //                 Position.cb => 5,
-  //                 Position.rb => 25,
-  //                 Position.gk => 5,
-  //               });
-  // }
-
-  // double get _posYMinBoundary {
-  //   return max(
-  //       0,
-  //       startingPoxXY.y +
-  //           teamDefenseArea *
-  //               personalDefenseArea *
-  //               switch (position ?? wantPosition) {
-  //                 Position.st => -15,
-  //                 Position.cf => -25,
-  //                 Position.lf => -35,
-  //                 Position.rf => -35,
-  //                 Position.lw => -35,
-  //                 Position.rw => -35,
-  //                 Position.lm => -45,
-  //                 Position.rm => -45,
-  //                 Position.cm => -45,
-  //                 Position.am => -45,
-  //                 Position.dm => -45,
-  //                 Position.lb => -25,
-  //                 Position.cb => -25,
-  //                 Position.rb => -25,
-  //                 Position.gk => -5,
-  //               });
-  // }
-
-  // double get _posYMaxBoundary {
-  //   return min(
-  //       200,
-  //       startingPoxXY.y +
-  //           teamAttackArea *
-  //               personalAttackArea *
-  //               switch (position ?? wantPosition) {
-  //                 Position.st => 150,
-  //                 Position.cf => 150,
-  //                 Position.lf => 150,
-  //                 Position.rf => 150,
-  //                 Position.lw => 150,
-  //                 Position.rw => 150,
-  //                 Position.lm => 100,
-  //                 Position.rm => 100,
-  //                 Position.cm => 90,
-  //                 Position.am => 100,
-  //                 Position.dm => 80,
-  //                 Position.lb => 130,
-  //                 Position.cb => 70,
-  //                 Position.rb => 130,
-  //                 Position.gk => 5,
-  //               });
-  // }
-
-// leftFreedom, rightFreedom, forwardFreedom, backwardFreedom
   ///이 수치가 높을수록 스타팅포인트에서 이동하기 어려움( 0 = 완전 자유로움 100 = 자리에고정)
   double get _leftFreedom => switch (position ?? wantPosition) {
         ///forward

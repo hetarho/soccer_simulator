@@ -21,6 +21,7 @@ class FixturePage extends ConsumerStatefulWidget {
 class _FixturePageState extends ConsumerState<FixturePage> {
   List<Player> actingPlayer = [];
   StreamSubscription<PlayerActEvent>? _playerStreamSubscription;
+  StreamSubscription<FixtureRecord>? _gameStreamSubscription;
   late Fixture _fixture;
   int _ballAnimationSpeed = 0;
 
@@ -28,6 +29,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
   void dispose() {
     _fixture.dispose();
     _playerStreamSubscription?.cancel();
+    _gameStreamSubscription?.cancel();
     super.dispose();
   }
 
@@ -37,6 +39,12 @@ class _FixturePageState extends ConsumerState<FixturePage> {
     _fixture = ref.read(fixtureProvider) ?? Fixture.empty();
     _fixture.ready();
     _playerStreamSubscription = _fixture.playerStream?.listen((event) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+    _fixture.isSimulation = false;
+    _gameStreamSubscription = _fixture.gameStream.listen((event) {
       if (mounted) {
         setState(() {});
       }
@@ -176,12 +184,8 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                             AnimatedPositioned(
                               duration: Duration(milliseconds: (_ballAnimationSpeed).round()),
                               curve: Curves.decelerate,
-                              top: fixture.isHomeTeamBall
-                                  ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)
-                                  : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
-                              left: fixture.isHomeTeamBall
-                                  ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10
-                                  : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
+                              top: fixture.isHomeTeamBall ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2) : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
+                              left: fixture.isHomeTeamBall ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10 : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
                               child: Container(
                                 width: ballSize,
                                 height: ballSize,
@@ -275,7 +279,7 @@ class PlayerWidget extends StatelessWidget {
                           width: playerSize / 10,
                         )
                       : null,
-                  color:  color,
+                  color: color,
                   borderRadius: BorderRadius.circular(playerSize),
                 ),
                 child: Center(
