@@ -442,7 +442,7 @@ extension PlayerMove on Player {
   }
 
   _dribble(ClubInFixture team, double evadePressurePoint) {
-    if (evadePressurePoint < 20) {
+    if (evadePressurePoint < 15) {
       lastAction = PlayerAction.dribble;
       dribbleSuccess++;
       team.dribble++;
@@ -525,9 +525,9 @@ extension PlayerMove on Player {
 
     double stat = distanceToGoalPost < 20 ? shootingStat.toDouble() : shootingStat * ((100 - distanceToGoalPost) / 100) + midRangeShootStat * (distanceToGoalPost / 100);
 
-    double finalShootStat = pow(stat * 0.73 + evadePressurePoint, 0.22 + R().getDouble(max: 0.91)).toDouble();
+    double finalShootStat = pow(stat * 0.75 + evadePressurePoint, 0.23 + R().getDouble(max: 0.92)).toDouble();
 
-    double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.80, max: 1.75);
+    double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.75, max: 1.72);
 
     if (finalShootStat > finalKeepingStat) {
       goal++;

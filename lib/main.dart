@@ -80,10 +80,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    init();
+    initEPL();
   }
 
-  init() {
+  initEPL() {
     Club arsenal = Club(
       name: 'Arsenal',
       nickName: 'ARS',
@@ -341,8 +341,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       burnley,
       sheffield,
     ];
+    init(clubs);
+  }
 
-    List<Club> testClubs = List.generate(20, (index) {
+  initRandom() {
+    List<Club> clubs = List.generate(20, (index) {
       return Club(
         name: 'team$index',
         nickName: 'team$index',
@@ -356,7 +359,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         );
     });
 
-    League epl = League(clubs: testClubs);
+    init(clubs);
+  }
+
+  init(List<Club> clubs) {
+    League epl = League(clubs: clubs);
     _league = epl;
     _league.startNewSeason();
     _isAutoPlay = false;
@@ -423,11 +430,20 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         onPressed: () {
                           if (mounted) {
                             setState(() {
-                              init();
+                              initEPL();
                             });
                           }
                         },
-                        child: const Text('리셋')),
+                        child: const Text('epl')),
+                    ElevatedButton(
+                        onPressed: () {
+                          if (mounted) {
+                            setState(() {
+                              initRandom();
+                            });
+                          }
+                        },
+                        child: const Text('랜덤')),
                     ElevatedButton(
                       onPressed: () async {
                         _startAllFixtures();
