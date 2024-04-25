@@ -1,5 +1,6 @@
 import 'dart:math' as m;
 
+import 'package:soccer_simulator/entities/formation/formation.dart';
 import 'package:soccer_simulator/enum/national.dart';
 import 'package:soccer_simulator/enum/player.dart';
 
@@ -43,5 +44,23 @@ class R {
 
   National getNational() {
     return National.values[getInt(max: National.values.length - 1)];
+  }
+
+  Formation getFormation() {
+    List<Formation> formations = [
+      Formation.create3241(),
+      Formation.create352(),
+      Formation.create41212(),
+      Formation.create4141(),
+      Formation.create4222(),
+      Formation.create4231(),
+      Formation.create433(),
+      Formation.create442(),
+      Formation.create532(),
+    ];
+
+    formations.shuffle();
+
+    return formations.first;
   }
 }

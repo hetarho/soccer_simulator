@@ -39,19 +39,33 @@ extension PlayerStat on Player {
     return res.round();
   }
 
-  /// 키패스 - 축구지능 +  기술 + 근력 + 체력 + 조직력 + 침착함
+  /// 키패스 - 축구지능 +  기술 + 근력 + 체력  + 침착함
   int get keyPassStat {
-    return 1;
+    double res = soccerIQ * 0.5;
+    res = res + stat.passSkill * 0.4;
+    res = res + stat.composure * 0.05;
+    res = res + _currentStamina * 0.05;
+    return res.round();
   }
 
-  /// 짧은패스 - 축구지능 + 기술 + 조직력 + 침착함
+  /// 짧은패스 - 축구지능 + 기술 + 조직력 + 침착함 + 체력
   int get shortPassStat {
-    return 1;
+    double res = soccerIQ * 0.3;
+    res = res + stat.passSkill * 0.5;
+    res = res + stat.teamwork * 0.01;
+    res = res + stat.composure * 0.05;
+    res = res + _currentStamina * 0.05;
+    return res.round();
   }
 
   /// 롱패스 - 축구지능 + 체력 + 기술 + 근력 + 조직력 + 침착함
   int get longPassStat {
-    return 1;
+    double res = soccerIQ * 0.2;
+    res = res + stat.passSkill * 0.5;
+    res = res + stat.strength * 0.2;
+    res = res + stat.composure * 0.05;
+    res = res + _currentStamina * 0.05;
+    return res.round();
   }
 
   /// 헤딩 - 키 + 체형 + 기술 + 체력

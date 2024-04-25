@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/main.dart';
-import 'package:soccer_simulator/pages/fixture/fixture_page.dart';
+import 'package:soccer_simulator/utils/color.dart';
 
 class PlayerListPage extends ConsumerWidget {
   const PlayerListPage({super.key});
@@ -40,7 +40,7 @@ class PlayerListPage extends ConsumerWidget {
                             ref.read(playerProvider.notifier).state = player;
                             context.push('/players/detail');
                           },
-                          child: PlayerWidget(
+                          child: _PlayerWidget(
                             player: player,
                             playerSize: playerSize,
                             color: player.role == PlayerRole.goalKeeper
@@ -61,6 +61,67 @@ class PlayerListPage extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _PlayerWidget extends StatelessWidget {
+  const _PlayerWidget({Key? key, required this.player, required this.playerSize, required this.color}) : super(key: key);
+  final Player player;
+  final double playerSize;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    Color textColor = C().colorDifference(Colors.black, color) < C().colorDifference(Colors.white, color) ? Colors.white : Colors.black;
+    return Column(
+      children: [
+        Transform.translate(
+          offset: Offset(playerSize / 2, playerSize / 2),
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 200),
+            transform: Matrix4.rotationZ(player.rotateDegree),
+            child: Transform.translate(
+              offset: Offset(-playerSize / 2, -playerSize / 2),
+              child: Container(
+                width: playerSize,
+                height: playerSize,
+                decoration: BoxDecoration(
+                  border: player.hasBall
+                      ? Border.all(
+                          color: textColor,
+                          width: playerSize / 10,
+                        )
+                      : null,
+                  color: color,
+                  borderRadius: BorderRadius.circular(playerSize),
+                ),
+                child: Center(
+                  child: Text(
+                    '${player.position}',
+                    style: TextStyle(
+                      color: textColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: playerSize / 2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Container(
+          width: playerSize,
+          alignment: Alignment.center,
+          child: Text(
+            '${player.overall.round()}',
+            style: TextStyle(
+              color: textColor,
+              fontSize: playerSize / 2,
+            ),
+          ),
+        )
+      ],
     );
   }
 }

@@ -15,6 +15,7 @@ import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';
 import 'package:soccer_simulator/router/routes.dart';
 import 'package:soccer_simulator/utils/color.dart';
+import 'package:soccer_simulator/utils/random.dart';
 
 void main() {
   runApp(
@@ -341,7 +342,21 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       sheffield,
     ];
 
-    League epl = League(clubs: clubs);
+    List<Club> testClubs = List.generate(20, (index) {
+      return Club(
+        name: 'team$index',
+        nickName: 'team$index',
+        homeColor: Color.fromRGBO(R().getInt(max: 255), R().getInt(max: 255), R().getInt(max: 255), 1),
+        awayColor: Color.fromRGBO(R().getInt(max: 255), R().getInt(max: 255), R().getInt(max: 255), 1),
+        tactics: Tactics.normal(),
+      )..createStartingMembers(
+          min: 60 + index * 2,
+          max: 60 + index * 2,
+          formation: R().getFormation(),
+        );
+    });
+
+    League epl = League(clubs: testClubs);
     _league = epl;
     _league.startNewSeason();
     _isAutoPlay = false;
