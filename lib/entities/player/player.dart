@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/player/vo/player_game_record.dart';
@@ -379,103 +380,197 @@ class Player extends Member {
         _ => 1,
       };
 
-  double get _posXMinBoundary {
-    return max(
-        0,
-        startingPoxXY.x +
-            teamFreeArea *
-                personalFreeArea *
-                switch (position ?? wantPosition) {
-                  Position.st => -10,
-                  Position.cf => -20,
-                  Position.lf => -20,
-                  Position.rf => -25,
-                  Position.lw => -15,
-                  Position.rw => -5,
-                  Position.lm => -10,
-                  Position.rm => -10,
-                  Position.cm => -10,
-                  Position.am => -20,
-                  Position.dm => -35,
-                  Position.lb => -25,
-                  Position.cb => -5,
-                  Position.rb => -5,
-                  Position.gk => -5,
-                });
-  }
+  // double get _posXMinBoundary {
+  //   return max(
+  //       0,
+  //       startingPoxXY.x +
+  //           teamFreeArea *
+  //               personalFreeArea *
+  //               switch (position ?? wantPosition) {
+  //                 Position.st => -10,
+  //                 Position.cf => -20,
+  //                 Position.lf => -20,
+  //                 Position.rf => -25,
+  //                 Position.lw => -15,
+  //                 Position.rw => -5,
+  //                 Position.lm => -10,
+  //                 Position.rm => -10,
+  //                 Position.cm => -10,
+  //                 Position.am => -20,
+  //                 Position.dm => -35,
+  //                 Position.lb => -25,
+  //                 Position.cb => -5,
+  //                 Position.rb => -5,
+  //                 Position.gk => -5,
+  //               });
+  // }
 
-  double get _posXMaxBoundary {
-    return min(
-        100,
-        startingPoxXY.x +
-            teamFreeArea *
-                personalFreeArea *
-                switch (position ?? wantPosition) {
-                  Position.st => 10,
-                  Position.cf => 20,
-                  Position.lf => 25,
-                  Position.rf => 20,
-                  Position.lw => 5,
-                  Position.rw => 15,
-                  Position.lm => 10,
-                  Position.rm => 10,
-                  Position.cm => 10,
-                  Position.am => 20,
-                  Position.dm => 35,
-                  Position.lb => 5,
-                  Position.cb => 5,
-                  Position.rb => 25,
-                  Position.gk => 5,
-                });
-  }
+  // double get _posXMaxBoundary {
+  //   return min(
+  //       100,
+  //       startingPoxXY.x +
+  //           teamFreeArea *
+  //               personalFreeArea *
+  //               switch (position ?? wantPosition) {
+  //                 Position.st => 10,
+  //                 Position.cf => 20,
+  //                 Position.lf => 25,
+  //                 Position.rf => 20,
+  //                 Position.lw => 5,
+  //                 Position.rw => 15,
+  //                 Position.lm => 10,
+  //                 Position.rm => 10,
+  //                 Position.cm => 10,
+  //                 Position.am => 20,
+  //                 Position.dm => 35,
+  //                 Position.lb => 5,
+  //                 Position.cb => 5,
+  //                 Position.rb => 25,
+  //                 Position.gk => 5,
+  //               });
+  // }
 
-  double get _posYMinBoundary {
-    return max(
-        0,
-        startingPoxXY.y +
-            teamDefenseArea *
-                personalDefenseArea *
-                switch (position ?? wantPosition) {
-                  Position.st => -15,
-                  Position.cf => -25,
-                  Position.lf => -35,
-                  Position.rf => -35,
-                  Position.lw => -35,
-                  Position.rw => -35,
-                  Position.lm => -45,
-                  Position.rm => -45,
-                  Position.cm => -45,
-                  Position.am => -45,
-                  Position.dm => -45,
-                  Position.lb => -25,
-                  Position.cb => -25,
-                  Position.rb => -25,
-                  Position.gk => -5,
-                });
-  }
+  // double get _posYMinBoundary {
+  //   return max(
+  //       0,
+  //       startingPoxXY.y +
+  //           teamDefenseArea *
+  //               personalDefenseArea *
+  //               switch (position ?? wantPosition) {
+  //                 Position.st => -15,
+  //                 Position.cf => -25,
+  //                 Position.lf => -35,
+  //                 Position.rf => -35,
+  //                 Position.lw => -35,
+  //                 Position.rw => -35,
+  //                 Position.lm => -45,
+  //                 Position.rm => -45,
+  //                 Position.cm => -45,
+  //                 Position.am => -45,
+  //                 Position.dm => -45,
+  //                 Position.lb => -25,
+  //                 Position.cb => -25,
+  //                 Position.rb => -25,
+  //                 Position.gk => -5,
+  //               });
+  // }
 
-  double get _posYMaxBoundary {
-    return min(
-        200,
-        startingPoxXY.y +
-            teamAttackArea *
-                personalAttackArea *
-                switch (position ?? wantPosition) {
-                  Position.st => 100,
-                  Position.cf => 100,
-                  Position.lf => 100,
-                  Position.rf => 100,
-                  Position.lw => 100,
-                  Position.rw => 100,
-                  Position.lm => 100,
-                  Position.rm => 100,
-                  Position.cm => 90,
-                  Position.am => 100,
-                  Position.dm => 80,
-                  Position.lb => 130,
-                  Position.cb => 70,
-                  Position.rb => 130,
-                  Position.gk => 5,
-                });
-  }
+  // double get _posYMaxBoundary {
+  //   return min(
+  //       200,
+  //       startingPoxXY.y +
+  //           teamAttackArea *
+  //               personalAttackArea *
+  //               switch (position ?? wantPosition) {
+  //                 Position.st => 150,
+  //                 Position.cf => 150,
+  //                 Position.lf => 150,
+  //                 Position.rf => 150,
+  //                 Position.lw => 150,
+  //                 Position.rw => 150,
+  //                 Position.lm => 100,
+  //                 Position.rm => 100,
+  //                 Position.cm => 90,
+  //                 Position.am => 100,
+  //                 Position.dm => 80,
+  //                 Position.lb => 130,
+  //                 Position.cb => 70,
+  //                 Position.rb => 130,
+  //                 Position.gk => 5,
+  //               });
+  // }
+
+// leftFreedom, rightFreedom, forwardFreedom, backwardFreedom
+  ///이 수치가 높을수록 스타팅포인트에서 이동하기 어려움( 0 = 완전 자유로움 100 = 자리에고정)
+  double get _leftFreedom => switch (position ?? wantPosition) {
+        ///forward
+        Position.lf => 0,
+        Position.lw => 0,
+        Position.rf => 30,
+        Position.rw => 20,
+        Position.st => 50,
+        Position.cf => 50,
+
+        ///midfielder
+        Position.lm => 0,
+        Position.rm => 20,
+        Position.cm => 50,
+        Position.am => 50,
+        Position.dm => 50,
+
+        ///defender
+        Position.lb => 0,
+        Position.rb => 20,
+        Position.cb => 70,
+        Position.gk => 90,
+      };
+
+  double get _rightFreedom => switch (position ?? wantPosition) {
+        ///forward
+        Position.lf => 30,
+        Position.lw => 20,
+        Position.rf => 0,
+        Position.rw => 0,
+        Position.st => 50,
+        Position.cf => 50,
+
+        ///midfielder
+        Position.lm => 30,
+        Position.rm => 0,
+        Position.cm => 50,
+        Position.am => 50,
+        Position.dm => 50,
+
+        ///defender
+        Position.lb => 0,
+        Position.rb => 20,
+        Position.cb => 70,
+        Position.gk => 90,
+      };
+
+  double get _forwardFreedom => switch (position ?? wantPosition) {
+        ///forward
+        Position.lf => 0,
+        Position.lw => 0,
+        Position.rf => 0,
+        Position.rw => 0,
+        Position.st => 0,
+        Position.cf => 0,
+
+        ///midfielder
+        Position.lm => 50,
+        Position.rm => 50,
+        Position.cm => 50,
+        Position.am => 50,
+        Position.dm => 50,
+
+        ///defender
+        Position.lb => 40,
+        Position.rb => 40,
+        Position.cb => 75,
+        Position.gk => 99,
+      };
+
+  double get _backwardFreedom => switch (position ?? wantPosition) {
+        ///forward
+        Position.lf => 60,
+        Position.lw => 60,
+        Position.rf => 60,
+        Position.rw => 60,
+        Position.st => 60,
+        Position.cf => 60,
+
+        ///midfielder
+        Position.lm => 30,
+        Position.rm => 30,
+        Position.cm => 30,
+        Position.am => 30,
+        Position.dm => 30,
+
+        ///defender
+        Position.lb => 0,
+        Position.rb => 0,
+        Position.cb => 0,
+        Position.gk => 90,
+      };
 }
