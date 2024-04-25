@@ -176,8 +176,12 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                             AnimatedPositioned(
                               duration: Duration(milliseconds: (_ballAnimationSpeed).round()),
                               curve: Curves.decelerate,
-                              top: fixture.isHomeTeamBall ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2) : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
-                              left: fixture.isHomeTeamBall ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10 : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
+                              top: fixture.isHomeTeamBall
+                                  ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2)
+                                  : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
+                              left: fixture.isHomeTeamBall
+                                  ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10
+                                  : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,
                               child: Container(
                                 width: ballSize,
                                 height: ballSize,
@@ -271,7 +275,7 @@ class PlayerWidget extends StatelessWidget {
                           width: playerSize / 10,
                         )
                       : null,
-                  color: color,
+                  color:  color,
                   borderRadius: BorderRadius.circular(playerSize),
                 ),
                 child: Center(
@@ -292,7 +296,7 @@ class PlayerWidget extends StatelessWidget {
           width: playerSize,
           alignment: Alignment.center,
           child: Text(
-            '${player.actPoint.round()}',
+            '${player.attractive.round()}',
             style: TextStyle(
               color: textColor,
               fontSize: playerSize / 2,

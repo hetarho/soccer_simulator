@@ -493,16 +493,16 @@ class Player extends Member {
 
         ///midfielder
         Position.lm => 0,
-        Position.rm => 20,
+        Position.rm => 60,
         Position.cm => 50,
         Position.am => 50,
         Position.dm => 50,
 
         ///defender
-        Position.lb => 0,
-        Position.rb => 20,
-        Position.cb => 70,
-        Position.gk => 90,
+        Position.lb => 10,
+        Position.rb => 70,
+        Position.cb => 80,
+        Position.gk => 95,
       };
 
   double get _rightFreedom => switch (position ?? wantPosition) {
@@ -515,34 +515,34 @@ class Player extends Member {
         Position.cf => 50,
 
         ///midfielder
-        Position.lm => 30,
+        Position.lm => 60,
         Position.rm => 0,
         Position.cm => 50,
         Position.am => 50,
         Position.dm => 50,
 
         ///defender
-        Position.lb => 0,
-        Position.rb => 20,
-        Position.cb => 70,
-        Position.gk => 90,
+        Position.lb => 70,
+        Position.rb => 10,
+        Position.cb => 80,
+        Position.gk => 95,
       };
 
   double get _forwardFreedom => switch (position ?? wantPosition) {
         ///forward
-        Position.lf => 0,
-        Position.lw => 0,
-        Position.rf => 0,
-        Position.rw => 0,
-        Position.st => 0,
-        Position.cf => 0,
+        Position.lf => 10,
+        Position.lw => 10,
+        Position.rf => 10,
+        Position.rw => 10,
+        Position.st => 10,
+        Position.cf => 10,
 
         ///midfielder
-        Position.lm => 50,
-        Position.rm => 50,
-        Position.cm => 50,
-        Position.am => 50,
-        Position.dm => 50,
+        Position.lm => 35,
+        Position.rm => 35,
+        Position.cm => 35,
+        Position.am => 35,
+        Position.dm => 35,
 
         ///defender
         Position.lb => 40,
@@ -553,19 +553,19 @@ class Player extends Member {
 
   double get _backwardFreedom => switch (position ?? wantPosition) {
         ///forward
-        Position.lf => 60,
-        Position.lw => 60,
-        Position.rf => 60,
-        Position.rw => 60,
-        Position.st => 60,
-        Position.cf => 60,
+        Position.lf => 80,
+        Position.lw => 80,
+        Position.rf => 80,
+        Position.rw => 80,
+        Position.st => 80,
+        Position.cf => 80,
 
         ///midfielder
-        Position.lm => 30,
-        Position.rm => 30,
-        Position.cm => 30,
-        Position.am => 30,
-        Position.dm => 30,
+        Position.lm => 60,
+        Position.rm => 60,
+        Position.cm => 60,
+        Position.am => 60,
+        Position.dm => 60,
 
         ///defender
         Position.lb => 0,
