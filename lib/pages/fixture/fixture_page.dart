@@ -292,7 +292,7 @@ class PlayerWidget extends StatelessWidget {
           width: playerSize,
           alignment: Alignment.center,
           child: Text(
-            '${player.attractive.round()}',
+            '${player.actPoint.round()}',
             style: TextStyle(
               color: textColor,
               fontSize: playerSize / 2,

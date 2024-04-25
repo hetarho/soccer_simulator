@@ -7,15 +7,32 @@ class Tactics {
   });
   Tactics.normal({
     this.pressDistance = 10,
-    this.freeLevel = PlayLevel.middle,
     this.attackLevel = PlayLevel.middle,
     this.shortPassLevel = PlayLevel.middle,
-  });
+  }) {
+    freeLevel = FreeLevel.normal();
+  }
 
-  final double pressDistance;
-  final PlayLevel freeLevel;
-  final PlayLevel attackLevel;
-  final PlayLevel shortPassLevel;
+  late final double pressDistance;
+  late final FreeLevel freeLevel;
+  late final PlayLevel attackLevel;
+  late final PlayLevel shortPassLevel;
+}
+
+class FreeLevel {
+  late final PlayLevel forward;
+  late final PlayLevel backward;
+  late final PlayLevel left;
+  late final PlayLevel right;
+
+  FreeLevel(this.forward, this.backward, this.left, this.right);
+
+  FreeLevel.normal() {
+    forward = PlayLevel.middle;
+    backward = PlayLevel.middle;
+    left = PlayLevel.middle;
+    right = PlayLevel.middle;
+  }
 }
 
 enum PlayLevel {
