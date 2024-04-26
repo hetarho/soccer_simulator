@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
@@ -15,6 +17,7 @@ class PlayerDetail extends ConsumerStatefulWidget {
 
 class _PlayerDetailState extends ConsumerState<PlayerDetail> {
   int plusMinus = 1;
+  Color _buttonColor = Colors.green[100]!;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +46,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 StatButton(
+                    color: _buttonColor,
                     text: '축구지능',
                     onClick: () {
                       setState(() {
@@ -50,6 +54,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                       });
                     }),
                 StatButton(
+                    color: _buttonColor,
                     text: '반응속도',
                     onClick: () {
                       setState(() {
@@ -57,6 +62,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                       });
                     }),
                 StatButton(
+                    color: _buttonColor,
                     text: '스피드',
                     onClick: () {
                       setState(() {
@@ -64,6 +70,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                       });
                     }),
                 StatButton(
+                    color: _buttonColor,
                     text: '유연성',
                     onClick: () {
                       setState(() {
@@ -71,6 +78,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                       });
                     }),
                 StatButton(
+                    color: _buttonColor,
                     text: '체력',
                     onClick: () {
                       setState(() {
@@ -78,6 +86,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                       });
                     }),
                 StatButton(
+                    color: _buttonColor,
                     text: '잠재력',
                     onClick: () {
                       setState(() {
@@ -102,6 +111,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 StatButton(
+                    color: _buttonColor,
                     text: '근력',
                     onClick: () {
                       setState(() {
@@ -109,6 +119,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                       });
                     }),
                 StatButton(
+                    color: _buttonColor,
                     text: '공격스킬',
                     onClick: () {
                       setState(() {
@@ -116,6 +127,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                       });
                     }),
                 StatButton(
+                    color: _buttonColor,
                     text: '패스스킬',
                     onClick: () {
                       setState(() {
@@ -123,6 +135,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                       });
                     }),
                 StatButton(
+                    color: _buttonColor,
                     text: '수비스킬',
                     onClick: () {
                       setState(() {
@@ -130,6 +143,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                       });
                     }),
                 StatButton(
+                    color: _buttonColor,
                     text: '키핑스킬',
                     onClick: () {
                       setState(() {
@@ -137,6 +151,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                       });
                     }),
                 StatButton(
+                    color: _buttonColor,
                     text: '침착함',
                     onClick: () {
                       setState(() {
@@ -243,8 +258,10 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
             ElevatedButton(
                 onPressed: () {
                   plusMinus = -1 * plusMinus;
+                  _buttonColor = plusMinus == 1 ? Colors.green[100]! : Colors.red[100]!;
+                  setState(() {});
                 },
-                child: Text('추가 제거 변경'))
+                child: const Text('추가 제거 변경'))
           ],
         ),
       ),
@@ -252,24 +269,47 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
   }
 }
 
-class StatButton extends StatelessWidget {
-  const StatButton({Key? key, required this.text, required this.onClick}) : super(key: key);
+class StatButton extends StatefulWidget {
+  const StatButton({super.key, required this.text, required this.onClick, required this.color});
   final String text;
   final Function onClick;
+  final Color color;
+  @override
+  State<StatButton> createState() => _StatButtonState();
+}
+
+class _StatButtonState extends State<StatButton> {
+  final Stopwatch _stopwatch = Stopwatch();
+  Timer? _timer;
+
+  _onTapEvent() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (_stopwatch.elapsed.inMilliseconds == 0) return;
+    _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
+      widget.onClick();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(0)),
-      onPressed: () {
-        onClick();
+    return GestureDetector(
+      onTapDown: (TapDownDetails details) {
+        _stopwatch.start();
+        _onTapEvent();
       },
-      onLongPress: () {
-        List.generate(10, (index) {
-          onClick();
-        });
+      onTapUp: (TapUpDetails details) {
+        _stopwatch.stop();
+        if (_stopwatch.elapsed.inMilliseconds < 100) {
+          widget.onClick();
+        }
+        _timer?.cancel();
+        _timer = null;
+        _stopwatch.reset();
       },
-      child: Text(text),
+      child: Container(
+        color: widget.color,
+        child: Text(widget.text),
+      ),
     );
   }
 }

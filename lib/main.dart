@@ -614,7 +614,7 @@ class LeagueTableWidget extends ConsumerWidget {
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(width: 150, child: Text('name')),
+              SizedBox(width: 120, child: Text('name')),
               SizedBox(width: 35, child: Text('pts')),
               SizedBox(width: 35, child: Text('win')),
               SizedBox(width: 35, child: Text('draw')),
@@ -632,6 +632,7 @@ class LeagueTableWidget extends ConsumerWidget {
                     context.push('/players');
                   },
                   child: Container(
+                    height: 30,
                     decoration: const BoxDecoration(
                         border: Border(
                       bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
@@ -639,7 +640,7 @@ class LeagueTableWidget extends ConsumerWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(width: 150, child: Text('${club.nickName}(${club.overall})')),
+                        SizedBox(width: 120, child: Text('${club.nickName}(${club.overall})')),
                         SizedBox(width: 35, child: Text('${club.pts}')),
                         SizedBox(width: 35, child: Text('${club.won}')),
                         SizedBox(width: 35, child: Text('${club.drawn}')),
