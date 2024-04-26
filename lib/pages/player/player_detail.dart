@@ -6,6 +6,7 @@ import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/stat.dart';
 import 'package:soccer_simulator/enum/national.dart';
 import 'package:soccer_simulator/enum/player.dart';
+import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/main.dart';
 
 class PlayerDetail extends ConsumerStatefulWidget {
@@ -42,6 +43,20 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PositionBadge(position: player.position ?? Position.st, role: player.role),
+                  const SizedBox(width: 8),
+                  Text(
+                    player.name,
+                    style: const TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -310,6 +325,33 @@ class _StatButtonState extends State<StatButton> {
         color: widget.color,
         child: Text(widget.text),
       ),
+    );
+  }
+}
+
+class PositionBadge extends StatelessWidget {
+  const PositionBadge({super.key, required this.position, required this.role});
+  final Position position;
+  final PlayerRole role;
+
+  Color _getColor(PlayerRole role) {
+    return switch (role) {
+      PlayerRole.forward => Colors.red,
+      PlayerRole.midfielder => Colors.blue,
+      PlayerRole.defender => Colors.orange,
+      PlayerRole.goalKeeper => Colors.yellow,
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 1),
+      decoration: BoxDecoration(
+        color: _getColor(role),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Center(child: Text(position.toString(), style: const TextStyle(fontSize: 16,color: Colors.white))),
     );
   }
 }
