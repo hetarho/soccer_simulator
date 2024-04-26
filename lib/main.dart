@@ -604,6 +604,7 @@ class LeagueTableWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    int index = 1;
     return Column(
       children: [
         Container(
@@ -614,6 +615,7 @@ class LeagueTableWidget extends ConsumerWidget {
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              SizedBox(width: 20, child: Text('')),
               SizedBox(width: 120, child: Text('name')),
               SizedBox(width: 35, child: Text('pts')),
               SizedBox(width: 35, child: Text('win')),
@@ -640,6 +642,7 @@ class LeagueTableWidget extends ConsumerWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        SizedBox(width: 20, child: Text('${index++}.')),
                         SizedBox(width: 120, child: Text('${club.nickName}(${club.overall})')),
                         SizedBox(width: 35, child: Text('${club.pts}')),
                         SizedBox(width: 35, child: Text('${club.won}')),
