@@ -277,6 +277,7 @@ class Player extends Member {
   int get seasonPassTry => gameRecord.fold(0, (prev, rec) => prev + rec.pass);
   int get seasonPassSuccessPercent => (seasonPassSuccess * 100 / max(1, seasonPassTry)).round();
   int get seasonShooting => gameRecord.fold(0, (prev, rec) => prev + rec.shooting);
+  int get seasonShootAccuracy =>  (seasonGoal * 100 / max(1, seasonShooting)).round();
 
   List<List<PlayerGameRecord>> seasonRecord = [];
 

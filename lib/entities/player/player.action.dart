@@ -536,7 +536,7 @@ extension PlayerMove on Player {
 
     double stat = distanceToGoalPost < 20 ? shootingStat.toDouble() : shootingStat * ((100 - distanceToGoalPost) / 100) + midRangeShootStat * (distanceToGoalPost / 100);
 
-    double finalShootStat = pow(stat * 0.65 + evadePressurePoint, 0.24 + R().getDouble(max: 0.97)).toDouble();
+    double finalShootStat = pow(stat * 0.64 + evadePressurePoint, 0.27 + R().getDouble(max: 1.05)).toDouble();
 
     double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.65, max: 1.78);
 
