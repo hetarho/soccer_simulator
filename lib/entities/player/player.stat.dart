@@ -68,14 +68,37 @@ extension PlayerStat on Player {
     return res.round();
   }
 
-  /// 헤딩 - 키 + 체형 + 기술 + 체력
+  /// 헤딩 - 축구지능  + 근력 +  키 +  기술 + 체력
   int get headerStat {
-    return 1;
+    double res = soccerIQ * 0.1;
+    res = res + (height * 0.7) * 0.25;
+    res = res + stat.strength * 0.25;
+    res = res + stat.attSkill * 0.3;
+    res = res + _currentStamina * 0.1;
+    return res.round();
   }
 
-  /// 드리블 - 키 + 체형 + 축구지능 + 반응속도 + 체력 + 기술 + 유연성
+  /// 드리블 - 축구지능 + 키 + 체형 + 반응속도 + 체력 + 유연성
   int get dribbleStat {
-    return 1;
+    double res = soccerIQ * 0.3;
+    res = res +
+        switch (height) {
+              < 170 => 100,
+              < 180 => 90,
+              < 190 => 70,
+              _ => 50,
+            } *
+            0.1;
+    res = res +
+        switch (bodyType) {
+              BodyType.slim => 100,
+              BodyType.normal => 70,
+              BodyType.robust => 50,
+            } *
+            0.2;
+    res = res + reflex * 0.2;
+    res = res + flexibility * 0.2;
+    return res.round();
   }
 
   /// 탈압박 - 축구지능 + 반응속도 + 유연성 + 체력 + 침착함
@@ -146,6 +169,3 @@ extension PlayerStat on Player {
     return res.round();
   }
 }
-// 빌드업: buildUp
-// 반박자빠른슈팅: quickReleaseShot
-// 아크로바틱: acrobatic

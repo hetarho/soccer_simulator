@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/player/vo/player_game_record.dart';
@@ -248,18 +249,21 @@ class Player extends Member {
   late int _potential;
 
   int get overall {
-    return ((_stat.stamina +
-                _stat.strength +
-                _stat.composure +
-                _stat.teamwork +
-                switch (role) {
-                  PlayerRole.forward => _stat.attSkill,
-                  PlayerRole.midfielder => _stat.passSkill,
-                  PlayerRole.defender => _stat.defSkill,
-                  PlayerRole.goalKeeper => _stat.gkSkill,
-                }) /
-            5)
-        .round();
+    List<int> stats = [
+      if ([PlayerRole.forward].contains(role)) shootingStat,
+      if ([PlayerRole.forward].contains(role)) midRangeShootStat,
+      if ([PlayerRole.forward, PlayerRole.midfielder].contains(role)) keyPassStat,
+      if ([PlayerRole.forward, PlayerRole.midfielder].contains(role)) shortPassStat,
+      if ([PlayerRole.forward, PlayerRole.midfielder, PlayerRole.defender, PlayerRole.goalKeeper].contains(role)) longPassStat,
+      if ([PlayerRole.forward, PlayerRole.midfielder, PlayerRole.defender, PlayerRole.goalKeeper].contains(role)) headerStat,
+      if ([PlayerRole.forward, PlayerRole.midfielder, PlayerRole.defender].contains(role)) dribbleStat,
+      if ([PlayerRole.forward, PlayerRole.midfielder, PlayerRole.defender, PlayerRole.goalKeeper].contains(role)) evadePressStat,
+      if ([PlayerRole.forward, PlayerRole.midfielder, PlayerRole.defender].contains(role)) tackleStat,
+      if ([PlayerRole.midfielder, PlayerRole.defender].contains(role)) pressureStat,
+      if ([PlayerRole.forward, PlayerRole.midfielder, PlayerRole.defender, PlayerRole.goalKeeper].contains(role)) judgementStat,
+    ];
+
+    return (stats.fold(0, (prev, res) => res + prev) / stats.length).round();
   }
 
   ///========================= 시즌마다 초기화 ==========================
