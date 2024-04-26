@@ -336,24 +336,6 @@ class Player extends Member {
 
   double rotateDegree = 0;
 
-  double get teamFreeArea => switch (team?.tactics.freeLevel) {
-        PlayLevel.max => 1.3,
-        PlayLevel.hight => 1.15,
-        PlayLevel.middle => 1,
-        PlayLevel.low => 0.9,
-        PlayLevel.min => 0.8,
-        _ => 1,
-      };
-
-  double get personalFreeArea => switch (tactics?.freeLevel) {
-        PlayLevel.max => 1.3,
-        PlayLevel.hight => 1.15,
-        PlayLevel.middle => 1,
-        PlayLevel.low => 0.9,
-        PlayLevel.min => 0.8,
-        _ => 1,
-      };
-
   double get teamAttackArea => switch (team?.tactics.attackLevel) {
         PlayLevel.max => 1.3,
         PlayLevel.hight => 1.15,

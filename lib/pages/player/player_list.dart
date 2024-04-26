@@ -78,32 +78,28 @@ class _PlayerWidget extends StatelessWidget {
       children: [
         Transform.translate(
           offset: Offset(playerSize / 2, playerSize / 2),
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 200),
-            transform: Matrix4.rotationZ(player.rotateDegree),
-            child: Transform.translate(
-              offset: Offset(-playerSize / 2, -playerSize / 2),
-              child: Container(
-                width: playerSize,
-                height: playerSize,
-                decoration: BoxDecoration(
-                  border: player.hasBall
-                      ? Border.all(
-                          color: textColor,
-                          width: playerSize / 10,
-                        )
-                      : null,
-                  color: color,
-                  borderRadius: BorderRadius.circular(playerSize),
-                ),
-                child: Center(
-                  child: Text(
-                    '${player.position}',
-                    style: TextStyle(
-                      color: textColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: playerSize / 2,
-                    ),
+          child: Transform.translate(
+            offset: Offset(-playerSize / 2, -playerSize / 2),
+            child: Container(
+              width: playerSize,
+              height: playerSize,
+              decoration: BoxDecoration(
+                border: player.hasBall
+                    ? Border.all(
+                        color: textColor,
+                        width: playerSize / 10,
+                      )
+                    : null,
+                color: color,
+                borderRadius: BorderRadius.circular(playerSize),
+              ),
+              child: Center(
+                child: Text(
+                  '${player.position}',
+                  style: TextStyle(
+                    color: textColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: playerSize / 2,
                   ),
                 ),
               ),
