@@ -60,6 +60,17 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Text('${player.soccerIQ}'),
+                Text('${player.reflex}'),
+                Text('${player.speed}'),
+                Text('${player.flexibility}'),
+                Text('${player.stat.stamina}'),
+                Text('${player.potential}'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                 StatButton(
                     color: _buttonColor,
                     text: '축구지능',
@@ -110,18 +121,18 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                     }),
               ],
             ),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('${player.soccerIQ}'),
-                Text('${player.reflex}'),
-                Text('${player.speed}'),
-                Text('${player.flexibility}'),
-                Text('${player.stat.stamina}'),
-                Text('${player.potential}'),
+                Text('${player.stat.strength}'),
+                Text('${player.stat.attSkill}'),
+                Text('${player.stat.passSkill}'),
+                Text('${player.stat.defSkill}'),
+                Text('${player.stat.gkSkill}'),
+                Text('${player.stat.composure}'),
               ],
             ),
-            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -173,17 +184,6 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                         player.stat.add(Stat(composure: plusMinus * 1));
                       });
                     }),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('${player.stat.strength}'),
-                Text('${player.stat.attSkill}'),
-                Text('${player.stat.passSkill}'),
-                Text('${player.stat.defSkill}'),
-                Text('${player.stat.gkSkill}'),
-                Text('${player.stat.composure}'),
               ],
             ),
             const SizedBox(height: 48),
@@ -266,7 +266,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                 Text('${player.seasonGoal}'),
                 Text('${player.seasonAssist}'),
                 Text('${player.seasonPassSuccess}'),
-                Text('${player.passTry == 0 ? 100 : (player.seasonPassSuccess * 100 / player.passTry).round()}%'),
+                Text('${player.seasonPassSuccessPercent}%'),
                 Text('${player.seasonDefSuccess}'),
               ],
             ),
@@ -322,8 +322,10 @@ class _StatButtonState extends State<StatButton> {
         _stopwatch.reset();
       },
       child: Container(
+        height: 35,
+        width: 50,
         color: widget.color,
-        child: Text(widget.text),
+        child: Center(child: Text(widget.text)),
       ),
     );
   }
@@ -351,7 +353,7 @@ class PositionBadge extends StatelessWidget {
         color: _getColor(role),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Center(child: Text(position.toString(), style: const TextStyle(fontSize: 16,color: Colors.white))),
+      child: Center(child: Text(position.toString(), style: const TextStyle(fontSize: 16, color: Colors.white))),
     );
   }
 }

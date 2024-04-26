@@ -9,6 +9,9 @@ final GoRouter router = GoRouter(
   routes: <RouteBase>[
     GoRoute(
       path: '/',
+      onExit: (context) {
+            return false;
+          },
       builder: (BuildContext context, GoRouterState state) {
         return const MyHomePage();
       },
