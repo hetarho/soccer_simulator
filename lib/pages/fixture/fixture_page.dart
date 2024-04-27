@@ -182,7 +182,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                               );
                             }),
                             AnimatedPositioned(
-                              duration: Duration(milliseconds: (_ballAnimationSpeed).round()),
+                              duration: Duration(milliseconds: (_ballAnimationSpeed / 2).round()),
                               curve: Curves.decelerate,
                               top: fixture.isHomeTeamBall ? stadiumHeight * (fixture.ballPosXY.x) / 100 - (ballSize / 2) : stadiumHeight - (stadiumHeight * (fixture.ballPosXY.x) / 100 + (ballSize / 2)),
                               left: fixture.isHomeTeamBall ? stadiumWidth * (fixture.ballPosXY.y) / 200 - (ballSize / 2) + 10 : stadiumWidth - (stadiumWidth * (fixture.ballPosXY.y) / 200 + (ballSize / 2)) - 10,

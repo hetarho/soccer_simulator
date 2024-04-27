@@ -229,10 +229,15 @@ extension PlayerMove on Player {
         int opponentInterference = 0;
         double baselineStat = _getPassStat(teamPlayer.posXY);
         for (var opponent in opponentPlayers) {
+          bool isOpponentBetween = opponent.reversePosXy.x >= min(posXY.x, teamPlayer.posXY.x) &&
+              opponent.reversePosXy.x <= max(posXY.x, teamPlayer.posXY.x) &&
+              opponent.reversePosXy.y >= min(posXY.y, teamPlayer.posXY.y) &&
+              opponent.reversePosXy.y <= max(posXY.y, teamPlayer.posXY.y);
+
           ///패스 길과 해당 선수와의 거리
           double distanceToPathRoute = M().getDistanceFromPointToLine(linePoint1: posXY, linePoint2: teamPlayer.posXY, point: opponent.reversePosXy);
 
-          if (distanceToPathRoute < visionStat * (evadePressurePoint) / 100) {
+          if (distanceToPathRoute < visionStat * (evadePressurePoint) / 100 && isOpponentBetween) {
             opponentInterference++;
           }
         }
@@ -254,9 +259,16 @@ extension PlayerMove on Player {
       ///골포스트 까지의 거리
       double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy);
 
+      ///압박감이 0 이하이면 _actPoint 증가
+      if (evadePressurePoint > evadePressStat / 2) {
+        _actPoint += judgementStat / 5;
+      }
+
       ///포지션이 골키퍼인 경우
       if (position == Position.gk) {
-        if (evadePressurePoint < 20 || availablePlayerToPass.isEmpty) {
+        if (_actPoint < 150)
+          backToStartPos();
+        else if (evadePressurePoint < 20 || availablePlayerToPass.isEmpty) {
           _clearance(opponent: opponent, team: team);
         } else {
           Player target = _getMostAttractivePlayerToPass(players: availablePlayerToPass, opponentPlayers: opponentPlayers);
@@ -271,11 +283,6 @@ extension PlayerMove on Player {
         } else {
           _moveToBetterPos(opponentPlayers);
         }
-      }
-
-      ///압박감이 0 이하이면 _actPoint 증가
-      else if (evadePressurePoint > evadePressStat / 2) {
-        _actPoint += judgementStat / 5;
       }
 
       /// actPoint가 10 이하인경우 대기만 가능
@@ -353,7 +360,7 @@ extension PlayerMove on Player {
       bool isRearGuardPlayer = nearThanMePlayer <
           switch (role) {
             PlayerRole.defender => 1,
-            PlayerRole.midfielder => 0,
+            PlayerRole.midfielder => 1,
             PlayerRole.forward => 0,
             _ => 0,
           };
@@ -397,10 +404,7 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
-    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) &&
-        isNotGoalKick &&
-        !(ballPos.x == posXY.x && ballPos.y == posXY.y) &&
-        closerPlayerAtBall < 2;
+    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < 2;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);
