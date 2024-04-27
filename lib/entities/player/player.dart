@@ -2,8 +2,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/player/vo/player_game_record.dart';
@@ -71,7 +69,7 @@ class Player extends Member {
   }
 
   Duration get playSpeed {
-    return Duration(microseconds: (_playSpeed.inMicroseconds * 10 / sqrt(reflex / 1.5)).round());
+    return Duration(microseconds: (_playSpeed.inMicroseconds * 10 / sqrt(reflex)).round());
   }
 
   Player.create({
@@ -277,7 +275,7 @@ class Player extends Member {
   int get seasonPassTry => gameRecord.fold(0, (prev, rec) => prev + rec.pass);
   int get seasonPassSuccessPercent => (seasonPassSuccess * 100 / max(1, seasonPassTry)).round();
   int get seasonShooting => gameRecord.fold(0, (prev, rec) => prev + rec.shooting);
-  int get seasonShootAccuracy =>  (seasonGoal * 100 / max(1, seasonShooting)).round();
+  int get seasonShootAccuracy => (seasonGoal * 100 / max(1, seasonShooting)).round();
 
   List<List<PlayerGameRecord>> seasonRecord = [];
 

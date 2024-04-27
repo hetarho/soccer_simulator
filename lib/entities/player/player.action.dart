@@ -343,9 +343,9 @@ extension PlayerMove on Player {
               _checkBoundary(
                 targetPos: ball.posXY,
                 otherPos: player.posXY,
-                frontBoundary: 50,
+                frontBoundary: 30,
                 backBoundary: -10,
-                distance: 50,
+                distance: 35,
               ) &&
               player.position == position)
           .toList();
@@ -354,7 +354,12 @@ extension PlayerMove on Player {
       int nearThanMePlayer = 0;
 
       for (var player in ourTeamPlayers) {
-        if (!player.hasBall && (player.posXY.y < posXY.y) && player.position == position) nearThanMePlayer++;
+        if (!player.hasBall && (ball.posXY.distance(player.posXY) < ball.posXY.distance(posXY)) && player.position == position) nearThanMePlayer++;
+      }
+
+      if (role == PlayerRole.defender && nearThanMePlayer == 0) {
+        print('backnumber:$backNumber');
+        print('nearThanMePlayer:$nearThanMePlayer');
       }
 
       bool isRearGuardPlayer = nearThanMePlayer <
@@ -374,10 +379,10 @@ extension PlayerMove on Player {
 
       bool isBallBehind = posXY.y > ball.posXY.y;
 
-      bool ballDistanceCheck = ball.posXY.distance(posXY) < 20;
+      bool ballDistanceCheck = ball.posXY.distance(posXY) > 20;
 
       if (noBallAroundBall && isRearGuardPlayer && isBallBehind && ballDistanceCheck) {
-        moveToBallForPass(ball.posXY);
+        _moveToBallForPass(ball.posXY);
       } else if (evadePressurePoint == 100 && posXY.y > 130) {
         _moveToBetterPos(opponentPlayers);
       } else {
@@ -404,7 +409,7 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
-    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < 2;
+    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < ball.posXY.y / 50;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);
@@ -565,7 +570,7 @@ extension PlayerMove on Player {
     double distanceToTarget = targetPlayer.reversePosXy.distance(posXY);
 
     ///태클 보너스(0~7)
-    double tackleBonus = R().getDouble(max: 2.2);
+    double tackleBonus = R().getDouble(max: 2.5);
 
     double tackleSuccessPercent = tackleStat * tackleBonus / (tackleStat * tackleBonus + targetPlayer.evadePressStat * distanceToTarget);
 
@@ -578,9 +583,9 @@ extension PlayerMove on Player {
     } else {}
   }
 
-  moveToBallForPass(PosXY ballPosXY) {
+  _moveToBallForPass(PosXY ballPosXY) {
     double ballPosX = ballPosXY.x;
-    double ballPosY = min(200, ballPosXY.y + 20);
+    double ballPosY = ballPosXY.y + 20;
     lastAction = PlayerAction.keeping;
 
     _move(targetPosXY: PosXY(ballPosX, ballPosY));
