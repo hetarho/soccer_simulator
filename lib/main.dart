@@ -11,7 +11,6 @@ import 'package:soccer_simulator/entities/formation/formation.dart';
 import 'package:soccer_simulator/entities/league.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/tactics/tactics.dart';
-import 'package:soccer_simulator/enum/position.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';
 import 'package:soccer_simulator/router/routes.dart';
 import 'package:soccer_simulator/utils/color.dart';
@@ -128,7 +127,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics.normal(),
     )..createStartingMembers(
         min: 60,
-        max: 100,
+        max: 90,
         formation: Formation.create41212(),
       );
     Club tottenham = Club(
@@ -139,7 +138,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics.normal(),
     )..createStartingMembers(
         min: 60,
-        max: 100,
+        max: 90,
         formation: Formation.create433(),
       );
     Club newcastle = Club(
@@ -150,7 +149,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics.normal(),
     )..createStartingMembers(
         min: 60,
-        max: 100,
+        max: 90,
         formation: Formation.create532(),
       );
 
@@ -162,7 +161,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics.normal(),
     )..createStartingMembers(
         min: 60,
-        max: 100,
+        max: 90,
         formation: Formation.create4222(),
       );
 
@@ -174,7 +173,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics.normal(),
     )..createStartingMembers(
         min: 60,
-        max: 100,
+        max: 90,
         formation: Formation.create433(),
       );
     Club chelsea = Club(
@@ -185,7 +184,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics.normal(),
     )..createStartingMembers(
         min: 60,
-        max: 100,
+        max: 90,
         formation: Formation.create3241(),
       );
 
@@ -197,7 +196,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics.normal(),
     )..createStartingMembers(
         min: 50,
-        max: 90,
+        max: 80,
         formation: Formation.create352(),
       );
     Club wolverhampton = Club(
@@ -208,7 +207,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics.normal(),
     )..createStartingMembers(
         min: 50,
-        max: 90,
+        max: 80,
         formation: Formation.create352(),
       );
 
@@ -220,7 +219,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics.normal(),
     )..createStartingMembers(
         min: 50,
-        max: 90,
+        max: 80,
         formation: Formation.create532(),
       );
     Club bournemouth = Club(
@@ -231,7 +230,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics.normal(),
     )..createStartingMembers(
         min: 50,
-        max: 90,
+        max: 80,
         formation: Formation.create4141(),
       );
 
@@ -243,7 +242,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       tactics: Tactics.normal(),
     )..createStartingMembers(
         min: 50,
-        max: 90,
+        max: 80,
         formation: Formation.create41212(),
       );
 
@@ -266,7 +265,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(70, 15, 15, 1),
       tactics: Tactics.normal(),
     )..createStartingMembers(
-        min: 50,
+        min: 40,
         max: 80,
         formation: Formation.create442(),
       );
@@ -278,8 +277,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(230, 230, 230, 1),
       tactics: Tactics.normal(),
     )..createStartingMembers(
-        min: 50,
-        max: 70,
+        min: 40,
+        max: 80,
         formation: Formation.create442(),
       );
 
@@ -290,7 +289,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(90, 100, 150, 1),
       tactics: Tactics.normal(),
     )..createStartingMembers(
-        min: 50,
+        min: 40,
         max: 80,
         formation: Formation.create3241(),
       );
@@ -302,7 +301,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(90, 100, 150, 1),
       tactics: Tactics.normal(),
     )..createStartingMembers(
-        min: 50,
+        min: 40,
         max: 80,
         formation: Formation.create433(),
       );
@@ -314,31 +313,31 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       awayColor: const Color.fromRGBO(0, 0, 0, 1),
       tactics: Tactics.normal(),
     )..createStartingMembers(
-        min: 50,
+        min: 40,
         max: 80,
         formation: Formation.create532(),
       );
 
     List<Club> clubs = [
-      // arsenal,
-      // manchesterCity,
-      // liverfpool,
-      // astonVilla,
-      // tottenham,
+      arsenal,
+      manchesterCity,
+      liverfpool,
+      astonVilla,
+      tottenham,
       newcastle,
-      // manchesterUnited,
-      // westHam,
-      // chelsea,
-      // brighton,
-      // wolverhampton,
-      // folham,
-      // bournemouth,
-      // crystalPalace,
-      // brentford,
-      // everton,
-      // nottingham,
-      // lutonTown,
-      // burnley,
+      manchesterUnited,
+      westHam,
+      chelsea,
+      brighton,
+      wolverhampton,
+      folham,
+      bournemouth,
+      crystalPalace,
+      brentford,
+      everton,
+      nottingham,
+      lutonTown,
+      burnley,
       sheffield,
     ];
     init(clubs);
