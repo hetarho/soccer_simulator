@@ -10,8 +10,8 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/',
       onExit: (context) {
-            return false;
-          },
+        return false;
+      },
       builder: (BuildContext context, GoRouterState state) {
         return const MyHomePage();
       },
@@ -25,7 +25,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/players',
       builder: (BuildContext context, GoRouterState state) {
-        return const PlayerListPage();
+        return PlayerListPage();
       },
       routes: <RouteBase>[
         GoRoute(
