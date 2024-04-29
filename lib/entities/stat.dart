@@ -151,6 +151,17 @@ class Stat {
     teamwork = R().getInt(max: point, min: 0);
   }
 
+  Stat.agingCurve({
+    required int point,
+  }) {
+    stamina = R().getInt(max: 0, min: point);
+    strength = R().getInt(max: 0, min: point);
+    attSkill = R().getInt(max: 0, min: point);
+    passSkill = R().getInt(max: 0, min: point);
+    defSkill = R().getInt(max: 0, min: point);
+    gkSkill = R().getInt(max: 0, min: point);
+  }
+
   ///체력
   int stamina = 0;
 

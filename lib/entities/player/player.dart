@@ -102,7 +102,7 @@ class Player extends Member {
     this.reflex = reflex ?? R().getInt(min: min, max: max);
     this.speed = speed ?? R().getInt(min: min, max: max);
     this.flexibility = flexibility ?? R().getInt(min: min, max: max);
-    _potential = potential ?? R().getInt(min: min, max: max);
+    _potential = potential ?? R().getInt(min: 30, max: 120);
     _stat = stat ?? Stat.create(role: role, min: min, max: max);
     this.tactics = tactics ?? Tactics.normal();
     _currentGameRecord = PlayerGameRecord.init();
@@ -146,6 +146,8 @@ class Player extends Member {
   set potential(newVal) {
     _potential = newVal;
   }
+
+  int get age => (DateTime.now().difference(birthDay).inDays / 365).floor();
 
   ///등번호
   int? backNumber;

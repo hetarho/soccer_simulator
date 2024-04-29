@@ -50,8 +50,18 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                   PositionBadge(position: player.position ?? Position.st, role: player.role),
                   const SizedBox(width: 8),
                   Text(
+                    '${player.backNumber}.',
+                    style: const TextStyle(fontSize: 20),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
                     player.name,
                     style: const TextStyle(fontSize: 20),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '(${player.age})',
+                    style: const TextStyle(fontSize: 17),
                   ),
                 ],
               ),
@@ -116,7 +126,7 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                     text: '잠재력',
                     onClick: () {
                       setState(() {
-                        player.potential += 1;
+                        player.potential += plusMinus * 1;
                       });
                     }),
               ],
