@@ -187,14 +187,14 @@ class Stat {
 
   ///새로운 스탯을 더하면 스텟이 올라가는 함수 : TODO
   add(Stat newStat) {
-    stamina = stamina + newStat.stamina;
-    strength = strength + newStat.strength;
-    attSkill = attSkill + newStat.attSkill;
-    passSkill = passSkill + newStat.passSkill;
-    defSkill = defSkill + newStat.defSkill;
-    gkSkill = gkSkill + newStat.gkSkill;
-    composure = composure + newStat.composure;
-    teamwork = teamwork + newStat.teamwork;
+    stamina = max(0, stamina + newStat.stamina);
+    strength = max(0, strength + newStat.strength);
+    attSkill = max(0, attSkill + newStat.attSkill);
+    passSkill = max(0, passSkill + newStat.passSkill);
+    defSkill = max(0, defSkill + newStat.defSkill);
+    gkSkill = max(0, gkSkill + newStat.gkSkill);
+    composure = max(0, composure + newStat.composure);
+    teamwork = max(0, teamwork + newStat.teamwork);
   }
 
   int get average {
