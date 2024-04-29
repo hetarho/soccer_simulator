@@ -34,27 +34,12 @@ extension PlayerMove on Player {
   }
 
   gameEnd() async {
-    gameRecord.add(PlayerGameRecord(
-      goal: goal,
-      assist: assist,
-      passSuccess: passSuccess,
-      pass: passTry,
-      shooting: shooting,
-      defSuccess: defSuccess,
-      saveSuccess: saveSuccess,
-      dribbleSuccess: dribbleSuccess,
-    ));
+    gameRecord.add(_currentGameRecord);
     _timer?.cancel();
     await _streamController?.close();
     _streamController = null;
-    goal = 0;
-    assist = 0;
-    passSuccess = 0;
-    passTry = 0;
-    shooting = 0;
-    defSuccess = 0;
-    saveSuccess = 0;
-    dribbleSuccess = 0;
+
+    _currentGameRecord = PlayerGameRecord.init();
     _currentStamina = 100;
     resetPosXY();
     _growAfterPlay();
@@ -404,7 +389,10 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
-    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < ball.posXY.y / 50;
+    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) &&
+        isNotGoalKick &&
+        !(ballPos.x == posXY.x && ballPos.y == posXY.y) &&
+        closerPlayerAtBall < ball.posXY.y / 50;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);
@@ -456,7 +444,7 @@ extension PlayerMove on Player {
     if (hasBall) {
       if (tackledPlayerNum > 0) {
         lastAction = PlayerAction.dribble;
-        dribbleSuccess++;
+        dribbleSuccess();
         team.dribble++;
       }
 
@@ -498,7 +486,7 @@ extension PlayerMove on Player {
   }
 
   _pass(Player target, ClubInFixture team, List<Player> opponents, Fixture fixture, double evadePressurePoint) async {
-    passTry++;
+    passTry();
     _turn(target.posXY);
     lastAction = PlayerAction.pass;
 
@@ -516,7 +504,7 @@ extension PlayerMove on Player {
 
     Player receivedPlayer = _findClosetPlayer(ballLandingPos, [target], [...opponents]);
     if (receivedPlayer.id == target.id) {
-      passSuccess++;
+      passSuccess();
       target.passedPlayer = this;
       team.pass += 1;
     }
@@ -534,7 +522,7 @@ extension PlayerMove on Player {
     hasBall = false;
     goalKeeper.hasBall = true;
     team.shoot += 1;
-    shooting++;
+    shooting();
 
     double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy);
 
@@ -545,7 +533,7 @@ extension PlayerMove on Player {
     double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.65, max: 1.76);
 
     if (finalShootStat > finalKeepingStat) {
-      goal++;
+      goal();
       _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.goal));
       if (passedPlayer != null) _streamController?.add(PlayerActEvent(player: passedPlayer!, action: PlayerAction.assist));
 
@@ -571,7 +559,7 @@ extension PlayerMove on Player {
 
     if (tackleSuccessPercent > R().getDouble(max: 1)) {
       lastAction = PlayerAction.tackle;
-      defSuccess++;
+      defSuccess();
       targetPlayer.hasBall = false;
       hasBall = true;
       team.tackle += 1;
@@ -648,5 +636,37 @@ extension PlayerMove on Player {
     }
 
     posXY = wantPos;
+  }
+
+  goal() {
+    _currentGameRecord.goal++;
+  }
+
+  assist() {
+    _currentGameRecord.assist++;
+  }
+
+  passTry() {
+    _currentGameRecord.passTry++;
+  }
+
+  passSuccess() {
+    _currentGameRecord.passSuccess++;
+  }
+
+  shooting() {
+    _currentGameRecord.shooting++;
+  }
+
+  defSuccess() {
+    _currentGameRecord.defSuccess++;
+  }
+
+  saveSuccess() {
+    _currentGameRecord.saveSuccess++;
+  }
+
+  dribbleSuccess() {
+    _currentGameRecord.dribbleSuccess++;
   }
 }

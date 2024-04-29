@@ -193,7 +193,7 @@ class Fixture {
     concedeClub.club.players.first.hasBall = true;
     _ball.posXY = PosXY(50, 100);
 
-    assistPlayer?.assist += 1;
+    assistPlayer?.assist();
   }
 
   pause() {

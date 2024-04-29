@@ -51,7 +51,7 @@ extension PlayerGrow on Player {
     if (_potential / 30 > Random().nextDouble()) {
       if (Random().nextDouble() > 0.7) {
         _potential -= 1;
-        Stat newStat = Stat.playGame(role: role, point: R().getDouble(max: 1) > 0.25 ? 1 : 0);
+        Stat newStat = Stat.playGame(role: role, point: R().getDouble(max: 1) > 0.15 ? 1 : 0);
         _stat.add(newStat);
       }
     }

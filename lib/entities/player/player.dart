@@ -50,6 +50,7 @@ class Player extends Member {
 
     //포텐셜을 지정해주지 않으면 랜덤으로 책정
     _potential = potential ?? R().getInt(min: 30, max: 120);
+    _currentGameRecord = PlayerGameRecord.init();
   }
 
   @override
@@ -104,6 +105,7 @@ class Player extends Member {
     _potential = potential ?? R().getInt(min: min, max: max);
     _stat = stat ?? Stat.create(role: role, min: min, max: max);
     this.tactics = tactics ?? Tactics.normal();
+    _currentGameRecord = PlayerGameRecord.init();
   }
 
   final String id = const Uuid().v4();
@@ -216,32 +218,11 @@ class Player extends Member {
   }
 
   ///========================= 경기마다 초기화 ==========================
+
   ///선수의 컨디션
   double condition = 1;
 
-  ///슛 횟수
-  int shooting = 0;
-
-  ///골
-  int goal = 0;
-
-  /// 어시스트
-  int assist = 0;
-
-  ///패스 시도
-  int passTry = 0;
-
-  ///성공한 패스
-  int passSuccess = 0;
-
-  ///성공한 드리블
-  int dribbleSuccess = 0;
-
-  /// 수비 성공
-  int defSuccess = 0;
-
-  /// 선방
-  int saveSuccess = 0;
+  late PlayerGameRecord _currentGameRecord;
 
   /// 트레이팅, 게임시 성장할 수 있는 스텟
   late int _potential;
@@ -267,14 +248,31 @@ class Player extends Member {
   ///========================= 시즌마다 초기화 ==========================
   List<PlayerGameRecord> gameRecord = [];
 
+  ///시즌 골 수
   int get seasonGoal => gameRecord.fold(0, (prev, rec) => prev + rec.goal);
+
+  ///시즌 어시스트 수
   int get seasonAssist => gameRecord.fold(0, (prev, rec) => prev + rec.assist);
+
+  ///시즌 패스 성공 수
   int get seasonPassSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.passSuccess);
+
+  ///시즌 수비 성공 수
   int get seasonDefSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.defSuccess);
+
+  ///시즌 드리블 성공 수
   int get seasonDribbleSuccess => gameRecord.fold(0, (prev, rec) => prev + rec.dribbleSuccess);
-  int get seasonPassTry => gameRecord.fold(0, (prev, rec) => prev + rec.pass);
+
+  ///시즌 패스 시도 수
+  int get seasonPassTry => gameRecord.fold(0, (prev, rec) => prev + rec.passTry);
+
+  ///시즌 패스 성공률
   int get seasonPassSuccessPercent => (seasonPassSuccess * 100 / max(1, seasonPassTry)).round();
+
+  ///시즌 패스 슈팅 수
   int get seasonShooting => gameRecord.fold(0, (prev, rec) => prev + rec.shooting);
+
+  ///시즌 패스 슈팅 정확도
   int get seasonShootAccuracy => (seasonGoal * 100 / max(1, seasonShooting)).round();
 
   List<List<PlayerGameRecord>> seasonRecord = [];
