@@ -46,7 +46,7 @@ class League {
       } else if (a.gf != b.gf) {
         return b.gf - a.gf;
       } else {
-        return a.name.compareTo(b.name);
+        return a.nickName.compareTo(b.nickName);
       }
     });
     return clubs;

@@ -36,7 +36,7 @@ class _PlayerListPageState extends ConsumerState<PlayerListPage> {
             ),
           Container(
             color: Colors.green,
-            padding: const EdgeInsets.only(top: 40),
+            padding: const EdgeInsets.only(top: 20),
             child: AspectRatio(
               aspectRatio: 1.125,
               child: LayoutBuilder(
@@ -45,10 +45,10 @@ class _PlayerListPageState extends ConsumerState<PlayerListPage> {
                   final stadiumHeight = constraints.maxHeight;
                   double playerSize = stadiumWidth / 10;
                   return DragTarget<Player>(
-                    onAcceptWithDetails: (details) {
+                    onMove: (details) {
                       details.data.startingPoxXY = PosXY(
-                        100 * (details.offset.dx) / stadiumWidth + 5,
-                        100 - (100 * (details.offset.dy - 140) / stadiumHeight + 10),
+                        (100 * (details.offset.dx) / stadiumWidth + 5).clamp(0, 100),
+                        (100 - (100 * (details.offset.dy - 120) / stadiumHeight + 10)).clamp(0, 100),
                       );
                       setState(() {});
                     },
@@ -103,7 +103,7 @@ class _PlayerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     Color textColor = C().colorDifference(Colors.black, color) < C().colorDifference(Colors.white, color) ? Colors.white : Colors.black;
     return Draggable(
-      feedback: this,
+      feedback: Container(),
       data: player,
       child: Column(
         children: [

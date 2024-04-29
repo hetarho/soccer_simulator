@@ -295,7 +295,7 @@ extension PlayerMove on Player {
       }
 
       ///슈팅 가능한 경우
-      else if (opponentsNumNearShootRout < 6 && (posXY.x > 30 || posXY.x < 70) || (distanceToGoalPost > 30 && distanceToGoalPost < midRangeShootStat / 3)) {
+      else if (opponentsNumNearShootRout < 5 && (posXY.x > 30 || posXY.x < 70) || (distanceToGoalPost > 30 && distanceToGoalPost < midRangeShootStat / 4)) {
         _shoot(
           fixture: fixture,
           team: team,
@@ -389,10 +389,7 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
-    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) &&
-        isNotGoalKick &&
-        !(ballPos.x == posXY.x && ballPos.y == posXY.y) &&
-        closerPlayerAtBall < ball.posXY.y / 50;
+    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < ball.posXY.y / 50;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);
@@ -435,7 +432,7 @@ extension PlayerMove on Player {
   _dribble(ClubInFixture team, double evadePressurePoint, ClubInFixture opponent) {
     int tackledPlayerNum = 0;
     for (var player in opponent.club.players) {
-      if (player.reversePosXy.distance(posXY) < 5) {
+      if (player.reversePosXy.distance(posXY) < 7) {
         tackledPlayerNum++;
         player._tackle(this, opponent);
       }
@@ -550,12 +547,12 @@ extension PlayerMove on Player {
     _actPoint = 0;
 
     ///태클을 할 타겟과의 거리 (0~7)
-    double distanceToTarget = targetPlayer.reversePosXy.distance(posXY);
+    double distanceToTarget = max(targetPlayer.reversePosXy.distance(posXY), 2.9);
 
     ///태클 보너스(0~7)
-    double tackleBonus = R().getDouble(min: targetPlayer.reversePosXy.y > posXY.y ? 0.5 : 0, max: 2.2);
+    double tackleBonus = R().getDouble(max: 0.5);
 
-    double tackleSuccessPercent = tackleStat * tackleBonus / (tackleStat * tackleBonus + targetPlayer.evadePressStat * distanceToTarget);
+    double tackleSuccessPercent = tackleStat * tackleBonus / (tackleStat * tackleBonus + targetPlayer.dribbleStat * distanceToTarget);
 
     if (tackleSuccessPercent > R().getDouble(max: 1)) {
       lastAction = PlayerAction.tackle;
