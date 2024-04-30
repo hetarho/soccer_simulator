@@ -1,8 +1,9 @@
 import 'dart:math';
 
+import 'package:soccer_simulator/entities/dbManager/jsonable_interface.dart';
 import 'package:soccer_simulator/utils/random.dart';
 
-class PosXY {
+class PosXY implements Jsonable {
   double _x = 0;
   double _y = 0;
   PosXY(double x, double y) {
@@ -38,5 +39,18 @@ class PosXY {
   @override
   String toString() {
     return 'x:$x y:$y';
+  }
+
+  PosXY.fromJson(Map<dynamic, dynamic> map) {
+    _x = map['_x'];
+    _y = map['_y'];
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      '_x': _x,
+      '_y': _y,
+    };
   }
 }

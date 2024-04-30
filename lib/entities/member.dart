@@ -1,6 +1,6 @@
 import 'package:soccer_simulator/enum/national.enum.dart';
 
-class Member {
+abstract class Member {
   Member({
     required this.name,
     required this.birthDay,

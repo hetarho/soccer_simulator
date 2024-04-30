@@ -1,0 +1,697 @@
+import 'dart:async';
+
+import 'package:async/async.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:soccer_simulator/entities/club.dart';
+import 'package:soccer_simulator/entities/dbManager/db_manager.dart';
+import 'package:soccer_simulator/entities/fixture/fixture.dart';
+import 'package:soccer_simulator/entities/fixture/vo/fixture_record.dart';
+import 'package:soccer_simulator/entities/league/league.dart';
+import 'package:soccer_simulator/entities/player/player.dart';
+import 'package:soccer_simulator/entities/saveSlot/save_slot.dart';
+import 'package:soccer_simulator/providers/providers.dart';
+import 'package:soccer_simulator/utils/color.dart';
+
+class LeaguePage extends ConsumerStatefulWidget {
+  const LeaguePage({super.key});
+
+  @override
+  ConsumerState<LeaguePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends ConsumerState<LeaguePage> {
+  final Stopwatch _stopwatch = Stopwatch();
+  late List<Fixture> _fixtures;
+  bool _isAutoPlay = false;
+  bool _isAutoPlaySeason = false;
+  late League _league;
+  late Stream<FixtureRecord> _roundStream;
+  StreamSubscription<FixtureRecord>? _roundSubscription;
+  int _finishedFixtureNum = 0;
+  bool _showFixtures = false;
+  bool _showLeagueTable = false;
+  bool _showBeforeLeagueTable = false;
+  bool _showTopScorerTable = false;
+  bool _showDetailHistory = false;
+  Duration _timer = const Duration(seconds: 0);
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  _save() async {
+    String id = ref.read(saveSlotProvider).id;
+
+    DbManager<SaveSlot> dbManager = DbManager('saveSlot');
+
+    await dbManager.put(id, ref.read(saveSlotProvider));
+  }
+
+  _init() {
+    _league = ref.read(saveSlotProvider).league;
+    _league.startNewSeason();
+    _isAutoPlay = false;
+    _initFixture();
+  }
+
+  _initFixture() async {
+    _fixtures = _league.getNextFixtures();
+    for (var fixture in _fixtures) {
+      fixture.ready();
+    }
+    _roundStream = StreamGroup.merge(_fixtures.map((e) => e.gameStream).toList());
+
+    await _roundSubscription?.cancel();
+    _roundSubscription = _roundStream.listen((event) async {
+      _timer = event.time;
+      if (event.isGameEnd && _isAutoPlay) {
+        _finishedFixtureNum++;
+        if (_finishedFixtureNum == _league.clubs.length / 2) {
+          if (_stopwatch.isRunning) {
+            _stopwatch.stop();
+            print('season${_league.seasons.length} / round:${_league.currentSeason.roundNumber} - ${_stopwatch.elapsed}');
+            _stopwatch.reset();
+          }
+          if (_league.round == (_league.clubs.length - 1) * 2 && _isAutoPlaySeason) _league.startNewSeason();
+          await Future.delayed(Duration.zero);
+          _finishedFixtureNum = 0;
+          _league.nextRound();
+          _autoPlaying();
+        }
+      }
+      if (mounted) setState(() {});
+    });
+
+    if (mounted) setState(() {});
+  }
+
+  _startAllFixtures() {
+    _stopwatch.start();
+    for (var e in _fixtures) {
+      e.gameStart();
+    }
+  }
+
+  _autoPlaying() {
+    _isAutoPlay = true;
+    _initFixture();
+    _startAllFixtures();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          const SizedBox(height: 64),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    ElevatedButton(onPressed: _save, child: const Text('save')),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _startAllFixtures();
+                      },
+                      child: const Text('game start'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _league.nextRound();
+                        _initFixture();
+                        if (mounted) setState(() {});
+                      },
+                      child: const Text('다음경기로'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _league.startNewSeason();
+                        if (mounted) setState(() {});
+                      },
+                      child: const Text('다음시즌'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _isAutoPlaySeason = !_isAutoPlaySeason;
+                      },
+                      child: const Text('시즌 자동플레이'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        context.pop();
+                      },
+                      child: const Text('뒤로가기'),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _showTopScorerTable = !_showTopScorerTable;
+                          });
+                        },
+                        child: const Text('득점')),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_isAutoPlay) {
+                          _isAutoPlay = false;
+                        } else {
+                          _autoPlaying();
+                        }
+                      },
+                      child: const Text('자동'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showFixtures = !_showFixtures;
+                        });
+                      },
+                      child: const Text('경기들 보기'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showLeagueTable = !_showLeagueTable;
+                        });
+                      },
+                      child: const Text('순위 보기'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showBeforeLeagueTable = !_showBeforeLeagueTable;
+                        });
+                      },
+                      child: const Text('지난 순위 보기'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showDetailHistory = !_showDetailHistory;
+                        });
+                      },
+                      child: const Text('역사'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Text('round : ${_league.round} time:${_timer.inMinutes}'),
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(
+                    children: <Widget>[
+                      if (_showFixtures)
+                        Expanded(
+                          child: Column(
+                            children: _fixtures
+                                .map((fixture) => FixtureInfo(
+                                      fixture: fixture,
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                      if (_showTopScorerTable) PlayerTableWidget(league: _league),
+                      if (_showLeagueTable)
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: LeagueTableWidget(clubs: _league.table),
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+                      if (_showBeforeLeagueTable)
+                        ..._league.seasons.map(
+                          (season) => Column(
+                            children: [
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: LeagueTableWidget(clubs: season.seasonRecords),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                            ],
+                          ),
+                        ),
+                      if (_showDetailHistory)
+                        Column(
+                          children: [
+                            ...[
+                              ...[..._league.clubs]..sort(
+                                  (a, b) => a.winner == b.winner ? b.ptsAverage - a.ptsAverage : b.winner - a.winner,
+                                )
+                            ].map((club) => Row(
+                                  children: [
+                                    Text('${club.name}: 우승${club.winner}회 평균 승점:${club.ptsAverage}'),
+                                  ],
+                                ))
+                          ],
+                        ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LeagueTableWidget extends ConsumerWidget {
+  const LeagueTableWidget({super.key, required this.clubs});
+  final List<Club> clubs;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    int index = 1;
+    return Column(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+              border: Border(
+            bottom: BorderSide(color: Colors.black),
+          )),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(width: 20, child: Text('')),
+              SizedBox(width: 120, child: Text('name')),
+              SizedBox(width: 35, child: Text('pts')),
+              SizedBox(width: 35, child: Text('win')),
+              SizedBox(width: 35, child: Text('draw')),
+              SizedBox(width: 35, child: Text('lose')),
+              SizedBox(width: 35, child: Text('gf')),
+              SizedBox(width: 35, child: Text('ga')),
+              SizedBox(width: 35, child: Text('gd')),
+            ],
+          ),
+        ),
+        ...clubs
+            .map((club) => GestureDetector(
+                  onTap: () {
+                    ref.read(playerListProvider.notifier).state = club.startPlayers;
+                    context.push('/players');
+                  },
+                  child: Container(
+                    height: 30,
+                    decoration: const BoxDecoration(
+                        border: Border(
+                      bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
+                    )),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(width: 20, child: Text('${index++}.')),
+                        SizedBox(width: 120, child: Text('${club.nickName}(${club.overall})')),
+                        SizedBox(width: 35, child: Text('${club.pts}')),
+                        SizedBox(width: 35, child: Text('${club.won}')),
+                        SizedBox(width: 35, child: Text('${club.drawn}')),
+                        SizedBox(width: 35, child: Text('${club.lost}')),
+                        SizedBox(width: 35, child: Text('${club.gf}')),
+                        SizedBox(width: 35, child: Text('${club.ga}')),
+                        SizedBox(width: 35, child: Text('${club.gd}')),
+                      ],
+                    ),
+                  ),
+                ))
+            .toList(),
+      ],
+    );
+  }
+}
+
+class PlayerTableWidget extends ConsumerStatefulWidget {
+  const PlayerTableWidget({super.key, required this.league});
+  final League league;
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _TableWidgetState();
+}
+
+class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
+  List<Player> _allPlayer = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _allPlayer = widget.league.allPlayer;
+  }
+
+  _changeSort(String sortBy) {
+    _allPlayer.sort((a, b) => switch (sortBy) {
+                  'ov' => b.overall,
+                  'assist' => b.seasonAssist,
+                  'pass' => b.seasonPassSuccess,
+                  'def' => b.seasonDefSuccess,
+                  'shoot' => b.seasonShooting,
+                  'seasonShootAccuracy' => b.seasonShootAccuracy,
+                  'passT' => b.seasonPassTry,
+                  'passS' => b.seasonPassSuccessPercent,
+                  'drib' => b.seasonDribbleSuccess,
+                  _ => b.seasonGoal,
+                } -
+                switch (sortBy) {
+                  'ov' => a.overall,
+                  'assist' => a.seasonAssist,
+                  'pass' => a.seasonPassSuccess,
+                  'def' => a.seasonDefSuccess,
+                  'shoot' => a.seasonShooting,
+                  'seasonShootAccuracy' => a.seasonShootAccuracy,
+                  'passT' => a.seasonPassTry,
+                  'passS' => a.seasonPassSuccessPercent,
+                  'drib' => a.seasonDribbleSuccess,
+                  _ => a.seasonGoal,
+                } >
+            0
+        ? 1
+        : -1);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(18.0),
+      child: Row(
+        children: [
+          DefaultTextStyle(
+            style: const TextStyle(
+              fontSize: 17,
+              color: Colors.black,
+            ),
+            child: Container(
+              color: Color.fromARGB(255, 229, 229, 229),
+              child: Column(
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                        border: Border(
+                      bottom: BorderSide(color: Colors.black),
+                    )),
+                    // ignore: prefer_const_constructors
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        SizedBox(width: 50, child: Text('club')),
+                        SizedBox(width: 65, child: Text('name')),
+                        SizedBox(width: 40, child: Text('pos')),
+                      ],
+                    ),
+                  ),
+                  ..._allPlayer
+                      .map((player) => GestureDetector(
+                            onTap: () {
+                              ref.read(playerProvider.notifier).state = player;
+                              context.push('/players/detail');
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                  border: Border(
+                                bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
+                              )),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(width: 50, child: Text(player.team?.nickName ?? 'none')),
+                                  SizedBox(width: 65, child: Text(player.name, overflow: TextOverflow.ellipsis)),
+                                  SizedBox(width: 40, child: Text('${player.position}')),
+                                ],
+                              ),
+                            ),
+                          ))
+                      .toList()
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DefaultTextStyle(
+                style: const TextStyle(
+                  fontSize: 17,
+                  color: Colors.black,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: const BoxDecoration(
+                          border: Border(
+                        bottom: BorderSide(color: Colors.black),
+                      )),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _changeSort('ov');
+                                });
+                              },
+                              child: const SizedBox(width: 50, child: Text('ov'))),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _changeSort('goal');
+                                });
+                              },
+                              child: const SizedBox(width: 50, child: Text('goal'))),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _changeSort('shoot');
+                                });
+                              },
+                              child: const SizedBox(width: 55, child: Text('shoot'))),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _changeSort('seasonShootAccuracy');
+                                });
+                              },
+                              child: const SizedBox(width: 60, child: Text('shootA'))),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _changeSort('assist');
+                                });
+                              },
+                              child: const SizedBox(width: 55, child: Text('assist'))),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _changeSort('pass');
+                                });
+                              },
+                              child: const SizedBox(width: 55, child: Text('pass'))),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _changeSort('passT');
+                                });
+                              },
+                              child: const SizedBox(width: 55, child: Text('passT'))),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _changeSort('passS');
+                                });
+                              },
+                              child: const SizedBox(width: 55, child: Text('passS'))),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _changeSort('def');
+                                });
+                              },
+                              child: const SizedBox(width: 55, child: Text('def'))),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _changeSort('drib');
+                                });
+                              },
+                              child: const SizedBox(width: 55, child: Text('drib'))),
+                        ],
+                      ),
+                    ),
+                    ..._allPlayer
+                        .map((player) => GestureDetector(
+                              onTap: () {
+                                ref.read(playerProvider.notifier).state = player;
+                                context.push('/players/detail');
+                              },
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                    border: Border(
+                                  bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
+                                )),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SizedBox(width: 35, child: Text('${player.overall}')),
+                                    SizedBox(width: 50, child: Text('${player.seasonGoal}')),
+                                    SizedBox(width: 55, child: Text('${player.seasonShooting}')),
+                                    SizedBox(width: 60, child: Text('${player.seasonShootAccuracy}')),
+                                    SizedBox(width: 55, child: Text('${player.seasonAssist}')),
+                                    SizedBox(width: 55, child: Text('${player.seasonPassSuccess}')),
+                                    SizedBox(width: 55, child: Text('${player.seasonPassTry}')),
+                                    SizedBox(width: 55, child: Text('${player.seasonPassSuccessPercent}')),
+                                    SizedBox(width: 55, child: Text('${player.seasonDefSuccess}')),
+                                    SizedBox(width: 55, child: Text('${player.seasonDribbleSuccess}')),
+                                  ],
+                                ),
+                              ),
+                            ))
+                        .toList()
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ClubInfo extends ConsumerWidget {
+  const ClubInfo({super.key, required this.club, required this.showWDL});
+  final Club club;
+  final bool showWDL;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    TextStyle textStyle = TextStyle(
+      color: C().colorDifference(Colors.black, club.homeColor) < C().colorDifference(Colors.white, club.homeColor) ? Colors.white : Colors.black,
+    );
+    return SizedBox(
+      width: 120,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '${club.name} ',
+            style: textStyle,
+          ),
+          if (showWDL)
+            Text(
+              '${club.won}/${club.drawn}/${club.lost}',
+              style: textStyle,
+            )
+        ],
+      ),
+    );
+  }
+}
+
+class FixtureInfo extends ConsumerStatefulWidget {
+  const FixtureInfo({super.key, required this.fixture, this.showWDL = true});
+  final Fixture fixture;
+  final bool showWDL;
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _FixtureInfoState();
+}
+
+class _FixtureInfoState extends ConsumerState<FixtureInfo> {
+  StreamSubscription<FixtureRecord>? _streamSubscription;
+  Color? _bgColor;
+
+  @override
+  void dispose() {
+    _streamSubscription?.cancel();
+    _streamSubscription = null;
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  init() async {
+    if (_streamSubscription != null) await _streamSubscription!.cancel();
+    _streamSubscription = widget.fixture.gameStream.listen((event) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text('time:${widget.fixture.playTime}'),
+        GestureDetector(
+          onTap: () {
+            ref.read(fixtureProvider.notifier).state = widget.fixture;
+            context.push('/fixture');
+          },
+          child: SizedBox(
+            height: widget.showWDL ? 60 : 40,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: constraints.maxWidth * ((widget.fixture.home.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          color: widget.fixture.home.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
+                        ),
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: constraints.maxWidth * ((widget.fixture.away.goal + 1) / (widget.fixture.home.goal + widget.fixture.away.goal + 2)),
+                          color: widget.fixture.away.club.color.withOpacity(widget.fixture.isGameEnd ? 0.3 : 1),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Container(
+                  color: _bgColor?.withOpacity(0.7),
+                ),
+                // const Center(child: Text('vs')),
+                Row(
+                  children: [
+                    ClubInfo(
+                      club: widget.fixture.home.club,
+                      showWDL: widget.showWDL,
+                    ),
+                    Expanded(child: Container()),
+                    Text('${widget.fixture.home.goal}'),
+                    const Text('vs'),
+                    Text('${widget.fixture.away.goal}'),
+                    Expanded(child: Container()),
+                    ClubInfo(
+                      club: widget.fixture.away.club,
+                      showWDL: widget.showWDL,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

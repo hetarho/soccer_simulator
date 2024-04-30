@@ -3,17 +3,19 @@ import 'dart:math';
 
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/dbManager/jsonable_interface.dart';
+import 'package:soccer_simulator/entities/fixture/club_in_fixture.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/player/vo/player_game_record.dart';
 import 'package:soccer_simulator/entities/tactics/tactics.dart';
 import 'package:soccer_simulator/enum/national.enum.dart';
+import 'package:soccer_simulator/enum/play_level.enum.dart';
 import 'package:soccer_simulator/enum/player_action.enum.dart';
 import 'package:soccer_simulator/utils/math.dart';
 import 'package:soccer_simulator/utils/function.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/entities/ball.dart';
-import 'package:soccer_simulator/entities/fixture.dart';
+import 'package:soccer_simulator/entities/fixture/fixture.dart';
 import 'package:soccer_simulator/entities/member.dart';
 import 'package:soccer_simulator/entities/stat.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
@@ -51,47 +53,6 @@ class Player extends Member implements Jsonable {
     //포텐셜을 지정해주지 않으면 랜덤으로 책정
     _potential = potential ?? R().getInt(min: 30, max: 120);
     _currentGameRecord = PlayerGameRecord.init();
-  }
-
-  Player.fromJson(Map<String, dynamic> map)
-      : super(
-          name: map['name'],
-          birthDay: map['birthDay'],
-          national: map['national'],
-        ) {
-    height = map['height'];
-    bodyType = map['bodyType'];
-    soccerIQ = map['soccerIQ'];
-    reflex = map['reflex'];
-    speed = map['speed'];
-    flexibility = map['flexibility'];
-    _potential = map['potential'];
-    _stat = map['stat'];
-    tactics = map['tactics'];
-    _currentGameRecord = PlayerGameRecord.fromJson(map['currentGameRecord']);
-    personalTrainingTypes = map['personalTrainingTypes'];
-    teamTrainingTypePercent = map['teamTrainingTypePercent'];
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'birthDay': birthDay,
-      'national': national.toString(),
-      'height': height,
-      'bodyType': bodyType.toString(),
-      'soccerIQ': soccerIQ,
-      'reflex': reflex,
-      'speed': speed,
-      'flexibility': flexibility,
-      'potential': potential,
-      'stat': stat,
-      'tactics': tactics,
-      'currentGameRecord': _currentGameRecord.toJson(),
-      'personalTrainingTypes': personalTrainingTypes,
-      'teamTrainingTypePercent': teamTrainingTypePercent,
-    };
   }
 
   @override
@@ -540,4 +501,49 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
         PlayLevel.max => 1.4,
         _ => 1,
       };
+
+  Player.fromJson(Map<dynamic, dynamic> map)
+      : super(
+          name: map['name'],
+          birthDay: map['birthDay'],
+          national: National.fromString(map['national']),
+        ) {
+    height = map['height'];
+    bodyType = BodyType.fromString(map['bodyType']);
+    soccerIQ = map['soccerIQ'];
+    reflex = map['reflex'];
+    speed = map['speed'];
+    flexibility = map['flexibility'];
+    _potential = map['potential'];
+    isStartingPlayer = map['isStartingPlayer'];
+    startingPoxXY = PosXY.fromJson(map['startingPoxXY']);
+    _stat = Stat.fromJson(map['stat']);
+    tactics = Tactics.fromJson(map['tactics']);
+    _currentGameRecord = PlayerGameRecord.fromJson(map['currentGameRecord']);
+    personalTrainingTypes = (map['personalTrainingTypes'] as List).map((e) => TrainingType.fromString(e)).toList();
+    teamTrainingTypePercent = map['teamTrainingTypePercent'];
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'birthDay': birthDay,
+      'national': national.toString(),
+      'height': height,
+      'bodyType': bodyType.toString(),
+      'soccerIQ': soccerIQ,
+      'reflex': reflex,
+      'speed': speed,
+      'flexibility': flexibility,
+      'potential': potential,
+      'isStartingPlayer': isStartingPlayer,
+      'startingPoxXY': startingPoxXY.toJson(),
+      'stat': stat.toJson(),
+      'tactics': tactics?.toJson(),
+      'currentGameRecord': _currentGameRecord.toJson(),
+      'personalTrainingTypes': personalTrainingTypes.map((e) => e.toString()).toList(),
+      'teamTrainingTypePercent': teamTrainingTypePercent,
+    };
+  }
 }

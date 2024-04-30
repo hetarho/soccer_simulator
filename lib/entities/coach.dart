@@ -1,6 +1,8 @@
+import 'package:soccer_simulator/entities/dbManager/jsonable_interface.dart';
 import 'package:soccer_simulator/entities/member.dart';
+import 'package:soccer_simulator/enum/play_style.enum.dart';
 
-class Coach extends Member {
+class Coach extends Member implements Jsonable {
   Coach({
     required super.name,
     required super.birthDay,
@@ -8,12 +10,24 @@ class Coach extends Member {
     required this.playStyle,
   });
 
-  final PlayStyle playStyle;
-}
+  late final PlayStyle playStyle;
 
-enum PlayStyle {
-  pass, //패스 플레이 위주
-  press, // 압박 위주
-  counter, // 역습 위주
-  none, // 기본
+  Coach.fromJson(Map<dynamic, dynamic> map)
+      : super(
+          birthDay: map['birthDay'],
+          name: map['name'],
+          national: map['national'],
+        ) {
+    playStyle = PlayStyle.fromString(map['playStyle']);
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'birthDay': birthDay,
+      'national': national,
+      'playStyle': playStyle.toString(),
+    };
+  }
 }

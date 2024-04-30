@@ -7,7 +7,7 @@ import 'package:soccer_simulator/entities/stat.dart';
 import 'package:soccer_simulator/enum/national.enum.dart';
 import 'package:soccer_simulator/enum/player.enum.dart';
 import 'package:soccer_simulator/enum/position.enum.dart';
-import 'package:soccer_simulator/main.dart';
+import 'package:soccer_simulator/providers/providers.dart';
 
 class PlayerDetail extends ConsumerStatefulWidget {
   const PlayerDetail({super.key});

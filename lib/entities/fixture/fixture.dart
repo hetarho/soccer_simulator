@@ -5,79 +5,49 @@ import 'dart:math';
 import 'package:async/async.dart';
 import 'package:soccer_simulator/entities/ball.dart';
 import 'package:soccer_simulator/entities/club.dart';
+import 'package:soccer_simulator/entities/dbManager/jsonable_interface.dart';
+import 'package:soccer_simulator/entities/fixture/club_in_fixture.dart';
+import 'package:soccer_simulator/entities/fixture/vo/fixture_record.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
 import 'package:soccer_simulator/enum/player_action.enum.dart';
 import 'package:soccer_simulator/utils/color.dart';
 
-class Fixture {
+class Fixture implements Jsonable {
   Fixture({required this.home, required this.away}) {
     _streamController = StreamController<FixtureRecord>.broadcast();
-  }
-
-  bool _isReady = false;
-
-  ready() {
-    if (!_isReady) {
-      _isReady = true;
-      for (var player in allPlayers) {
-        player.ready(_playSpeed);
-      }
-
-      playerStream = StreamGroup.merge(allPlayers.map((e) => e.playerStream!).toList()).asBroadcastStream();
-
-      _streamSubscription = playerStream?.listen((event) {
-        if ([
-              PlayerAction.goal,
-              PlayerAction.assist,
-              PlayerAction.shoot,
-            ].contains(event.action) &&
-            isGameStart) {
-          records.add(FixtureRecord(
-            time: playTime,
-            club: home.club.players.where((element) => element.id == event.player.id).isEmpty ? away.club : home.club,
-            player: event.player,
-            action: event.action,
-            isGameEnd: isGameEnd,
-          ));
-        }
-        _setBallPos();
-      });
-
-      ///홈팀 유니폼 홈유니폼으로 설정
-      home.club.color = home.club.homeColor;
-
-      double homeDiff = C().colorDifference(home.club.homeColor, away.club.homeColor);
-      double awayDiff = C().colorDifference(home.club.homeColor, away.club.awayColor);
-
-      ///어웨이 유니폼 홈유니폼으로 설정
-      ///
-      if (homeDiff < 100) {
-        away.club.color = homeDiff > awayDiff ? away.club.homeColor : away.club.awayColor;
-      } else {
-        away.club.color = away.club.homeColor;
-      }
-    }
   }
 
   Fixture.empty() {
     home = ClubInFixture.empty();
     away = ClubInFixture.empty();
   }
-  ////테스트용
-  bool stopWhenGoal = false;
+
+  bool _isReady = false;
+
+  ///홈 팀 데이터
   late final ClubInFixture home;
+
+  ///어웨이 팀 데이터
   late final ClubInFixture away;
+
+  ///경기 정보
   List<FixtureRecord> records = [];
 
+  ///플레이어들의 stream을 모을 streamSubscription
   StreamSubscription<PlayerActEvent>? _streamSubscription;
 
+  ///게임 시간을 증가시키는 타이머
   Timer? _timer; // Timer 인스턴스를 저장할 변수
+
+  ///게임 시간이 지나면 이벤트를 발생시키는 streamController
   late StreamController<FixtureRecord> _streamController;
 
+  ///fixtureRecord가 발생하는 stream
   Stream<FixtureRecord> get gameStream => _streamController.stream;
 
+  ///플레이어 이벤트가 발생하는 stream
   late Stream<PlayerActEvent>? playerStream;
 
   ///현재 경기 시간
@@ -88,6 +58,12 @@ class Fixture {
 
   ///경기가 시작 되었는지 안되었는지
   bool isGameStart = false;
+
+  Duration _playSpeed = const Duration(microseconds: 1000);
+
+  late int _playTimeAmount = 10;
+
+  Ball _ball = Ball();
 
   ///경기가 종료 되었는지 안되었는지
   bool get isGameEnd {
@@ -103,11 +79,6 @@ class Fixture {
   Duration get playSpeed {
     return _playSpeed;
   }
-
-  Duration _playSpeed = const Duration(microseconds: 1000);
-  final _playTimeAmount = 10;
-
-  final Ball _ball = Ball();
 
   get ballPosXY => _ball.posXY;
 
@@ -174,11 +145,6 @@ class Fixture {
   }) async {
     scoredClub.score();
     concedeClub.concede();
-    if (!isSimulation && stopWhenGoal) {
-      pause();
-      await Future.delayed(const Duration(seconds: 2));
-      gameStart();
-    }
 
     for (var player in scoredClub.club.players) {
       player.hasBall = false;
@@ -198,6 +164,49 @@ class Fixture {
 
   pause() {
     _timer?.cancel();
+  }
+
+  ready() {
+    if (!_isReady) {
+      _isReady = true;
+      for (var player in allPlayers) {
+        player.ready(_playSpeed);
+      }
+
+      playerStream = StreamGroup.merge(allPlayers.map((e) => e.playerStream!).toList()).asBroadcastStream();
+
+      _streamSubscription = playerStream?.listen((event) {
+        if ([
+              PlayerAction.goal,
+              PlayerAction.assist,
+              PlayerAction.shoot,
+            ].contains(event.action) &&
+            isGameStart) {
+          records.add(FixtureRecord(
+            time: playTime,
+            club: home.club.players.where((element) => element.id == event.player.id).isEmpty ? away.club : home.club,
+            player: event.player,
+            action: event.action,
+            isGameEnd: isGameEnd,
+          ));
+        }
+        _setBallPos();
+      });
+
+      ///홈팀 유니폼 홈유니폼으로 설정
+      home.club.color = home.club.homeColor;
+
+      double homeDiff = C().colorDifference(home.club.homeColor, away.club.homeColor);
+      double awayDiff = C().colorDifference(home.club.homeColor, away.club.awayColor);
+
+      ///어웨이 유니폼 홈유니폼으로 설정
+      ///
+      if (homeDiff < 100) {
+        away.club.color = homeDiff > awayDiff ? away.club.homeColor : away.club.awayColor;
+      } else {
+        away.club.color = away.club.homeColor;
+      }
+    }
   }
 
   gameStart() async {
@@ -271,56 +280,30 @@ class Fixture {
   }
 
   List<Player> get allPlayers => [...home.club.players, ...away.club.players];
-}
 
-class ClubInFixture {
-  late final Club club;
-  int _scoredGoal = 0;
-  int hasBallTime = 0;
-  int shoot = 0;
-  int pass = 0;
-  int tackle = 0;
-  int dribble = 0;
-
-  score() {
-    _scoredGoal += 1;
-    club.gf++;
+  Fixture.fromJson(Map<dynamic, dynamic> map) {
+    home = ClubInFixture.fromJson(map['home']);
+    away = ClubInFixture.fromJson(map['away']);
+    records = (map['records'] as List).map((e) => FixtureRecord.fromJson(e)).toList();
+    playTime = Duration(microseconds: map['playTime']);
+    isSimulation = map['isSimulation'];
+    isGameStart = map['isGameStart'];
+    _playSpeed = Duration(microseconds: map['_playSpeed']);
+    _playTimeAmount = map['_playTimeAmount'];
+    _streamController = StreamController<FixtureRecord>.broadcast();
   }
-
-  concede() {
-    club.ga++;
-  }
-
-  get goal {
-    return _scoredGoal;
-  }
-
-  ClubInFixture({
-    required this.club,
-  });
-
-  ClubInFixture.empty() {
-    club = Club.empty();
-  }
-}
-
-class FixtureRecord {
-  final Duration time;
-  final Club? club;
-  final PlayerAction? action;
-  final Player? player;
-  final bool isGameEnd;
-
-  FixtureRecord({
-    required this.time,
-    required this.isGameEnd,
-    this.club,
-    this.action,
-    this.player,
-  });
 
   @override
-  String toString() {
-    return 'FixtureRecord(time: $time, club: ${club?.name}, action: $action, player: ${player?.name})';
+  Map<String, dynamic> toJson() {
+    return {
+      'home': home.toJson(),
+      'away': away.toJson(),
+      'records': records.map((e) => e.toJson()).toList(),
+      'playTime': playTime.inMicroseconds,
+      'isSimulation': isSimulation,
+      'isGameStart': isGameStart,
+      '_playSpeed': _playSpeed.inMicroseconds,
+      '_playTimeAmount': _playTimeAmount,
+    };
   }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:soccer_simulator/main.dart';
 import 'package:soccer_simulator/pages/fixture/fixture_page.dart';
+import 'package:soccer_simulator/pages/league/league_page.dart';
 import 'package:soccer_simulator/pages/player/player_detail.dart';
 import 'package:soccer_simulator/pages/player/player_list.dart';
+import 'package:soccer_simulator/pages/start/start_page.dart';
 
 final GoRouter router = GoRouter(
   routes: <RouteBase>[
@@ -13,7 +14,13 @@ final GoRouter router = GoRouter(
         return false;
       },
       builder: (BuildContext context, GoRouterState state) {
-        return const MyHomePage();
+        return const StartPage();
+      },
+    ),
+    GoRoute(
+      path: '/league',
+      builder: (BuildContext context, GoRouterState state) {
+        return const LeaguePage();
       },
     ),
     GoRoute(
@@ -25,7 +32,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/players',
       builder: (BuildContext context, GoRouterState state) {
-        return PlayerListPage();
+        return const PlayerListPage();
       },
       routes: <RouteBase>[
         GoRoute(

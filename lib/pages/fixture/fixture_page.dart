@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:soccer_simulator/entities/fixture.dart';
+import 'package:soccer_simulator/entities/fixture/fixture.dart';
+import 'package:soccer_simulator/entities/fixture/vo/fixture_record.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/main.dart';
-import 'package:soccer_simulator/providers/fixture_provider.dart';
+import 'package:soccer_simulator/providers/providers.dart';
 import 'package:soccer_simulator/utils/color.dart';
 
 class FixturePage extends ConsumerStatefulWidget {
@@ -229,17 +230,6 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                               '${fixture.records[index].time.inMinutes} -${fixture.records[index].player?.backNumber} ${fixture.records[index].player?.name} /${fixture.records[index].action}',
                               style: TextStyle(color: fixture.records[index].club?.color),
                             )),
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [true, false]
-                        .map((e) => ElevatedButton(
-                              onPressed: () {
-                                fixture.stopWhenGoal = e;
-                              },
-                              child: Text('$e'),
-                            ))
-                        .toList(),
                   ),
                 ],
               ),

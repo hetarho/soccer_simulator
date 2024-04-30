@@ -32,7 +32,7 @@ class PlayerGameRecord {
     };
   }
 
-  PlayerGameRecord.fromJson(Map<String, dynamic> map) {
+  PlayerGameRecord.fromJson(Map<dynamic, dynamic> map) {
     goal = map['goal'];
     assist = map['assist'];
     passTry = map['passTry'];

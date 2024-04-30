@@ -1,72 +1,10 @@
-import 'dart:async';
-
 import 'package:soccer_simulator/entities/club.dart';
-import 'package:soccer_simulator/entities/fixture.dart';
-import 'package:soccer_simulator/entities/player/player.dart';
+import 'package:soccer_simulator/entities/dbManager/jsonable_interface.dart';
+import 'package:soccer_simulator/entities/fixture/club_in_fixture.dart';
+import 'package:soccer_simulator/entities/fixture/fixture.dart';
+import 'package:soccer_simulator/entities/league/round.dart';
 
-class League {
-  List<Season> seasons = [];
-  Season _currentSeason = Season(rounds: []);
-  List<Club> clubs;
-  League({required this.clubs});
-
-  get round {
-    return _currentSeason.roundNumber;
-  }
-
-  Season get currentSeason => _currentSeason;
-
-  startNewSeason() {
-    _currentSeason.seasonEnd(table.map((club) => Club.copy(club)).toList());
-    int ranking = 0;
-    for (var club in clubs) {
-      club.startNewSeason(seasons.length, ranking++);
-      for (var player in club.players) {
-        player.newSeason();
-      }
-    }
-    _currentSeason = Season.create(clubs: clubs);
-    seasons.add(_currentSeason);
-  }
-
-  List<Fixture> getNextFixtures() {
-    return _currentSeason.currentRound.fixtures;
-  }
-
-  nextRound() {
-    if (_currentSeason.currentRound.isAllGameEnd) _currentSeason.nextRound();
-  }
-
-  List<Club> get table {
-    clubs.sort((a, b) {
-      if (a.pts != b.pts) {
-        return b.pts - a.pts;
-      } else if (a.gd != b.gd) {
-        return b.gd - a.gd;
-      } else if (a.gf != b.gf) {
-        return b.gf - a.gf;
-      } else {
-        return a.nickName.compareTo(b.nickName);
-      }
-    });
-    return clubs;
-  }
-
-  List<Player> get allPlayer => clubs.map((e) => e.players).expand((element) => element).toList();
-}
-
-class Round {
-  final List<Fixture> fixtures;
-  final int number;
-
-  get isAllGameEnd {
-    return fixtures.fold(true, (pre, curr) => curr.isGameEnd && pre);
-  }
-
-  Round({required this.fixtures, required this.number});
-}
-
-class Season {
+class Season implements Jsonable {
   late List<Round> rounds;
   int _roundNumber = 1;
   List<Club> seasonRecords = [];
@@ -134,4 +72,19 @@ class Season {
   }
 
   Season({required this.rounds});
+
+  Season.fromJson(Map<dynamic, dynamic> map) {
+    rounds = (map['rounds'] as List).map((e) => Round.fromJson(e)).toList();
+    _roundNumber = map['_roundNumber'];
+    seasonRecords = (map['seasonRecords'] as List).map((e) => Club.fromJson(e)).toList();
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'rounds': rounds.map((e) => e.toJson()).toList(),
+      '_roundNumber': _roundNumber,
+      'seasonRecords': seasonRecords.map((e) => e.toJson()).toList(),
+    };
+  }
 }

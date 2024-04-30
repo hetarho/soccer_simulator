@@ -32,6 +32,11 @@ enum Position {
   final String text;
   const Position(this.text);
 
+  // 문자열을 Position 열거형으로 변환하는 함수
+  static Position fromString(String str) {
+    return Position.values.firstWhere((val) => val.text == str, orElse: () => throw ArgumentError('Invalid Position string: $str'));
+  }
+
   @override
   String toString() => text;
 }

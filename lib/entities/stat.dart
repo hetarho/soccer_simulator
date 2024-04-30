@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:soccer_simulator/entities/player/player.dart';
+import 'package:soccer_simulator/entities/dbManager/jsonable_interface.dart';
 import 'package:soccer_simulator/enum/position.enum.dart';
 import 'package:soccer_simulator/enum/training_type.enum.dart';
 import 'package:soccer_simulator/utils/random.dart';
@@ -16,7 +16,7 @@ import 'package:soccer_simulator/utils/random.dart';
 /// 90 ~ 120 리그 탑급 플레이어
 ///
 /// 120 ~ 월드클래스
-class Stat {
+class Stat implements Jsonable {
   Stat({
     int? stamina,
     int? strength,
@@ -199,5 +199,30 @@ class Stat {
 
   int get average {
     return ((stamina + strength + attSkill + passSkill + passSkill + defSkill + gkSkill + composure + teamwork) / 9).round();
+  }
+
+  Stat.fromJson(Map<dynamic, dynamic> map) {
+    stamina = map['stamina'];
+    strength = map['strength'];
+    attSkill = map['attSkill'];
+    passSkill = map['passSkill'];
+    defSkill = map['defSkill'];
+    gkSkill = map['gkSkill'];
+    composure = map['composure'];
+    teamwork = map['teamwork'];
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'stamina': stamina,
+      'strength': strength,
+      'attSkill': attSkill,
+      'passSkill': passSkill,
+      'defSkill': defSkill,
+      'gkSkill': gkSkill,
+      'composure': composure,
+      'teamwork': teamwork,
+    };
   }
 }

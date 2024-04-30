@@ -5,4 +5,6 @@ class Ball {
   bool isMoving = false;
   PosXY? startPos;
   PosXY? endPos;
+
+  Ball();
 }

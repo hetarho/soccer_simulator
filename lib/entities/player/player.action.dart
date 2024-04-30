@@ -389,10 +389,7 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
-    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) &&
-        isNotGoalKick &&
-        !(ballPos.x == posXY.x && ballPos.y == posXY.y) &&
-        closerPlayerAtBall < ball.posXY.y / 50;
+    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < ball.posXY.y / 50;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);

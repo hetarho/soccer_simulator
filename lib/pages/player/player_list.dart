@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
 import 'package:soccer_simulator/enum/position.enum.dart';
-import 'package:soccer_simulator/main.dart';
+import 'package:soccer_simulator/providers/providers.dart';
 import 'package:soccer_simulator/utils/color.dart';
 
 class PlayerListPage extends ConsumerStatefulWidget {
@@ -46,11 +46,11 @@ class _PlayerListPageState extends ConsumerState<PlayerListPage> {
                   double playerSize = stadiumWidth / 10;
                   return DragTarget<Player>(
                     onMove: (details) {
-                      if(details.data.position != Position.gk) {
+                      if (details.data.position != Position.gk) {
                         details.data.startingPoxXY = PosXY(
-                        (100 * (details.offset.dx) / stadiumWidth + 5).clamp(0, 100),
-                        (100 - (100 * (details.offset.dy - 120) / stadiumHeight -5)).clamp(0, 100),
-                      );
+                          (100 * (details.offset.dx) / stadiumWidth + 5).clamp(0, 100),
+                          (100 - (100 * (details.offset.dy - 120) / stadiumHeight - 5)).clamp(0, 100),
+                        );
                       }
                       setState(() {});
                     },

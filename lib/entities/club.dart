@@ -2,15 +2,17 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:random_name_generator/random_name_generator.dart';
+import 'package:soccer_simulator/entities/dbManager/jsonable_interface.dart';
 import 'package:soccer_simulator/entities/formation/formation.dart';
 import 'package:soccer_simulator/entities/tactics/tactics.dart';
 import 'package:soccer_simulator/enum/position.enum.dart';
+import 'package:soccer_simulator/extension/color.extension.dart';
 import 'package:soccer_simulator/utils/function.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/entities/player/player.dart';
 
-class Club {
+class Club implements Jsonable {
   Club({
     required this.name,
     required this.nickName,
@@ -20,18 +22,26 @@ class Club {
   }) {
     this.tactics = tactics ?? Tactics.normal();
     color = homeColor;
+    id = const Uuid().v4();
   }
 
   Club.empty({
+    this.id = '',
     this.name = '',
     this.nickName = '',
+    this.color = Colors.black,
     this.homeColor = Colors.black,
     this.awayColor = Colors.black,
-  });
+  }) {
+    tactics = Tactics.normal();
+  }
 
   Club.copy(Club club) {
+    id = club.id;
     players = club.players;
     nickName = club.nickName;
+    color = club.color;
+    tactics = club.tactics;
     homeColor = club.homeColor;
     awayColor = club.awayColor;
     name = club.name;
@@ -62,7 +72,7 @@ class Club {
         .toList();
   }
 
-  final String id = const Uuid().v4();
+  late final String id;
   late String name;
   late String nickName;
   late Color color;
@@ -173,6 +183,51 @@ class Club {
   List<Player> get startPlayers {
     return players.where((player) => player.isStartingPlayer).toList();
   }
+
+  Club.fromJson(Map<dynamic, dynamic> map) {
+    id = map['id'];
+    name = map['name'];
+    nickName = map['nickName'];
+    color = Color.fromRGBO(map['color']['red'], map['color']['green'], map['color']['blue'], 1);
+    homeColor = Color.fromRGBO(map['homeColor']['red'], map['homeColor']['green'], map['homeColor']['blue'], 1);
+    awayColor = Color.fromRGBO(map['awayColor']['red'], map['awayColor']['green'], map['awayColor']['blue'], 1);
+    tactics = Tactics.fromJson(map['tactics']);
+    clubRecord = (map['clubRecord'] as List).map((e) => ClubRecord.fromJson(e)).toList();
+    won = map['won'];
+    drawn = map['drawn'];
+    lost = map['lost'];
+    winStack = map['winStack'];
+    noLoseStack = map['noLoseStack'];
+    loseStack = map['loseStack'];
+    noWinStack = map['noWinStack'];
+    gf = map['gf'];
+    ga = map['ga'];
+    players = (map['players'] as List).map((e) => Player.fromJson(e)..team = this).toList();
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'nickName': nickName,
+      'color': color.toJson(),
+      'homeColor': homeColor.toJson(),
+      'awayColor': awayColor.toJson(),
+      'tactics': tactics.toJson(),
+      'clubRecord': clubRecord.map((e) => e.toJson()).toList(),
+      'won': won,
+      'drawn': drawn,
+      'lost': lost,
+      'winStack': winStack,
+      'noLoseStack': noLoseStack,
+      'loseStack': loseStack,
+      'noWinStack': noWinStack,
+      'gf': gf,
+      'ga': ga,
+      'players': players.map((e) => e.toJson()).toList(),
+    };
+  }
 }
 
 class Uniform {
@@ -197,13 +252,34 @@ enum UniformType {
   double,
 }
 
-class ClubRecord {
-  final int season;
-  final int pts;
-  final int gf;
-  final int ga;
-  final int gd;
-  final int ranking;
+class ClubRecord implements Jsonable {
+  late final int season;
+  late final int pts;
+  late final int gf;
+  late final int ga;
+  late final int gd;
+  late final int ranking;
 
   ClubRecord({required this.season, required this.pts, required this.gf, required this.ga, required this.gd, required this.ranking});
+
+  ClubRecord.fromJson(Map<dynamic, dynamic> map) {
+    season = map['season'];
+    pts = map['pts'];
+    gf = map['gf'];
+    ga = map['ga'];
+    gd = map['gd'];
+    ranking = map['ranking'];
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'season': season,
+      'pts': pts,
+      'gf': gf,
+      'ga': ga,
+      'gd': gd,
+      'ranking': ranking,
+    };
+  }
 }
