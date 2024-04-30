@@ -5,18 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/formation/formation.dart';
 import 'package:soccer_simulator/entities/league.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/tactics/tactics.dart';
+import 'package:soccer_simulator/enum/position.enum.dart';
 import 'package:soccer_simulator/providers/fixture_provider.dart';
 import 'package:soccer_simulator/router/routes.dart';
 import 'package:soccer_simulator/utils/color.dart';
 import 'package:soccer_simulator/utils/random.dart';
 
 void main() {
+  Hive.initFlutter();
   runApp(
     const ProviderScope(
       child: MyApp(),
@@ -425,6 +428,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               children: [
                 Row(
                   children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          Player ppp = Player.create(name: 'name12', backNumber: 1, role: PlayerRole.defender, min: 1, max: 1);
+                          print(ppp);
+                          Player ppp2 = Player.fromJson(ppp.toJson());
+                          print(ppp2);
+                        },
+                        child: const Text('test')),
                     ElevatedButton(
                         onPressed: () {
                           if (mounted) {

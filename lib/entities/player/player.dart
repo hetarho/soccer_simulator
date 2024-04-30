@@ -53,9 +53,66 @@ class Player extends Member {
     _currentGameRecord = PlayerGameRecord.init();
   }
 
+  Player.fromJson(Map<String, dynamic> map)
+      : super(
+          name: map['name'],
+          birthDay: map['birthDay'],
+          national: map['national'],
+        ) {
+    height = map['height'];
+    bodyType = map['bodyType'];
+    soccerIQ = map['soccerIQ'];
+    reflex = map['reflex'];
+    speed = map['speed'];
+    flexibility = map['flexibility'];
+    _potential = map['potential'];
+    _stat = map['stat'];
+    tactics = map['tactics'];
+    _currentGameRecord = PlayerGameRecord.fromJson(map['currentGameRecord']);
+    personalTrainingTypes = map['personalTrainingTypes'];
+    teamTrainingTypePercent = map['teamTrainingTypePercent'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'birthDay': birthDay,
+      'national': national,
+      'height': height,
+      'bodyType': bodyType,
+      'soccerIQ': soccerIQ,
+      'reflex': reflex,
+      'speed': speed,
+      'flexibility': flexibility,
+      'potential': potential,
+      'stat': stat,
+      'tactics': tactics,
+      'currentGameRecord': _currentGameRecord.toJson(),
+      'personalTrainingTypes': personalTrainingTypes,
+      'teamTrainingTypePercent': teamTrainingTypePercent,
+    };
+  }
+
   @override
   String toString() {
-    return 'Player:$name goal:$seasonGoal';
+    return '''
+=====================Player=====================
+name: $name,
+birthDay: $birthDay,
+national: $national,
+height: $height,
+bodyType: $bodyType,
+soccerIQ: $soccerIQ,
+reflex: $reflex,
+speed: $speed,
+flexibility: $flexibility,
+potential: $potential,
+stat: $stat,
+tactics: $tactics,
+currentGameRecord: $_currentGameRecord,
+personalTrainingTypes: $personalTrainingTypes,
+teamTrainingTypePercent: $teamTrainingTypePercent,
+  ''';
   }
 
   bool isPlaying = false;
@@ -179,10 +236,10 @@ class Player extends Member {
   Tactics? tactics;
 
   ///개인 트레이닝 시 훈련 종류
-  List<TrainingType> personalTrainingTypes;
+  late List<TrainingType> personalTrainingTypes;
 
   ///팀 트레이닝 베율
-  double teamTrainingTypePercent;
+  late double teamTrainingTypePercent;
 
   ///추가로 상승시킬 스탯
   int _extraStat = 0;
