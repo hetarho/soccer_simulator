@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:soccer_simulator/entities/club.dart';
+import 'package:soccer_simulator/entities/dbManager/db_manager.dart';
 import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/formation/formation.dart';
 import 'package:soccer_simulator/entities/league.dart';
@@ -429,13 +430,25 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 Row(
                   children: [
                     ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           Player ppp = Player.create(name: 'name12', backNumber: 1, role: PlayerRole.defender, min: 1, max: 1);
-                          print(ppp);
-                          Player ppp2 = Player.fromJson(ppp.toJson());
-                          print(ppp2);
+
+                          DbManager<Player> manager = DbManager();
+
+                          await manager.put('testBox', 'test', ppp);
                         },
                         child: const Text('test')),
+                    ElevatedButton(
+                        onPressed: () async {
+                          DbManager<Player> manager = DbManager();
+
+                          var a = await manager.get('test', 'test');
+
+                          Player pp2 = Player.fromJson(a);
+
+                          print(pp2);
+                        },
+                        child: const Text('get')),
                     ElevatedButton(
                         onPressed: () {
                           if (mounted) {

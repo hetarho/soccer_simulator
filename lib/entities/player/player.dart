@@ -1,8 +1,8 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:math';
 
 import 'package:soccer_simulator/entities/club.dart';
+import 'package:soccer_simulator/entities/dbManager/jsonable_interface.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/player/vo/player_game_record.dart';
 import 'package:soccer_simulator/entities/tactics/tactics.dart';
@@ -26,7 +26,7 @@ part 'player.action.dart';
 part 'player.grow.dart';
 part 'player.stat.dart';
 
-class Player extends Member {
+class Player extends Member implements Jsonable {
   StreamController<PlayerActEvent>? _streamController;
   Stream<PlayerActEvent>? get playerStream => _streamController?.stream;
   Player({
@@ -73,13 +73,14 @@ class Player extends Member {
     teamTrainingTypePercent = map['teamTrainingTypePercent'];
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       'birthDay': birthDay,
-      'national': national,
+      'national': national.toString(),
       'height': height,
-      'bodyType': bodyType,
+      'bodyType': bodyType.toString(),
       'soccerIQ': soccerIQ,
       'reflex': reflex,
       'speed': speed,
