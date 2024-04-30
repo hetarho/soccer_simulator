@@ -370,7 +370,8 @@ class Player extends Member {
       };
 
   ///이 수치가 높을수록 스타팅포인트에서 이동하기 어려움( 0 = 완전 자유로움 100 = 자리에고정)
-  double get _leftFreedom => switch (position ?? wantPosition) {
+  double get _leftFreedom =>
+      switch (position ?? wantPosition) {
         ///forward
         Position.lf => 0,
         Position.lw => 0,
@@ -391,9 +392,12 @@ class Player extends Member {
         Position.rb => 70,
         Position.cb => 80,
         Position.gk => 95,
-      };
+      } *
+      _freeLevelToDouble(tactics?.freeLevel.left) *
+      _freeLevelToDouble(team?.tactics.freeLevel.left);
 
-  double get _rightFreedom => switch (position ?? wantPosition) {
+  double get _rightFreedom =>
+      switch (position ?? wantPosition) {
         ///forward
         Position.lf => 30,
         Position.lw => 20,
@@ -414,9 +418,12 @@ class Player extends Member {
         Position.rb => 10,
         Position.cb => 80,
         Position.gk => 95,
-      };
+      } *
+      _freeLevelToDouble(tactics?.freeLevel.right) *
+      _freeLevelToDouble(team?.tactics.freeLevel.right);
 
-  double get _forwardFreedom => switch (position ?? wantPosition) {
+  double get _forwardFreedom =>
+      switch (position ?? wantPosition) {
         ///forward
         Position.lf => 10,
         Position.lw => 10,
@@ -437,9 +444,12 @@ class Player extends Member {
         Position.rb => 40,
         Position.cb => 75,
         Position.gk => 99,
-      };
+      } *
+      _freeLevelToDouble(tactics?.freeLevel.forward) *
+      _freeLevelToDouble(team?.tactics.freeLevel.forward);
 
-  double get _backwardFreedom => switch (position ?? wantPosition) {
+  double get _backwardFreedom =>
+      switch (position ?? wantPosition) {
         ///forward
         Position.lf => 80,
         Position.lw => 80,
@@ -460,7 +470,16 @@ class Player extends Member {
         Position.rb => 0,
         Position.cb => 0,
         Position.gk => 90,
-      };
+      } *
+      _freeLevelToDouble(tactics?.freeLevel.backward) *
+      _freeLevelToDouble(team?.tactics.freeLevel.backward);
 
-      
+  double _freeLevelToDouble(PlayLevel? freeLevel) => switch (freeLevel) {
+        PlayLevel.min => 0.6,
+        PlayLevel.low => 0.8,
+        PlayLevel.middle => 1,
+        PlayLevel.hight => 1.2,
+        PlayLevel.max => 1.4,
+        _ => 1,
+      };
 }

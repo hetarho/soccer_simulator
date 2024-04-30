@@ -26,7 +26,7 @@ class _PlayerListPageState extends ConsumerState<PlayerListPage> {
         children: [
           if (playerList.isNotEmpty)
             Center(
-              child: Container(
+              child: SizedBox(
                 height: 50,
                 child: Text(
                   playerList[0].team?.name ?? '',
@@ -46,10 +46,12 @@ class _PlayerListPageState extends ConsumerState<PlayerListPage> {
                   double playerSize = stadiumWidth / 10;
                   return DragTarget<Player>(
                     onMove: (details) {
-                      details.data.startingPoxXY = PosXY(
+                      if(details.data.position != Position.gk) {
+                        details.data.startingPoxXY = PosXY(
                         (100 * (details.offset.dx) / stadiumWidth + 5).clamp(0, 100),
-                        (100 - (100 * (details.offset.dy - 120) / stadiumHeight + 10)).clamp(0, 100),
+                        (100 - (100 * (details.offset.dy - 120) / stadiumHeight -5)).clamp(0, 100),
                       );
+                      }
                       setState(() {});
                     },
                     builder: (BuildContext context, List<dynamic> accepted, List<dynamic> rejected) {

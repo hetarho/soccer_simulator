@@ -389,7 +389,10 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
-    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < ball.posXY.y / 50;
+    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) &&
+        isNotGoalKick &&
+        !(ballPos.x == posXY.x && ballPos.y == posXY.y) &&
+        closerPlayerAtBall < ball.posXY.y / 50;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);
@@ -566,7 +569,7 @@ extension PlayerMove on Player {
   _moveToBallForPass(PosXY ballPosXY) {
     double ballPosX = ballPosXY.x;
     double ballPosY = ballPosXY.y + 20;
-    lastAction = PlayerAction.keeping;
+    lastAction = PlayerAction.move;
 
     _move(targetPosXY: PosXY(ballPosX, ballPosY));
   }
@@ -624,7 +627,7 @@ extension PlayerMove on Player {
     ///TODO: 체력 감소 로직 추후 구체화
     if (_currentStamina > 30) {
       _currentStamina -= moveDistance / stat.stamina;
-    } else {
+    } else if (_currentStamina > 1) {
       _currentStamina *= 0.95;
     }
 

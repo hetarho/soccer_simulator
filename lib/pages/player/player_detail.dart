@@ -85,49 +85,61 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                     color: _buttonColor,
                     text: '축구지능',
                     onClick: () {
-                      setState(() {
-                        player.soccerIQ += plusMinus * 1;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          player.soccerIQ += plusMinus * 1;
+                        });
+                      }
                     }),
                 StatButton(
                     color: _buttonColor,
                     text: '반응속도',
                     onClick: () {
-                      setState(() {
-                        player.reflex += plusMinus * 1;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          player.reflex += plusMinus * 1;
+                        });
+                      }
                     }),
                 StatButton(
                     color: _buttonColor,
                     text: '스피드',
                     onClick: () {
-                      setState(() {
-                        player.speed += plusMinus * 1;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          player.speed += plusMinus * 1;
+                        });
+                      }
                     }),
                 StatButton(
                     color: _buttonColor,
                     text: '유연성',
                     onClick: () {
-                      setState(() {
-                        player.flexibility += plusMinus * 1;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          player.flexibility += plusMinus * 1;
+                        });
+                      }
                     }),
                 StatButton(
                     color: _buttonColor,
                     text: '체력',
                     onClick: () {
-                      setState(() {
-                        player.stat.add(Stat(stamina: plusMinus * 1));
-                      });
+                      if (mounted) {
+                        setState(() {
+                          player.stat.add(Stat(stamina: plusMinus * 1));
+                        });
+                      }
                     }),
                 StatButton(
                     color: _buttonColor,
                     text: '잠재력',
                     onClick: () {
-                      setState(() {
-                        player.potential += plusMinus * 1;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          player.potential += plusMinus * 1;
+                        });
+                      }
                     }),
               ],
             ),
@@ -158,41 +170,51 @@ class _PlayerDetailState extends ConsumerState<PlayerDetail> {
                     color: _buttonColor,
                     text: '공격스킬',
                     onClick: () {
-                      setState(() {
-                        player.stat.add(Stat(attSkill: plusMinus * 1));
-                      });
+                      if (mounted) {
+                        setState(() {
+                          player.stat.add(Stat(attSkill: plusMinus * 1));
+                        });
+                      }
                     }),
                 StatButton(
                     color: _buttonColor,
                     text: '패스스킬',
                     onClick: () {
-                      setState(() {
-                        player.stat.add(Stat(passSkill: plusMinus * 1));
-                      });
+                      if (mounted) {
+                        setState(() {
+                          player.stat.add(Stat(passSkill: plusMinus * 1));
+                        });
+                      }
                     }),
                 StatButton(
                     color: _buttonColor,
                     text: '수비스킬',
                     onClick: () {
-                      setState(() {
-                        player.stat.add(Stat(defSkill: plusMinus * 1));
-                      });
+                      if (mounted) {
+                        setState(() {
+                          player.stat.add(Stat(defSkill: plusMinus * 1));
+                        });
+                      }
                     }),
                 StatButton(
                     color: _buttonColor,
                     text: '키핑스킬',
                     onClick: () {
-                      setState(() {
-                        player.stat.add(Stat(gkSkill: plusMinus * 1));
-                      });
+                      if (mounted) {
+                        setState(() {
+                          player.stat.add(Stat(gkSkill: plusMinus * 1));
+                        });
+                      }
                     }),
                 StatButton(
                     color: _buttonColor,
                     text: '침착함',
                     onClick: () {
-                      setState(() {
-                        player.stat.add(Stat(composure: plusMinus * 1));
-                      });
+                      if (mounted) {
+                        setState(() {
+                          player.stat.add(Stat(composure: plusMinus * 1));
+                        });
+                      }
                     }),
               ],
             ),
