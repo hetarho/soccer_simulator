@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
-import 'package:soccer_simulator/enum/position.dart';
+import 'package:soccer_simulator/enum/position.enum.dart';
 import 'package:soccer_simulator/main.dart';
 import 'package:soccer_simulator/utils/color.dart';
 

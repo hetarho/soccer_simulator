@@ -8,7 +8,7 @@ import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
-import 'package:soccer_simulator/enum/player_action.dart';
+import 'package:soccer_simulator/enum/player_action.enum.dart';
 import 'package:soccer_simulator/utils/color.dart';
 
 class Fixture {

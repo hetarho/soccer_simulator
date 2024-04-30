@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:soccer_simulator/entities/player/player.dart';
-import 'package:soccer_simulator/enum/position.dart';
-import 'package:soccer_simulator/enum/training_type.dart';
+import 'package:soccer_simulator/enum/position.enum.dart';
+import 'package:soccer_simulator/enum/training_type.enum.dart';
 import 'package:soccer_simulator/utils/random.dart';
 
 /// 플레이어의 스텟

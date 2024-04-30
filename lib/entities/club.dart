@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:random_name_generator/random_name_generator.dart';
 import 'package:soccer_simulator/entities/formation/formation.dart';
 import 'package:soccer_simulator/entities/tactics/tactics.dart';
-import 'package:soccer_simulator/enum/position.dart';
+import 'package:soccer_simulator/enum/position.enum.dart';
 import 'package:soccer_simulator/utils/function.dart';
 import 'package:uuid/uuid.dart';
 

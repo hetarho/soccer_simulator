@@ -1,4 +1,4 @@
-import 'package:soccer_simulator/enum/national.dart';
+import 'package:soccer_simulator/enum/national.enum.dart';
 
 class Member {
   Member({

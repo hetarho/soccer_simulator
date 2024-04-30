@@ -6,8 +6,8 @@ import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/entities/player/vo/player_game_record.dart';
 import 'package:soccer_simulator/entities/tactics/tactics.dart';
-import 'package:soccer_simulator/enum/national.dart';
-import 'package:soccer_simulator/enum/player_action.dart';
+import 'package:soccer_simulator/enum/national.enum.dart';
+import 'package:soccer_simulator/enum/player_action.enum.dart';
 import 'package:soccer_simulator/utils/math.dart';
 import 'package:soccer_simulator/utils/function.dart';
 import 'package:uuid/uuid.dart';
@@ -17,9 +17,9 @@ import 'package:soccer_simulator/entities/fixture.dart';
 import 'package:soccer_simulator/entities/member.dart';
 import 'package:soccer_simulator/entities/stat.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
-import 'package:soccer_simulator/enum/player.dart';
-import 'package:soccer_simulator/enum/position.dart';
-import 'package:soccer_simulator/enum/training_type.dart';
+import 'package:soccer_simulator/enum/player.enum.dart';
+import 'package:soccer_simulator/enum/position.enum.dart';
+import 'package:soccer_simulator/enum/training_type.enum.dart';
 import 'package:soccer_simulator/utils/random.dart';
 
 part 'player.action.dart';
@@ -461,4 +461,6 @@ class Player extends Member {
         Position.cb => 0,
         Position.gk => 90,
       };
+
+      
 }

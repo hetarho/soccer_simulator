@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/stat.dart';
-import 'package:soccer_simulator/enum/national.dart';
-import 'package:soccer_simulator/enum/player.dart';
-import 'package:soccer_simulator/enum/position.dart';
+import 'package:soccer_simulator/enum/national.enum.dart';
+import 'package:soccer_simulator/enum/player.enum.dart';
+import 'package:soccer_simulator/enum/position.enum.dart';
 import 'package:soccer_simulator/main.dart';
 
 class PlayerDetail extends ConsumerStatefulWidget {

@@ -1,8 +1,8 @@
 import 'dart:math' as m;
 
 import 'package:soccer_simulator/entities/formation/formation.dart';
-import 'package:soccer_simulator/enum/national.dart';
-import 'package:soccer_simulator/enum/player.dart';
+import 'package:soccer_simulator/enum/national.enum.dart';
+import 'package:soccer_simulator/enum/player.enum.dart';
 
 class R {
   int getInt({
