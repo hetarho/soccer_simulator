@@ -28,9 +28,12 @@ class _State extends ConsumerState<StartPage> {
   init() async {
     DbManager<SaveSlot> manager = DbManager('saveSlot');
     await manager.init();
+    await _refresh();
+  }
 
+  _refresh() async {
+    DbManager<SaveSlot> manager = DbManager('saveSlot');
     _saveSlot = (await manager.getAll() as List).map((e) => SaveSlot.fromJson(e)).toList();
-
     setState(() {});
   }
 
@@ -319,6 +322,11 @@ class _State extends ConsumerState<StartPage> {
                     if (context.mounted) context.push('/league');
                   },
                   child: const Text('create epl')),
+              ElevatedButton(
+                  onPressed: () {
+                    _refresh();
+                  },
+                  child: const Text('refresh')),
               const SizedBox(height: 24),
               ..._saveSlot.map((slot) => Column(
                     children: [
