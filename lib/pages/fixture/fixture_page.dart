@@ -1,14 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soccer_simulator/entities/fixture/fixture.dart';
 import 'package:soccer_simulator/entities/fixture/vo/fixture_record.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/player/vo/player_act_event.dart';
-import 'package:soccer_simulator/main.dart';
 import 'package:soccer_simulator/providers/providers.dart';
 import 'package:soccer_simulator/utils/color.dart';
 

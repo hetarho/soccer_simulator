@@ -6,9 +6,12 @@ import 'package:soccer_simulator/entities/player/player.dart';
 
 class League implements Jsonable {
   List<Season> seasons = [];
-  Season _currentSeason = Season(rounds: []);
+  bool _seasonEnd = true;
+  late Season _currentSeason;
   late List<Club> clubs;
-  League({required this.clubs});
+  League({required this.clubs}) {
+    startNewSeason();
+  }
 
   get round {
     return _currentSeason.roundNumber;
@@ -16,7 +19,7 @@ class League implements Jsonable {
 
   Season get currentSeason => _currentSeason;
 
-  startNewSeason() {
+  endCurrentSeason() {
     _currentSeason.seasonEnd(table.map((club) => Club.copy(club)).toList());
     int ranking = 0;
     for (var club in clubs) {
@@ -25,8 +28,14 @@ class League implements Jsonable {
         player.newSeason();
       }
     }
+    _seasonEnd = true;
+  }
+
+  startNewSeason() {
+    if (!_seasonEnd) return;
     _currentSeason = Season.create(clubs: clubs);
     seasons.add(_currentSeason);
+    _seasonEnd = false;
   }
 
   List<Fixture> getNextFixtures() {
@@ -57,6 +66,7 @@ class League implements Jsonable {
   League.fromJson(Map<dynamic, dynamic> map) {
     seasons = (map['seasons'] as List).map((e) => Season.fromJson(e)).toList();
     _currentSeason = Season.fromJson(map['_currentSeason']);
+    _seasonEnd = map['_seasonEnd'];
     clubs = (map['clubs'] as List).map((e) => Club.fromJson(e)).toList();
   }
 
@@ -65,6 +75,7 @@ class League implements Jsonable {
     return {
       'seasons': seasons.map((e) => e.toJson()).toList(),
       '_currentSeason': _currentSeason.toJson(),
+      '_seasonEnd': _seasonEnd,
       'clubs': clubs.map((e) => e.toJson()).toList(),
     };
   }

@@ -623,7 +623,7 @@ extension PlayerMove on Player {
 
     ///TODO: 체력 감소 로직 추후 구체화
     if (_currentStamina > 30) {
-      _currentStamina -= moveDistance / stat.stamina;
+      _currentStamina -= moveDistance / max(1, stat.stamina);
     } else if (_currentStamina > 1) {
       _currentStamina *= 0.95;
     }

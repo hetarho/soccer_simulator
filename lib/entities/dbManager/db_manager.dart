@@ -6,10 +6,10 @@ class DbManager<T extends Jsonable> {
 
   DbManager(this.boxName);
 
-  add(String key, T data) async {
+  add(T data) async {
     Map<String, dynamic> json = data.toJson();
-    Box box = await Hive.openBox(key);
-    await box.add(data);
+    Box box = await Hive.openBox(boxName);
+    await box.add(json);
     await box.close();
   }
 
@@ -30,6 +30,13 @@ class DbManager<T extends Jsonable> {
   getAll() async {
     Box box = await Hive.openBox(boxName);
     List data = box.values.toList();
+    await box.close();
+    return data;
+  }
+
+  delete(String key) async {
+    Box box = await Hive.openBox(boxName);
+    var data = await box.delete(key);
     await box.close();
     return data;
   }

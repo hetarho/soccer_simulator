@@ -40,7 +40,8 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   @override
   void initState() {
     super.initState();
-    _init();
+    _league = ref.read(saveSlotProvider).league;
+    _initFixture();
   }
 
   _save() async {
@@ -49,13 +50,6 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
     DbManager<SaveSlot> dbManager = DbManager('saveSlot');
 
     await dbManager.put(id, ref.read(saveSlotProvider));
-  }
-
-  _init() {
-    _league = ref.read(saveSlotProvider).league;
-    _league.startNewSeason();
-    _isAutoPlay = false;
-    _initFixture();
   }
 
   _initFixture() async {
@@ -132,6 +126,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                     ElevatedButton(
                       onPressed: () async {
                         _league.startNewSeason();
+                        _save();
                         if (mounted) setState(() {});
                       },
                       child: const Text('다음시즌'),

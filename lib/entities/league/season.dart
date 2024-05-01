@@ -14,6 +14,8 @@ class Season implements Jsonable {
     rounds = [];
   }
 
+  bool get isSeasonEnd => roundNumber == rounds.length;
+
   int get roundNumber {
     return _roundNumber;
   }
