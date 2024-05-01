@@ -295,7 +295,7 @@ extension PlayerMove on Player {
       }
 
       ///슈팅 가능한 경우
-      else if (opponentsNumNearShootRout < 5 && (posXY.x > 30 || posXY.x < 70) || (distanceToGoalPost > 30 && distanceToGoalPost / midRangeShootStat < R().getDouble(max: 1))) {
+      else if (opponentsNumNearShootRout < 5 && ((posXY.x > 30 || posXY.x < 70) || (distanceToGoalPost > 30 && distanceToGoalPost / midRangeShootStat < 1 / 3))) {
         _shoot(
           fixture: fixture,
           team: team,
@@ -525,7 +525,7 @@ extension PlayerMove on Player {
 
     double stat = distanceToGoalPost < 20 ? shootingStat.toDouble() : shootingStat * ((100 - distanceToGoalPost) / 100) + midRangeShootStat * (distanceToGoalPost / 100);
 
-    double finalShootStat = pow(stat * 0.68 + evadePressurePoint, 0.31 + R().getDouble(max: 1.11)).toDouble();
+    double finalShootStat = pow(stat * 0.52 + evadePressurePoint, 0.32 + R().getDouble(max: 1.12)).toDouble();
 
     double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.65, max: 1.76);
 

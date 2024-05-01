@@ -77,7 +77,10 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
             print('season${_league.seasons.length} / round:${_league.currentSeason.roundNumber} - ${_stopwatch.elapsed}');
             _stopwatch.reset();
           }
-          if (_league.round == (_league.clubs.length - 1) * 2 && _isAutoPlaySeason) _league.startNewSeason();
+          if (_league.round == (_league.clubs.length - 1) * 2 && _isAutoPlaySeason) {
+            _league.endCurrentSeason();
+            _league.startNewSeason();
+          }
           await Future.delayed(Duration.zero);
           _finishedFixtureNum = 0;
           _league.nextRound();
@@ -144,8 +147,13 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                         ElevatedButton(
                           onPressed: () async {
                             _isAutoPlaySeason = !_isAutoPlaySeason;
+                            setState(() {});
                           },
-                          child: const Text('시즌 자동플레이'),
+                          style: ElevatedButton.styleFrom(backgroundColor: _isAutoPlaySeason ? Colors.blue : Colors.black),
+                          child: const Text(
+                            '시즌 자동플레이',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                         ElevatedButton(
                           onPressed: () async {
