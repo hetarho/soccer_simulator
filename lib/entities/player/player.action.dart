@@ -295,7 +295,7 @@ extension PlayerMove on Player {
       }
 
       ///슈팅 가능한 경우
-      else if (opponentsNumNearShootRout < 5 && (posXY.x > 30 || posXY.x < 70) || (distanceToGoalPost > 30 && distanceToGoalPost < midRangeShootStat / 4)) {
+      else if (opponentsNumNearShootRout < 5 && (posXY.x > 30 || posXY.x < 70) || (distanceToGoalPost > 30 && distanceToGoalPost / midRangeShootStat < R().getDouble(max: 1))) {
         _shoot(
           fixture: fixture,
           team: team,

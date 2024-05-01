@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/dbManager/db_manager.dart';
 import 'package:soccer_simulator/entities/formation/formation.dart';
@@ -29,6 +27,7 @@ class _State extends ConsumerState<StartPage> {
 
   init() async {
     DbManager<SaveSlot> manager = DbManager('saveSlot');
+    await manager.init();
 
     _saveSlot = (await manager.getAll() as List).map((e) => SaveSlot.fromJson(e)).toList();
 

@@ -56,7 +56,7 @@ extension PlayerGrow on Player {
       }
     } else {
       ///포텐이 떨어졌는데 나이가 많아서 에이징커브가 올 경우
-      if (age - 25 < R().getInt(max: 15)) {
+      if (age - 25 > R().getInt(max: 15)) {
         Stat newStat = Stat.agingCurve(point: R().getInt(min: -1 * age ~/ 10, max: 0));
         _stat.add(newStat);
       }

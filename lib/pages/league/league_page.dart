@@ -36,6 +36,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   bool _showTopScorerTable = false;
   bool _showDetailHistory = false;
   Duration _timer = const Duration(seconds: 0);
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -45,11 +46,17 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   }
 
   _save() async {
+    setState(() {
+      _isLoading = true;
+    });
     String id = ref.read(saveSlotProvider).id;
 
     DbManager<SaveSlot> dbManager = DbManager('saveSlot');
 
     await dbManager.put(id, ref.read(saveSlotProvider));
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   _initFixture() async {
@@ -99,171 +106,188 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
-          const SizedBox(height: 64),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Column(
-              children: [
-                Row(
+          Column(
+            children: [
+              const SizedBox(height: 64),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Column(
                   children: [
-                    ElevatedButton(onPressed: _save, child: const Text('save')),
-                    ElevatedButton(
-                      onPressed: () async {
-                        _startAllFixtures();
-                      },
-                      child: const Text('game start'),
+                    Row(
+                      children: [
+                        ElevatedButton(onPressed: _save, child: const Text('save')),
+                        ElevatedButton(
+                          onPressed: () async {
+                            _startAllFixtures();
+                          },
+                          child: const Text('game start'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            _league.nextRound();
+                            _initFixture();
+                            if (mounted) setState(() {});
+                          },
+                          child: const Text('다음경기로'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            _league.endCurrentSeason();
+                            _league.startNewSeason();
+                            _save();
+                            if (mounted) setState(() {});
+                          },
+                          child: const Text('다음시즌'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            _isAutoPlaySeason = !_isAutoPlaySeason;
+                          },
+                          child: const Text('시즌 자동플레이'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            context.pop();
+                          },
+                          child: const Text('뒤로가기'),
+                        ),
+                      ],
                     ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        _league.nextRound();
-                        _initFixture();
-                        if (mounted) setState(() {});
-                      },
-                      child: const Text('다음경기로'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        _league.startNewSeason();
-                        _save();
-                        if (mounted) setState(() {});
-                      },
-                      child: const Text('다음시즌'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        _isAutoPlaySeason = !_isAutoPlaySeason;
-                      },
-                      child: const Text('시즌 자동플레이'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        context.pop();
-                      },
-                      child: const Text('뒤로가기'),
+                    Row(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                _showTopScorerTable = !_showTopScorerTable;
+                              });
+                            },
+                            child: const Text('득점')),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (_isAutoPlay) {
+                              _isAutoPlay = false;
+                            } else {
+                              _autoPlaying();
+                            }
+                          },
+                          child: const Text('자동'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _showFixtures = !_showFixtures;
+                            });
+                          },
+                          child: const Text('경기들 보기'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _showLeagueTable = !_showLeagueTable;
+                            });
+                          },
+                          child: const Text('순위 보기'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _showBeforeLeagueTable = !_showBeforeLeagueTable;
+                            });
+                          },
+                          child: const Text('지난 순위 보기'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _showDetailHistory = !_showDetailHistory;
+                            });
+                          },
+                          child: const Text('역사'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _showTopScorerTable = !_showTopScorerTable;
-                          });
-                        },
-                        child: const Text('득점')),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_isAutoPlay) {
-                          _isAutoPlay = false;
-                        } else {
-                          _autoPlaying();
-                        }
-                      },
-                      child: const Text('자동'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _showFixtures = !_showFixtures;
-                        });
-                      },
-                      child: const Text('경기들 보기'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _showLeagueTable = !_showLeagueTable;
-                        });
-                      },
-                      child: const Text('순위 보기'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _showBeforeLeagueTable = !_showBeforeLeagueTable;
-                        });
-                      },
-                      child: const Text('지난 순위 보기'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _showDetailHistory = !_showDetailHistory;
-                        });
-                      },
-                      child: const Text('역사'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Text('round : ${_league.round} time:${_timer.inMinutes}'),
-          Expanded(
-            child: CustomScrollView(
-              slivers: [
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Column(
-                    children: <Widget>[
-                      if (_showFixtures)
-                        Expanded(
-                          child: Column(
-                            children: _fixtures
-                                .map((fixture) => FixtureInfo(
-                                      fixture: fixture,
-                                    ))
-                                .toList(),
-                          ),
-                        ),
-                      if (_showTopScorerTable) PlayerTableWidget(league: _league),
-                      if (_showLeagueTable)
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: LeagueTableWidget(clubs: _league.table),
-                          ),
-                        ),
-                      const SizedBox(height: 8),
-                      if (_showBeforeLeagueTable)
-                        ..._league.seasons.map(
-                          (season) => Column(
-                            children: [
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: LeagueTableWidget(clubs: season.seasonRecords),
-                                ),
+              ),
+              Text('round : ${_league.round} time:${_timer.inMinutes}'),
+              Expanded(
+                child: CustomScrollView(
+                  slivers: [
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Column(
+                        children: <Widget>[
+                          if (_showFixtures)
+                            Expanded(
+                              child: Column(
+                                children: _fixtures
+                                    .map((fixture) => FixtureInfo(
+                                          fixture: fixture,
+                                        ))
+                                    .toList(),
                               ),
-                              const SizedBox(height: 8),
-                            ],
-                          ),
-                        ),
-                      if (_showDetailHistory)
-                        Column(
-                          children: [
-                            ...[
-                              ...[..._league.clubs]..sort(
-                                  (a, b) => a.winner == b.winner ? b.ptsAverage - a.ptsAverage : b.winner - a.winner,
-                                )
-                            ].map((club) => Row(
-                                  children: [
-                                    Text('${club.name}: 우승${club.winner}회 평균 승점:${club.ptsAverage}'),
-                                  ],
-                                ))
-                          ],
-                        ),
-                    ],
-                  ),
-                )
-              ],
-            ),
+                            ),
+                          if (_showTopScorerTable) PlayerTableWidget(league: _league),
+                          if (_showLeagueTable)
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: LeagueTableWidget(clubs: _league.table),
+                              ),
+                            ),
+                          const SizedBox(height: 8),
+                          if (_showBeforeLeagueTable)
+                            ..._league.seasons.map(
+                              (season) => Column(
+                                children: [
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: LeagueTableWidget(clubs: season.seasonRecords),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
+                              ),
+                            ),
+                          if (_showDetailHistory)
+                            Column(
+                              children: [
+                                ...[
+                                  ...[..._league.clubs]..sort(
+                                      (a, b) => a.winner == b.winner ? b.ptsAverage - a.ptsAverage : b.winner - a.winner,
+                                    )
+                                ].map((club) => Row(
+                                      children: [
+                                        Text('${club.name}: 우승${club.winner}회 평균 승점:${club.ptsAverage}'),
+                                      ],
+                                    ))
+                              ],
+                            ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
           ),
+          if (_isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.4),
+              child: Center(
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.green[400],
+                  color: Colors.black,
+                  strokeAlign: 3,
+                  strokeWidth: 20,
+                ),
+              ),
+            )
         ],
       ),
     );
@@ -391,7 +415,7 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
               color: Colors.black,
             ),
             child: Container(
-              color: Color.fromARGB(255, 229, 229, 229),
+              color: const Color.fromARGB(255, 229, 229, 229),
               child: Column(
                 children: [
                   Container(
