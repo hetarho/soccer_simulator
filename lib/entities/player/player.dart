@@ -195,7 +195,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
   Club? team;
 
   ///선수의 개인 전술
-  Tactics? tactics;
+  late Tactics tactics;
 
   ///개인 트레이닝 시 훈련 종류
   late List<TrainingType> personalTrainingTypes;
@@ -345,7 +345,12 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
 
   set hasBall(bool newVal) {
     ///공을 얻거나 잃으면 활동 포인트 초기화
-    _actPoint = 0;
+
+    if (newVal) {
+      _actPoint = _actPoint / 2;
+    } else {
+      _actPoint = 0;
+    }
     if (newVal) {
       _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.none));
     }
@@ -494,8 +499,8 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
       _freeLevelToDouble(team?.tactics.freeLevel.backward);
 
   double _freeLevelToDouble(PlayLevel? freeLevel) => switch (freeLevel) {
-        PlayLevel.min => 1.4,
-        PlayLevel.low => 1.2,
+        PlayLevel.min => 1.2,
+        PlayLevel.low => 1.1,
         PlayLevel.middle => 1,
         PlayLevel.hight => 0.8,
         PlayLevel.max => 0.6,

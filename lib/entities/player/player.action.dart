@@ -19,7 +19,7 @@ extension PlayerMove on Player {
     _timer = Timer.periodic(playSpeed, (timer) async {
       playTime = fixture.playTime;
       bool teamHasBall = team.club.startPlayers.where((player) => player.hasBall).isNotEmpty;
-      lastAction = null;
+      // lastAction = null;
 
       /// 판단력/5 만큼 행동 포인트 적립
       _actPoint += judgementStat / 10;
@@ -382,10 +382,11 @@ extension PlayerMove on Player {
     required Ball ball,
     required Fixture fixture,
   }) {
+    if (fixture.playerWithBall == null) return;
     bool isNotGoalKick = fixture.playerWithBall?.role != PlayerRole.goalKeeper;
 
     PosXY ballPos = PosXY(100 - ball.posXY.x, 200 - ball.posXY.y);
-    bool canTackle = ballPos.distance(posXY) < 7 && isNotGoalKick && _actPoint > 60 && fixture.playerWithBall != null;
+    bool canTackle = ballPos.distance(posXY) < tackleDistance && isNotGoalKick && _actPoint > max(60, 200 - tackleStat);
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
@@ -432,14 +433,14 @@ extension PlayerMove on Player {
   _dribble(ClubInFixture team, double evadePressurePoint, ClubInFixture opponent) {
     int tackledPlayerNum = 0;
     for (var player in opponent.club.players) {
-      if (player.reversePosXy.distance(posXY) < 7) {
+      if (player.reversePosXy.distance(posXY) < player.tackleDistance) {
         tackledPlayerNum++;
-        player._tackle(this, opponent);
+        player._tackle(this, opponent, true);
       }
     }
 
     if (hasBall) {
-      if (tackledPlayerNum > 0) {
+      if (tackledPlayerNum > 1) {
         lastAction = PlayerAction.dribble;
         dribbleSuccess();
         team.dribble++;
@@ -525,9 +526,9 @@ extension PlayerMove on Player {
 
     double stat = distanceToGoalPost < 20 ? shootingStat.toDouble() : shootingStat * ((100 - distanceToGoalPost) / 100) + midRangeShootStat * (distanceToGoalPost / 100);
 
-    double finalShootStat = pow(stat * 0.52 + evadePressurePoint, 0.32 + R().getDouble(max: 1.12)).toDouble();
+    double finalShootStat = pow(stat * 0.35 + evadePressurePoint, 0.23 + R().getDouble(max: 1.12)).toDouble();
 
-    double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.65, max: 1.76);
+    double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.65, max: 1.84);
 
     if (finalShootStat > finalKeepingStat) {
       goal();
@@ -543,18 +544,14 @@ extension PlayerMove on Player {
     }
   }
 
-  _tackle(Player targetPlayer, ClubInFixture team) {
+  _tackle(Player targetPlayer, ClubInFixture team, [bool isDribbled = false]) {
     _actPoint = 0;
 
-    ///태클을 할 타겟과의 거리 (0~7)
-    double distanceToTarget = max(targetPlayer.reversePosXy.distance(posXY), 2.9);
+    double targetDribbleBonus = (isDribbled ? 1.5 : 1);
 
-    ///태클 보너스(0~7)
-    double tackleBonus = R().getDouble(max: 0.5);
+    double tackleSuccessPercent = (tackleStat * 3 * targetDribbleBonus) / (tackleStat * 3 + targetPlayer.dribbleStat + targetPlayer.evadePressStat + 300);
 
-    double tackleSuccessPercent = tackleStat * tackleBonus / (tackleStat * tackleBonus + targetPlayer.dribbleStat * distanceToTarget);
-
-    if (tackleSuccessPercent > R().getDouble(max: 1)) {
+    if (tackleSuccessPercent > R().getDouble(max: 2)) {
       lastAction = PlayerAction.tackle;
       defSuccess();
       targetPlayer.hasBall = false;

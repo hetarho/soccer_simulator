@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/pos/pos.dart';
+import 'package:soccer_simulator/enum/play_level.enum.dart';
 import 'package:soccer_simulator/enum/position.enum.dart';
 import 'package:soccer_simulator/providers/providers.dart';
 import 'package:soccer_simulator/utils/color.dart';
@@ -22,74 +24,79 @@ class _PlayerListPageState extends ConsumerState<PlayerListPage> {
       appBar: AppBar(
         toolbarHeight: 50,
       ),
-      body: Column(
-        children: [
-          if (playerList.isNotEmpty)
-            Center(
-              child: SizedBox(
-                height: 50,
-                child: Text(
-                  playerList[0].team?.name ?? '',
-                  style: const TextStyle(fontSize: 22),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            if (playerList.isNotEmpty)
+              Center(
+                child: SizedBox(
+                  height: 50,
+                  child: Text(
+                    playerList[0].team?.name ?? '',
+                    style: const TextStyle(fontSize: 22),
+                  ),
+                ),
+              ),
+            Container(
+              color: Colors.green,
+              padding: const EdgeInsets.only(top: 20),
+              child: AspectRatio(
+                aspectRatio: 1.125,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final stadiumWidth = constraints.maxWidth;
+                    final stadiumHeight = constraints.maxHeight;
+                    double playerSize = stadiumWidth / 10;
+                    return DragTarget<Player>(
+                      onMove: (details) {
+                        if (details.data.position != Position.gk) {
+                          details.data.startingPoxXY = PosXY(
+                            (100 * (details.offset.dx) / stadiumWidth + 5).clamp(0, 100),
+                            (100 - (100 * (details.offset.dy - 120) / stadiumHeight - 5)).clamp(0, 100),
+                          );
+                        }
+                        setState(() {});
+                      },
+                      builder: (BuildContext context, List<dynamic> accepted, List<dynamic> rejected) {
+                        return Stack(
+                          clipBehavior: Clip.none,
+                          children: playerList.map((player) {
+                            return AnimatedPositioned(
+                              duration: Duration(milliseconds: (player.playSpeed.inMilliseconds / 1).round()),
+                              curve: Curves.decelerate,
+                              top: stadiumHeight * (100 - player.startingPoxXY.y) / 100 - playerSize,
+                              left: stadiumWidth * (player.startingPoxXY.x) / 100 - playerSize / 2,
+                              child: GestureDetector(
+                                onTap: () {
+                                  ref.read(playerProvider.notifier).state = player;
+                                  context.push('/players/detail');
+                                },
+                                child: _PlayerWidget(
+                                  player: player,
+                                  playerSize: playerSize,
+                                  color: player.role == PlayerRole.goalKeeper
+                                      ? Colors.yellow
+                                      : player.role == PlayerRole.forward
+                                          ? Colors.red
+                                          : player.role == PlayerRole.midfielder
+                                              ? Colors.blue
+                                              : Colors.orange,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
             ),
-          Container(
-            color: Colors.green,
-            padding: const EdgeInsets.only(top: 20),
-            child: AspectRatio(
-              aspectRatio: 1.125,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final stadiumWidth = constraints.maxWidth;
-                  final stadiumHeight = constraints.maxHeight;
-                  double playerSize = stadiumWidth / 10;
-                  return DragTarget<Player>(
-                    onMove: (details) {
-                      if (details.data.position != Position.gk) {
-                        details.data.startingPoxXY = PosXY(
-                          (100 * (details.offset.dx) / stadiumWidth + 5).clamp(0, 100),
-                          (100 - (100 * (details.offset.dy - 120) / stadiumHeight - 5)).clamp(0, 100),
-                        );
-                      }
-                      setState(() {});
-                    },
-                    builder: (BuildContext context, List<dynamic> accepted, List<dynamic> rejected) {
-                      return Stack(
-                        clipBehavior: Clip.none,
-                        children: playerList.map((player) {
-                          return AnimatedPositioned(
-                            duration: Duration(milliseconds: (player.playSpeed.inMilliseconds / 1).round()),
-                            curve: Curves.decelerate,
-                            top: stadiumHeight * (100 - player.startingPoxXY.y) / 100 - playerSize,
-                            left: stadiumWidth * (player.startingPoxXY.x) / 100 - playerSize / 2,
-                            child: GestureDetector(
-                              onTap: () {
-                                ref.read(playerProvider.notifier).state = player;
-                                context.push('/players/detail');
-                              },
-                              child: _PlayerWidget(
-                                player: player,
-                                playerSize: playerSize,
-                                color: player.role == PlayerRole.goalKeeper
-                                    ? Colors.yellow
-                                    : player.role == PlayerRole.forward
-                                        ? Colors.red
-                                        : player.role == PlayerRole.midfielder
-                                            ? Colors.blue
-                                            : Colors.orange,
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
+            _TacticsWidget(
+              club: playerList[0].team ?? Club.empty(),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -113,12 +120,6 @@ class _PlayerWidget extends StatelessWidget {
             width: playerSize,
             height: playerSize,
             decoration: BoxDecoration(
-              border: player.hasBall
-                  ? Border.all(
-                      color: textColor,
-                      width: playerSize / 10,
-                    )
-                  : null,
               color: color,
               borderRadius: BorderRadius.circular(playerSize),
             ),
@@ -146,6 +147,123 @@ class _PlayerWidget extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+}
+
+class _TacticsWidget extends StatefulWidget {
+  const _TacticsWidget({Key? key, required this.club}) : super(key: key);
+  final Club club;
+
+  @override
+  State<_TacticsWidget> createState() => _TacticsWidgetState();
+}
+
+class _TacticsWidgetState extends State<_TacticsWidget> {
+  String distance = '0';
+  TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = widget.club.tactics.pressDistance.toString();
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var _buttonStyle = ElevatedButton.styleFrom(padding: const EdgeInsets.all(0));
+    var _buttonStyleSelected = ElevatedButton.styleFrom(padding: const EdgeInsets.all(0), backgroundColor: Colors.blue[200]);
+
+    return Column(
+      children: [
+        const SizedBox(height: 24),
+        Row(
+          children: [
+            const Text('distance'),
+            SizedBox(
+              width: 100,
+              height: 20,
+              child: TextField(
+                controller: _controller,
+                onChanged: (val) => distance = val,
+              ),
+            )
+          ],
+        ),
+        Row(
+          children: [
+            const Text('shortPassLevel'),
+            ...PlayLevel.values.map((e) => ElevatedButton(
+                onPressed: () {
+                  widget.club.tactics.shortPassLevel = e;
+                  setState(() {});
+                },
+                style: widget.club.tactics.shortPassLevel == e ? _buttonStyleSelected : _buttonStyle,
+                child: Text(e.text))),
+          ],
+        ),
+        Row(
+          children: [
+            const Text('attackLevel'),
+            ...PlayLevel.values.map((e) => ElevatedButton(
+                onPressed: () {
+                  widget.club.tactics.attackLevel = e;
+                  setState(() {});
+                },
+                style: widget.club.tactics.attackLevel == e ? _buttonStyleSelected : _buttonStyle,
+                child: Text(e.text))),
+          ],
+        ),
+        Row(
+          children: [
+            const Text('free - front'),
+            ...PlayLevel.values.map((e) => ElevatedButton(
+                onPressed: () {
+                  widget.club.tactics.freeLevel.forward = e;
+                  setState(() {});
+                },
+                style: widget.club.tactics.freeLevel.forward == e ? _buttonStyleSelected : _buttonStyle,
+                child: Text(e.text))),
+          ],
+        ),
+        Row(
+          children: [
+            const Text('free - back'),
+            ...PlayLevel.values.map((e) => ElevatedButton(
+                onPressed: () {
+                  widget.club.tactics.freeLevel.backward = e;
+                  setState(() {});
+                },
+                style: widget.club.tactics.freeLevel.backward == e ? _buttonStyleSelected : _buttonStyle,
+                child: Text(e.text))),
+          ],
+        ),
+        Row(
+          children: [
+            const Text('free - right'),
+            ...PlayLevel.values.map((e) => ElevatedButton(
+                onPressed: () {
+                  widget.club.tactics.freeLevel.right = e;
+                  setState(() {});
+                },
+                style: widget.club.tactics.freeLevel.right == e ? _buttonStyleSelected : _buttonStyle,
+                child: Text(e.text))),
+          ],
+        ),
+        Row(
+          children: [
+            const Text('free - left'),
+            ...PlayLevel.values.map((e) => ElevatedButton(
+                onPressed: () {
+                  widget.club.tactics.freeLevel.left = e;
+                  setState(() {});
+                },
+                style: widget.club.tactics.freeLevel.left == e ? _buttonStyleSelected : _buttonStyle,
+                child: Text(e.text))),
+          ],
+        ),
+      ],
     );
   }
 }

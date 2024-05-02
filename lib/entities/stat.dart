@@ -66,26 +66,26 @@ class Stat implements Jsonable {
 
     switch (role) {
       case PlayerRole.forward:
-        this.attSkill += 40;
+        this.attSkill += 30;
         this.defSkill = sqrt(this.defSkill).round() + 10;
-        this.gkSkill -= 40;
+        this.gkSkill -= 30;
         break;
       case PlayerRole.midfielder:
-        this.passSkill += 40;
-        this.defSkill -= 40;
-        this.attSkill -= 40;
-        this.gkSkill -= 40;
+        this.passSkill += 30;
+        this.defSkill -= 30;
+        this.attSkill -= 30;
+        this.gkSkill -= 30;
         break;
       case PlayerRole.defender:
-        this.defSkill += 40;
+        this.defSkill += 30;
         this.attSkill = sqrt(this.attSkill).round() + 10;
-        this.gkSkill -= 40;
+        this.gkSkill -= 30;
         break;
       case PlayerRole.goalKeeper:
-        this.gkSkill += 40;
+        this.gkSkill += 30;
         this.passSkill -= 20;
         this.defSkill -= 20;
-        this.attSkill -= 40;
+        this.attSkill -= 30;
         break;
       default:
         break;

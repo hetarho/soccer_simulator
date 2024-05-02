@@ -133,7 +133,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                       child: LayoutBuilder(builder: (context, constraints) {
                         final stadiumWidth = constraints.maxWidth;
                         final stadiumHeight = constraints.maxHeight;
-                        double playerSize = stadiumWidth / 16;
+                        double playerSize = stadiumWidth / 18;
                         double ballSize = stadiumWidth / 28;
                         return Stack(
                           clipBehavior: Clip.none,

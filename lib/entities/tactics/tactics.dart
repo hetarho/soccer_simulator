@@ -16,10 +16,10 @@ class Tactics implements Jsonable {
     freeLevel = FreeLevel.normal();
   }
 
-  late final double pressDistance;
-  late final FreeLevel freeLevel;
-  late final PlayLevel attackLevel;
-  late final PlayLevel shortPassLevel;
+  late double pressDistance;
+  late FreeLevel freeLevel;
+  late PlayLevel attackLevel;
+  late PlayLevel shortPassLevel;
 
   Tactics.fromJson(Map<dynamic, dynamic> map) {
     pressDistance = map['pressDistance'];
@@ -40,10 +40,10 @@ class Tactics implements Jsonable {
 }
 
 class FreeLevel implements Jsonable {
-  late final PlayLevel forward;
-  late final PlayLevel backward;
-  late final PlayLevel left;
-  late final PlayLevel right;
+  late PlayLevel forward;
+  late PlayLevel backward;
+  late PlayLevel left;
+  late PlayLevel right;
 
   FreeLevel(this.forward, this.backward, this.left, this.right);
 

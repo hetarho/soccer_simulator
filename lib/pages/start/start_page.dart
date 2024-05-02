@@ -257,15 +257,10 @@ class _State extends ConsumerState<StartPage> {
                       homeColor: const Color.fromARGB(255, 130, 130, 110),
                       awayColor: const Color.fromRGBO(90, 100, 150, 1),
                       tactics: Tactics(
-                        pressDistance: 60,
-                        attackLevel: PlayLevel.hight,
-                        shortPassLevel: PlayLevel.hight,
-                        freeLevel: FreeLevel(
-                          PlayLevel.hight,
-                          PlayLevel.hight,
-                          PlayLevel.hight,
-                          PlayLevel.hight,
-                        ),
+                        pressDistance: 50,
+                        freeLevel: FreeLevel(PlayLevel.max, PlayLevel.max, PlayLevel.max, PlayLevel.max),
+                        attackLevel: PlayLevel.max,
+                        shortPassLevel: PlayLevel.max,
                       ),
                     )..createStartingMembers(
                         min: 40,

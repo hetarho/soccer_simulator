@@ -168,4 +168,6 @@ extension PlayerStat on Player {
     res = res + stat.composure * 0.1;
     return res.round();
   }
+
+  double get tackleDistance => max(8, tackleStat / 25);
 }
