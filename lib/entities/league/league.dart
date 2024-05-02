@@ -64,17 +64,16 @@ class League implements Jsonable {
   List<Player> get allPlayer => clubs.map((e) => e.players).expand((element) => element).toList();
 
   League.fromJson(Map<dynamic, dynamic> map) {
-    seasons = (map['seasons'] as List).map((e) => Season.fromJson(e)).toList();
-    _currentSeason = Season.fromJson(map['_currentSeason']);
-    _seasonEnd = map['_seasonEnd'];
     clubs = (map['clubs'] as List).map((e) => Club.fromJson(e)).toList();
+    seasons = (map['seasons'] as List).map((e) => Season.fromJson(e, clubs)).toList();
+    if (seasons.isNotEmpty) _currentSeason = seasons.last;
+    _seasonEnd = map['_seasonEnd'];
   }
 
   @override
   Map<String, dynamic> toJson() {
     return {
       'seasons': seasons.map((e) => e.toJson()).toList(),
-      '_currentSeason': _currentSeason.toJson(),
       '_seasonEnd': _seasonEnd,
       'clubs': clubs.map((e) => e.toJson()).toList(),
     };

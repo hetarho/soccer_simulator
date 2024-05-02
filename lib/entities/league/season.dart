@@ -75,8 +75,8 @@ class Season implements Jsonable {
 
   Season({required this.rounds});
 
-  Season.fromJson(Map<dynamic, dynamic> map) {
-    rounds = (map['rounds'] as List).map((e) => Round.fromJson(e)).toList();
+  Season.fromJson(Map<dynamic, dynamic> map, List<Club> clubs) {
+    rounds = (map['rounds'] as List).map((e) => Round.fromJson(e, clubs)).toList();
     _roundNumber = map['_roundNumber'];
     seasonRecords = (map['seasonRecords'] as List).map((e) => Club.fromJson(e)).toList();
   }

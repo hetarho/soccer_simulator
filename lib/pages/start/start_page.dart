@@ -7,6 +7,7 @@ import 'package:soccer_simulator/entities/formation/formation.dart';
 import 'package:soccer_simulator/entities/league/league.dart';
 import 'package:soccer_simulator/entities/saveSlot/save_slot.dart';
 import 'package:soccer_simulator/entities/tactics/tactics.dart';
+import 'package:soccer_simulator/enum/play_level.enum.dart';
 import 'package:soccer_simulator/providers/providers.dart';
 
 class StartPage extends ConsumerStatefulWidget {
@@ -33,7 +34,7 @@ class _State extends ConsumerState<StartPage> {
 
   _refresh() async {
     DbManager<SaveSlot> manager = DbManager('saveSlot');
-    _saveSlot = (await manager.getAll() as List).map((e) => SaveSlot.fromJson(e)).toList();
+    _saveSlot = manager.getAll().map((e) => SaveSlot.fromJson(e)).toList();
     setState(() {});
   }
 
@@ -255,7 +256,17 @@ class _State extends ConsumerState<StartPage> {
                       nickName: 'LT',
                       homeColor: const Color.fromARGB(255, 130, 130, 110),
                       awayColor: const Color.fromRGBO(90, 100, 150, 1),
-                      tactics: Tactics.normal(),
+                      tactics: Tactics(
+                        pressDistance: 60,
+                        attackLevel: PlayLevel.hight,
+                        shortPassLevel: PlayLevel.hight,
+                        freeLevel: FreeLevel(
+                          PlayLevel.hight,
+                          PlayLevel.hight,
+                          PlayLevel.hight,
+                          PlayLevel.hight,
+                        ),
+                      ),
                     )..createStartingMembers(
                         min: 40,
                         max: 80,

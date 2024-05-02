@@ -1,3 +1,4 @@
+import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/dbManager/jsonable_interface.dart';
 import 'package:soccer_simulator/entities/fixture/fixture.dart';
 
@@ -11,8 +12,8 @@ class Round implements Jsonable {
 
   Round({required this.fixtures, required this.number});
 
-  Round.fromJson(Map<dynamic, dynamic> map) {
-    fixtures = (map['fixtures'] as List).map((e) => Fixture.fromJson(e)).toList();
+  Round.fromJson(Map<dynamic, dynamic> map, List<Club> clubs) {
+    fixtures = (map['fixtures'] as List).map((e) => Fixture.fromJson(e, clubs)).toList();
     number = map['number'];
   }
 

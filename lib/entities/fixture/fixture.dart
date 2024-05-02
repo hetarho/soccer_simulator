@@ -281,9 +281,12 @@ class Fixture implements Jsonable {
 
   List<Player> get allPlayers => [...home.club.players, ...away.club.players];
 
-  Fixture.fromJson(Map<dynamic, dynamic> map) {
-    home = ClubInFixture.fromJson(map['home']);
-    away = ClubInFixture.fromJson(map['away']);
+  Fixture.fromJson(Map<dynamic, dynamic> map, List<Club> clubs) {
+    Club homeClub = clubs.firstWhere((club) => club.id == map['home_club_id']);
+    Club awayClub = clubs.firstWhere((club) => club.id == map['away_club_id']);
+
+    home = ClubInFixture.fromJson(map['home'], homeClub);
+    away = ClubInFixture.fromJson(map['away'], awayClub);
     records = (map['records'] as List).map((e) => FixtureRecord.fromJson(e)).toList();
     playTime = Duration(microseconds: map['playTime']);
     isSimulation = map['isSimulation'];
@@ -298,6 +301,8 @@ class Fixture implements Jsonable {
     return {
       'home': home.toJson(),
       'away': away.toJson(),
+      'home_club_id': home.club.id,
+      'away_club_id': away.club.id,
       'records': records.map((e) => e.toJson()).toList(),
       'playTime': playTime.inMicroseconds,
       'isSimulation': isSimulation,

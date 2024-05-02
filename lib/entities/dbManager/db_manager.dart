@@ -28,7 +28,7 @@ class DbManager<T extends Jsonable> {
     return data;
   }
 
-  getAll() async {
+  List getAll() {
     Box box = Hive.box(boxName);
     List data = box.values.toList();
     return data;

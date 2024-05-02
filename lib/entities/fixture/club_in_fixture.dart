@@ -31,8 +31,7 @@ class ClubInFixture implements Jsonable {
     club = Club.empty();
   }
 
-  ClubInFixture.fromJson(Map<dynamic, dynamic> map) {
-    club = Club.fromJson(map['club']);
+  ClubInFixture.fromJson(Map<dynamic, dynamic> map, this.club) {
     _scoredGoal = map['_scoredGoal'];
     hasBallTime = map['hasBallTime'];
     shoot = map['shoot'];

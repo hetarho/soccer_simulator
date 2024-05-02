@@ -494,11 +494,11 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
       _freeLevelToDouble(team?.tactics.freeLevel.backward);
 
   double _freeLevelToDouble(PlayLevel? freeLevel) => switch (freeLevel) {
-        PlayLevel.min => 0.6,
-        PlayLevel.low => 0.8,
+        PlayLevel.min => 1.4,
+        PlayLevel.low => 1.2,
         PlayLevel.middle => 1,
-        PlayLevel.hight => 1.2,
-        PlayLevel.max => 1.4,
+        PlayLevel.hight => 0.8,
+        PlayLevel.max => 0.6,
         _ => 1,
       };
 
