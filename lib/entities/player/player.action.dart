@@ -290,7 +290,7 @@ extension PlayerMove on Player {
       }
 
       ///상대 골대 중앙에있으면 슈팅
-      else if (posXY.y > 170 && (posXY.x > 35 && posXY.x < 65)) {
+      else if (posXY.y > 175 && (posXY.x > 40 && posXY.x < 70)) {
         _shoot(goalKeeper: goalKeeper, fixture: fixture, team: team, opponent: opponent, evadePressurePoint: evadePressurePoint);
       }
 
@@ -526,9 +526,9 @@ extension PlayerMove on Player {
 
     double stat = distanceToGoalPost < 20 ? shootingStat.toDouble() : shootingStat * ((100 - distanceToGoalPost) / 100) + midRangeShootStat * (distanceToGoalPost / 100);
 
-    double finalShootStat = pow(stat * 0.35 + evadePressurePoint, 0.23 + R().getDouble(max: 1.12)).toDouble();
+    double finalShootStat = pow(stat * 0.29 + evadePressurePoint, 0.15 + R().getDouble(max: 1.25)).toDouble();
 
-    double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.65, max: 1.84);
+    double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.52, max: 2.14);
 
     if (finalShootStat > finalKeepingStat) {
       goal();

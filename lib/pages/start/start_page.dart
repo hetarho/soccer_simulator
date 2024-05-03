@@ -50,6 +50,7 @@ class _State extends ConsumerState<StartPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const SizedBox(height: 20),
               ElevatedButton(
                   onPressed: () async {
                     Club arsenal = Club(
