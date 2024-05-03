@@ -63,7 +63,7 @@ class Fixture implements Jsonable {
 
   late int _playTimeAmount = 10;
 
-  Ball _ball = Ball();
+  final Ball _ball = Ball();
 
   ///경기가 종료 되었는지 안되었는지
   bool get isGameEnd {
@@ -228,15 +228,6 @@ class Fixture implements Jsonable {
         ));
         if (isGameEnd) {
           gameEnd();
-
-          if (isGameEnd) {
-            playerWithBall?.hasBall = false;
-            _ball.posXY = PosXY(50, 100);
-
-            for (var player in allPlayers) {
-              player.gameEnd();
-            }
-          }
         } else {
           isSimulation ? updateGameInSimulate() : updateGame();
         }
@@ -245,6 +236,13 @@ class Fixture implements Jsonable {
   }
 
   void gameEnd() async {
+    playerWithBall?.hasBall = false;
+    _ball.posXY = PosXY(50, 100);
+
+    for (var player in allPlayers) {
+      player.gameEnd();
+    }
+
     if (home.goal == away.goal) {
       home.club.draw();
       away.club.draw();
@@ -282,8 +280,14 @@ class Fixture implements Jsonable {
   List<Player> get allPlayers => [...home.club.players, ...away.club.players];
 
   Fixture.fromJson(Map<dynamic, dynamic> map, List<Club> clubs) {
-    Club homeClub = clubs.firstWhere((club) => club.id == map['home_club_id']);
-    Club awayClub = clubs.firstWhere((club) => club.id == map['away_club_id']);
+    Club homeClub = clubs.firstWhere(
+      (club) => club.id == map['home_club_id'],
+      orElse: () => Club.empty(),
+    );
+    Club awayClub = clubs.firstWhere(
+      (club) => club.id == map['away_club_id'],
+      orElse: () => Club.empty(),
+    );
 
     home = ClubInFixture.fromJson(map['home'], homeClub);
     away = ClubInFixture.fromJson(map['away'], awayClub);

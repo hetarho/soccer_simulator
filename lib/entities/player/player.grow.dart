@@ -47,6 +47,7 @@ extension PlayerGrow on Player {
 
   ///실제 경기를 뛰면서 발생하는 스텟 성장 - 출전 포지션에 따라 다르게 성장
   void _growAfterPlay() {
+    return;
     //남은 포텐셜이 0보다 커야 성장 가능, 30이상이면 경기시마다 항상 성장
     if (_potential / 30 > Random().nextDouble()) {
       if (Random().nextDouble() > 0.3) {

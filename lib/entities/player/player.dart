@@ -367,7 +367,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
         PlayLevel.min => 0.8,
         _ => 1,
       };
-  double get personalAttackArea => switch (tactics?.attackLevel) {
+  double get personalAttackArea => switch (tactics.attackLevel) {
         PlayLevel.max => 1.3,
         PlayLevel.hight => 1.15,
         PlayLevel.middle => 1,
@@ -384,7 +384,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
         PlayLevel.min => 1.3,
         _ => 1,
       };
-  double get personalDefenseArea => switch (tactics?.attackLevel) {
+  double get personalDefenseArea => switch (tactics.attackLevel) {
         PlayLevel.max => 0.8,
         PlayLevel.hight => 0.9,
         PlayLevel.middle => 1,
@@ -417,7 +417,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
         Position.cb => 80,
         Position.gk => 95,
       } *
-      _freeLevelToDouble(tactics?.freeLevel.left) *
+      _freeLevelToDouble(tactics.freeLevel.left) *
       _freeLevelToDouble(team?.tactics.freeLevel.left);
 
   double get _rightFreedom =>
@@ -443,7 +443,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
         Position.cb => 80,
         Position.gk => 95,
       } *
-      _freeLevelToDouble(tactics?.freeLevel.right) *
+      _freeLevelToDouble(tactics.freeLevel.right) *
       _freeLevelToDouble(team?.tactics.freeLevel.right);
 
   double get _forwardFreedom =>
@@ -469,7 +469,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
         Position.cb => 75,
         Position.gk => 99,
       } *
-      _freeLevelToDouble(tactics?.freeLevel.forward) *
+      _freeLevelToDouble(tactics.freeLevel.forward) *
       _freeLevelToDouble(team?.tactics.freeLevel.forward);
 
   double get _backwardFreedom =>
@@ -495,7 +495,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
         Position.cb => 0,
         Position.gk => 90,
       } *
-      _freeLevelToDouble(tactics?.freeLevel.backward) *
+      _freeLevelToDouble(tactics.freeLevel.backward) *
       _freeLevelToDouble(team?.tactics.freeLevel.backward);
 
   double _freeLevelToDouble(PlayLevel? freeLevel) => switch (freeLevel) {
@@ -545,7 +545,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
       'isStartingPlayer': isStartingPlayer,
       'startingPoxXY': startingPoxXY.toJson(),
       'stat': stat.toJson(),
-      'tactics': tactics?.toJson(),
+      'tactics': tactics.toJson(),
       'currentGameRecord': _currentGameRecord.toJson(),
       'personalTrainingTypes': personalTrainingTypes.map((e) => e.toString()).toList(),
       'teamTrainingTypePercent': teamTrainingTypePercent,

@@ -123,13 +123,12 @@ extension PlayerMove on Player {
       ///선수가 앞쪽에 있을 수록 매력도 상승
       player.attractive += player.posXY.y *
           (posXY.y > 100 ? 1 : 0.4) *
-          switch (tactics?.attackLevel) {
+          switch (tactics.attackLevel) {
             PlayLevel.max => 2,
             PlayLevel.hight => 1.7,
             PlayLevel.middle => 1,
             PlayLevel.low => 0.7,
             PlayLevel.min => 0.5,
-            _ => 1,
           } *
           switch (team?.tactics.attackLevel) {
             PlayLevel.max => 2,
@@ -142,7 +141,7 @@ extension PlayerMove on Player {
 
       ///선수가 경기장 앞쪽 중앙에있을 수록 매력도 상승
       if (player.posXY.y > 150) {
-        player.attractive += sqrt((player.posXY.x > 50 ? 100 - player.posXY.x : player.posXY.x) * player.posXY.y) * 0.35;
+        player.attractive += sqrt((player.posXY.x > 50 ? 100 - player.posXY.x : player.posXY.x) * player.posXY.y) * 0.65;
       }
 
       // /선수의 능력치가 높을 수록 매력도 상승
@@ -153,27 +152,27 @@ extension PlayerMove on Player {
 
       ///선수와의 거리가 가까울수록 매력도 상승 ~100점
       player.attractive += switch (player.posXY.distance(posXY)) {
-            < 50 => 50,
-            < 80 => 30,
-            < 130 => 10,
+            < 20 => 100,
+            < 40 => 80,
+            < 60 => 50,
+            < 80 => 20,
             _ => 0,
           } *
           (posXY.y > 100 ? 0.5 : 1) *
           (posXY.y > 150 ? 0.5 : 1) *
-          switch (tactics?.shortPassLevel) {
-            PlayLevel.max => 2,
-            PlayLevel.hight => 1.7,
-            PlayLevel.middle => 1,
-            PlayLevel.low => 0.7,
-            PlayLevel.min => 0.5,
-            _ => 1,
+          switch (tactics.shortPassLevel) {
+            PlayLevel.max => 1,
+            PlayLevel.hight => 0.5,
+            PlayLevel.middle => 0,
+            PlayLevel.low => -0.5,
+            PlayLevel.min => -1,
           } *
           switch (team?.tactics.shortPassLevel) {
-            PlayLevel.max => 2,
-            PlayLevel.hight => 1.7,
-            PlayLevel.middle => 1,
-            PlayLevel.low => 0.7,
-            PlayLevel.min => 0.5,
+            PlayLevel.max => 1,
+            PlayLevel.hight => 0.5,
+            PlayLevel.middle => 0,
+            PlayLevel.low => -0.5,
+            PlayLevel.min => -1,
             _ => 1,
           };
 
@@ -259,6 +258,11 @@ extension PlayerMove on Player {
           Player target = _getMostAttractivePlayerToPass(players: availablePlayerToPass, opponentPlayers: opponentPlayers);
           _pass(target, team, opponentPlayers, fixture, evadePressurePoint);
         }
+      }
+
+      ///TODO:header
+      else if (posXY.x > 35 && posXY.x < 60 && posXY.y > 185) {
+        _shoot(goalKeeper: goalKeeper, fixture: fixture, team: team, opponent: opponent, evadePressurePoint: evadePressurePoint);
       }
 
       ///주변에 활용 가능한 선수가 안보일 때
@@ -390,7 +394,7 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
-    bool canPress = (30 + (tactics?.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < ball.posXY.y / 50;
+    bool canPress = (30 + (tactics.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < ball.posXY.y / 50;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);
@@ -526,9 +530,9 @@ extension PlayerMove on Player {
 
     double stat = distanceToGoalPost < 20 ? shootingStat.toDouble() : shootingStat * ((100 - distanceToGoalPost) / 100) + midRangeShootStat * (distanceToGoalPost / 100);
 
-    double finalShootStat = pow(stat * 0.29 + evadePressurePoint, 0.15 + R().getDouble(max: 1.25)).toDouble();
+    double finalShootStat = pow(stat * 0.27 + evadePressurePoint, 0.21 + R().getDouble(max: 1.28)).toDouble();
 
-    double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.52, max: 2.14);
+    double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.46, max: 2.21);
 
     if (finalShootStat > finalKeepingStat) {
       goal();
