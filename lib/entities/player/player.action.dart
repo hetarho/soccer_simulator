@@ -122,17 +122,17 @@ extension PlayerMove on Player {
 
       ///선수가 앞쪽에 있을 수록 매력도 상승
       player.attractive += player.posXY.y *
-          (posXY.y > 100 ? 1 : 0.4) *
+          (posXY.y > 100 ? 1 : 0.6) *
           switch (tactics.attackLevel) {
-            PlayLevel.max => 2,
-            PlayLevel.hight => 1.7,
+            PlayLevel.max => 3,
+            PlayLevel.hight => 2,
             PlayLevel.middle => 1,
             PlayLevel.low => 0.7,
             PlayLevel.min => 0.5,
           } *
           switch (team?.tactics.attackLevel) {
-            PlayLevel.max => 2,
-            PlayLevel.hight => 1.7,
+            PlayLevel.max => 3,
+            PlayLevel.hight => 2,
             PlayLevel.middle => 1,
             PlayLevel.low => 0.7,
             PlayLevel.min => 0.5,
@@ -158,21 +158,21 @@ extension PlayerMove on Player {
             < 80 => 20,
             _ => 0,
           } *
-          (posXY.y > 100 ? 0.5 : 1) *
-          (posXY.y > 150 ? 0.5 : 1) *
+          (posXY.y > 100 ? 0.7 : 1) *
+          (posXY.y > 150 ? 0.7 : 1) *
           switch (tactics.shortPassLevel) {
-            PlayLevel.max => 1,
-            PlayLevel.hight => 0.5,
+            PlayLevel.max => 2,
+            PlayLevel.hight => 1,
             PlayLevel.middle => 0,
-            PlayLevel.low => -0.5,
-            PlayLevel.min => -1,
+            PlayLevel.low => -1,
+            PlayLevel.min => -2,
           } *
           switch (team?.tactics.shortPassLevel) {
-            PlayLevel.max => 1,
-            PlayLevel.hight => 0.5,
+            PlayLevel.max => 2,
+            PlayLevel.hight => 1,
             PlayLevel.middle => 0,
-            PlayLevel.low => -0.5,
-            PlayLevel.min => -1,
+            PlayLevel.low => -1,
+            PlayLevel.min => -2,
             _ => 1,
           };
 
@@ -311,11 +311,11 @@ extension PlayerMove on Player {
 
       ///슈팅이 불가능한 경우
       else {
-        bool canEvadePressureAndMoveFront = evadePressurePoint + evadePressStat * 0.4 > (200 - posXY.y) * 0.55;
-        bool nearByGoalPost = (posXY.y > 170 && !(posXY.x > 35 && posXY.x < 65));
+        bool canEvadePressureAndMoveFront = evadePressurePoint + evadePressStat * 0.25 > (200 - posXY.y) * 0.75;
+        bool nearByGoalPost = (posXY.y > 180 && !(posXY.x > 40 && posXY.x < 60));
         bool batterDribble = _getEvadePressurePoint(this, opponentPlayers, PosXY(posXY.x, posXY.y + maxDistance * 3)) >= _getEvadePressurePoint(this, opponentPlayers, posXY);
 
-        if ((canEvadePressureAndMoveFront || nearByGoalPost) && batterDribble) {
+        if ((canEvadePressureAndMoveFront || nearByGoalPost) && batterDribble && posXY.y > 120) {
           _dribble(team, evadePressurePoint, opponent);
         } else {
           Player target = _getMostAttractivePlayerToPass(players: availablePlayerToPass, opponentPlayers: opponentPlayers);
@@ -390,11 +390,11 @@ extension PlayerMove on Player {
     bool isNotGoalKick = fixture.playerWithBall?.role != PlayerRole.goalKeeper;
 
     PosXY ballPos = PosXY(100 - ball.posXY.x, 200 - ball.posXY.y);
-    bool canTackle = ballPos.distance(posXY) < tackleDistance && isNotGoalKick && _actPoint > max(60, 200 - tackleStat);
+    bool canTackle = ballPos.distance(posXY) < tackleDistance && isNotGoalKick && _actPoint > 250;
 
     int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
 
-    bool canPress = (30 + (tactics.pressDistance ?? 0) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < ball.posXY.y / 50;
+    bool canPress = (30 + (tactics.pressDistance) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < ball.posXY.y / 50;
 
     if (canTackle) {
       _tackle(fixture.playerWithBall!, team);
@@ -437,14 +437,14 @@ extension PlayerMove on Player {
   _dribble(ClubInFixture team, double evadePressurePoint, ClubInFixture opponent) {
     int tackledPlayerNum = 0;
     for (var player in opponent.club.players) {
-      if (player.reversePosXy.distance(posXY) < player.tackleDistance) {
+      if (player.reversePosXy.distance(posXY) < player.tackleDistance * 1.9) {
         tackledPlayerNum++;
-        player._tackle(this, opponent, true);
+        player._tackle(this, opponent, tackledPlayerNum * 3.8);
       }
     }
 
     if (hasBall) {
-      if (tackledPlayerNum > 1) {
+      if (tackledPlayerNum > 0) {
         lastAction = PlayerAction.dribble;
         dribbleSuccess();
         team.dribble++;
@@ -548,14 +548,12 @@ extension PlayerMove on Player {
     }
   }
 
-  _tackle(Player targetPlayer, ClubInFixture team, [bool isDribbled = false]) {
+  _tackle(Player targetPlayer, ClubInFixture team, [double tackleBonus = 1]) {
     _actPoint = 0;
 
-    double targetDribbleBonus = (isDribbled ? 1.5 : 1);
+    double tackleSuccessPercent = (tackleStat * 3 * tackleBonus) / (tackleStat * 3 + targetPlayer.dribbleStat + targetPlayer.evadePressStat + 300);
 
-    double tackleSuccessPercent = (tackleStat * 3 * targetDribbleBonus) / (tackleStat * 3 + targetPlayer.dribbleStat + targetPlayer.evadePressStat + 300);
-
-    if (tackleSuccessPercent > R().getDouble(max: 2)) {
+    if (tackleSuccessPercent > R().getDouble(max: 1.9)) {
       lastAction = PlayerAction.tackle;
       defSuccess();
       targetPlayer.hasBall = false;

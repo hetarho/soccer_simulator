@@ -188,7 +188,12 @@ class _TacticsWidgetState extends State<_TacticsWidget> {
                 controller: _controller,
                 onChanged: (val) => distance = val,
               ),
-            )
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  widget.club.tactics.pressDistance = double.parse(distance);
+                },
+                child: Text('change'))
           ],
         ),
         Row(

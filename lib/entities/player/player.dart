@@ -359,39 +359,39 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
 
   double rotateDegree = 0;
 
-  double get teamAttackArea => switch (team?.tactics.attackLevel) {
-        PlayLevel.max => 1.3,
-        PlayLevel.hight => 1.15,
-        PlayLevel.middle => 1,
-        PlayLevel.low => 0.9,
-        PlayLevel.min => 0.8,
-        _ => 1,
-      };
-  double get personalAttackArea => switch (tactics.attackLevel) {
-        PlayLevel.max => 1.3,
-        PlayLevel.hight => 1.15,
-        PlayLevel.middle => 1,
-        PlayLevel.low => 0.9,
-        PlayLevel.min => 0.8,
-        _ => 1,
-      };
+  // double get teamAttackArea => switch (team?.tactics.attackLevel) {
+  //       PlayLevel.max => 1.3,
+  //       PlayLevel.hight => 1.15,
+  //       PlayLevel.middle => 1,
+  //       PlayLevel.low => 0.9,
+  //       PlayLevel.min => 0.8,
+  //       _ => 1,
+  //     };
+  // double get personalAttackArea => switch (tactics.attackLevel) {
+  //       PlayLevel.max => 1.3,
+  //       PlayLevel.hight => 1.15,
+  //       PlayLevel.middle => 1,
+  //       PlayLevel.low => 0.9,
+  //       PlayLevel.min => 0.8,
+  //       _ => 1,
+  //     };
 
-  double get teamDefenseArea => switch (team?.tactics.attackLevel) {
-        PlayLevel.max => 0.8,
-        PlayLevel.hight => 0.9,
-        PlayLevel.middle => 1,
-        PlayLevel.low => 1.15,
-        PlayLevel.min => 1.3,
-        _ => 1,
-      };
-  double get personalDefenseArea => switch (tactics.attackLevel) {
-        PlayLevel.max => 0.8,
-        PlayLevel.hight => 0.9,
-        PlayLevel.middle => 1,
-        PlayLevel.low => 1.15,
-        PlayLevel.min => 1.3,
-        _ => 1,
-      };
+  // double get teamDefenseArea => switch (team?.tactics.attackLevel) {
+  //       PlayLevel.max => 0.8,
+  //       PlayLevel.hight => 0.9,
+  //       PlayLevel.middle => 1,
+  //       PlayLevel.low => 1.15,
+  //       PlayLevel.min => 1.3,
+  //       _ => 1,
+  //     };
+  // double get personalDefenseArea => switch (tactics.attackLevel) {
+  //       PlayLevel.max => 0.8,
+  //       PlayLevel.hight => 0.9,
+  //       PlayLevel.middle => 1,
+  //       PlayLevel.low => 1.15,
+  //       PlayLevel.min => 1.3,
+  //       _ => 1,
+  //     };
 
   ///이 수치가 높을수록 스타팅포인트에서 이동하기 어려움( 0 = 완전 자유로움 100 = 자리에고정)
   double get _leftFreedom =>
@@ -499,11 +499,11 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
       _freeLevelToDouble(team?.tactics.freeLevel.backward);
 
   double _freeLevelToDouble(PlayLevel? freeLevel) => switch (freeLevel) {
-        PlayLevel.min => 1.2,
-        PlayLevel.low => 1.1,
+        PlayLevel.min => 2,
+        PlayLevel.low => 1.5,
         PlayLevel.middle => 1,
-        PlayLevel.hight => 0.8,
-        PlayLevel.max => 0.6,
+        PlayLevel.hight => 0.5,
+        PlayLevel.max => 0.25,
         _ => 1,
       };
 
