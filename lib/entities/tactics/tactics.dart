@@ -9,7 +9,7 @@ class Tactics implements Jsonable {
     required this.shortPassLevel,
   });
   Tactics.normal({
-    this.pressDistance = 10,
+    this.pressDistance = 25,
     this.attackLevel = PlayLevel.middle,
     this.shortPassLevel = PlayLevel.middle,
   }) {
