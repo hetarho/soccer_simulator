@@ -89,7 +89,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
   }
 
   Duration get playSpeed {
-    return Duration(microseconds: (_playSpeed.inMicroseconds * 10 / sqrt(reflex)).round());
+    return Duration(microseconds: (_playSpeed.inMicroseconds * 10 / sqrt(judgementStat)).round());
   }
 
   Player.create({
@@ -245,6 +245,20 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
 
   late PlayerGameRecord _currentGameRecord;
 
+  Fixture _currentFixture = Fixture.empty();
+
+  ClubInFixture get _myTeamCurrentFixture {
+    return _currentFixture.home.club.id == team?.id ? _currentFixture.home : _currentFixture.away;
+  }
+
+  ClubInFixture get _opponentTeamCurrentFixture {
+    return _currentFixture.home.club.id == team?.id ? _currentFixture.away : _currentFixture.home;
+  }
+
+  PosXY get _ballPosXY {
+    return _currentFixture.ballPosXY;
+  }
+
   /// 트레이팅, 게임시 성장할 수 있는 스텟
   late int _potential;
 
@@ -337,9 +351,6 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
 
   bool get hasBall => _hasBall;
 
-  ///현재 공을 잡고 플레이가 가능한지를 나타내는 변수 100이상이 되야 플레이 가능
-  double _actPoint = 0;
-
   ///현재 선수의 패스 선택지로서의 매력도
   double attractive = 0.0;
 
@@ -347,11 +358,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
     ///공을 얻거나 잃으면 활동 포인트 초기화
 
     if (newVal) {
-      _actPoint = _actPoint / 2;
-    } else {
-      _actPoint = 0;
-    }
-    if (newVal) {
+      _wait();
       _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.none));
     }
     _hasBall = newVal;

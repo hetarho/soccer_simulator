@@ -10,23 +10,28 @@ extension PlayerMove on Player {
 
   gameStart({
     required Fixture fixture,
-    required ClubInFixture team,
-    required ClubInFixture opposite,
-    required Ball ball,
-    required bool isHome,
   }) {
+    _currentFixture = fixture;
+    _play();
+  }
+
+  _wait() async {
+    _timer?.cancel();
+    await Future.delayed(Duration(milliseconds: (5000 / judgementStat).round()));
+    _play();
+  }
+
+  _play() {
     _timer?.cancel();
     _timer = Timer.periodic(playSpeed, (timer) async {
-      playTime = fixture.playTime;
-      bool teamHasBall = team.club.startPlayers.where((player) => player.hasBall).isNotEmpty;
+      playTime = _currentFixture.playTime;
+      bool teamHasBall = team!.startPlayers.where((player) => player.hasBall).isNotEmpty;
       // lastAction = null;
 
-      /// 판단력/5 만큼 행동 포인트 적립
-      _actPoint += judgementStat / 10;
       if (teamHasBall) {
-        attack(team: team, opponent: opposite, ball: ball, fixture: fixture);
+        attack();
       } else {
-        defend(team: team, opponent: opposite, ball: ball, fixture: fixture);
+        defend();
       }
 
       if (lastAction != null) _streamController?.add(PlayerActEvent(player: this, action: lastAction!));
@@ -120,32 +125,15 @@ extension PlayerMove on Player {
       ///매력도를 0으로 초기화
       player.attractive = 0;
 
-      ///선수가 앞쪽에 있을 수록 매력도 상승
-      player.attractive += player.posXY.y *
-          (posXY.y > 100 ? 1 : 0.6) *
-          switch (tactics.attackLevel) {
-            PlayLevel.max => 3,
-            PlayLevel.hight => 2,
-            PlayLevel.middle => 1,
-            PlayLevel.low => 0.7,
-            PlayLevel.min => 0.5,
-          } *
-          switch (team?.tactics.attackLevel) {
-            PlayLevel.max => 3,
-            PlayLevel.hight => 2,
-            PlayLevel.middle => 1,
-            PlayLevel.low => 0.7,
-            PlayLevel.min => 0.5,
-            _ => 1,
-          };
+      /// 공격 진영 에서는 패스 받을 선수가 본인보다 앞쪽에 있을 수록 매력도 상승
+      if (posXY.y > 100 && player.posXY.y > posXY.y) {
+        player.attractive += player.posXY.y;
+      }
 
       ///선수가 경기장 앞쪽 중앙에있을 수록 매력도 상승
       if (player.posXY.y > 150) {
         player.attractive += sqrt((player.posXY.x > 50 ? 100 - player.posXY.x : player.posXY.x) * player.posXY.y) * 0.65;
       }
-
-      // /선수의 능력치가 높을 수록 매력도 상승
-      player.attractive += player.overall * 0.15;
 
       ///선수가 위치한 압박 극복 점수 추가
       player.attractive += _getEvadePressurePoint(player, opponentPlayers);
@@ -154,31 +142,31 @@ extension PlayerMove on Player {
       player.attractive += switch (player.posXY.distance(posXY)) {
             < 20 => 100,
             < 40 => 80,
-            < 60 => 50,
-            < 80 => 20,
+            < 60 => 60,
+            < 80 => 30,
             _ => 0,
           } *
           (posXY.y > 100 ? 0.7 : 1) *
           (posXY.y > 150 ? 0.7 : 1) *
           switch (tactics.shortPassLevel) {
             PlayLevel.max => 2,
-            PlayLevel.hight => 1,
-            PlayLevel.middle => 0,
-            PlayLevel.low => -1,
-            PlayLevel.min => -2,
+            PlayLevel.hight => 1.5,
+            PlayLevel.middle => 1,
+            PlayLevel.low => 0.5,
+            PlayLevel.min => 0,
           } *
           switch (team?.tactics.shortPassLevel) {
             PlayLevel.max => 2,
-            PlayLevel.hight => 1,
-            PlayLevel.middle => 0,
-            PlayLevel.low => -1,
-            PlayLevel.min => -2,
+            PlayLevel.hight => 1.5,
+            PlayLevel.middle => 1,
+            PlayLevel.low => 0.5,
+            PlayLevel.min => 0,
             _ => 1,
           };
 
-      if (posXY.y > 50 && player.role == PlayerRole.goalKeeper) {
-        player.attractive -= 40;
-      }
+      // if (posXY.y > 50 && player.role == PlayerRole.goalKeeper) {
+      //   player.attractive -= 100;
+      // }
     }
 
     players.sort((a, b) => b.attractive - a.attractive > 0 ? 1 : -1);
@@ -186,17 +174,23 @@ extension PlayerMove on Player {
     return players.first;
   }
 
-  attack({
-    required ClubInFixture team,
-    required ClubInFixture opponent,
-    required Ball ball,
-    required Fixture fixture,
-  }) {
+  attack() {
+    ///현재 내가 공을 잡은 상태인 경우
+    if (hasBall) {
+      _attackOnTheBall();
+
+      ///공을 가지고 있지 않을 때
+    } else {
+      _attackOffTheBall();
+    }
+  }
+
+  _attackOnTheBall() {
     ///우리팀 선수들
-    List<Player> ourTeamPlayers = [...team.club.players.where((p) => p.id != id)];
+    List<Player> ourTeamPlayers = [...team!.players.where((p) => p.id != id)];
 
     ///상대팀 선수들
-    List<Player> opponentPlayers = opponent.club.players;
+    List<Player> opponentPlayers = _opponentTeamCurrentFixture.club.players;
 
     ///탈압박 점수
     double evadePressurePoint = _getEvadePressurePoint(this, opponentPlayers);
@@ -206,202 +200,199 @@ extension PlayerMove on Player {
       (player) => player.role == PlayerRole.goalKeeper,
     );
 
-    ///현재 내가 공을 잡은 상태인 경우
-    if (hasBall) {
-      ///내가 활용 가능한 우리팀 선수들: canVisibleDistance 이내
-      List<Player> availablePlayerToPass = ourTeamPlayers.where((teamPlayer) {
-        int opponentInterference = 0;
-        double baselineStat = _getPassStat(teamPlayer.posXY);
-        for (var opponent in opponentPlayers) {
-          bool isOpponentBetween = opponent.reversePosXy.x >= min(posXY.x, teamPlayer.posXY.x) &&
-              opponent.reversePosXy.x <= max(posXY.x, teamPlayer.posXY.x) &&
-              opponent.reversePosXy.y >= min(posXY.y, teamPlayer.posXY.y) &&
-              opponent.reversePosXy.y <= max(posXY.y, teamPlayer.posXY.y);
+    ///내가 활용 가능한 우리팀 선수들: canVisibleDistance 이내
+    List<Player> availablePlayerToPass = ourTeamPlayers.where((teamPlayer) {
+      int opponentInterference = 0;
+      double baselineStat = _getPassStat(teamPlayer.posXY);
+      for (var opponent in opponentPlayers) {
+        bool isOpponentBetween = opponent.reversePosXy.x >= min(posXY.x, teamPlayer.posXY.x) &&
+            opponent.reversePosXy.x <= max(posXY.x, teamPlayer.posXY.x) &&
+            opponent.reversePosXy.y >= min(posXY.y, teamPlayer.posXY.y) &&
+            opponent.reversePosXy.y <= max(posXY.y, teamPlayer.posXY.y);
 
-          ///패스 길과 해당 선수와의 거리
-          double distanceToPathRoute = M().getDistanceFromPointToLine(linePoint1: posXY, linePoint2: teamPlayer.posXY, point: opponent.reversePosXy);
+        ///패스 길과 해당 선수와의 거리
+        double distanceToPathRoute = M().getDistanceFromPointToLine(linePoint1: posXY, linePoint2: teamPlayer.posXY, point: opponent.reversePosXy);
 
-          if (distanceToPathRoute < visionStat * (evadePressurePoint) / 100 && isOpponentBetween) {
-            opponentInterference++;
-          }
-        }
-
-        return baselineStat ~/ 20 > opponentInterference;
-      }).toList();
-
-      ///슛을 했을 때 일정경로 이내에 있는 선수의 수 - 슛스텟이 높아질수록 정교해짐
-      int opponentsNumNearShootRout = fixture.allPlayers
-          .where((opponent) =>
-              M().getDistanceFromPointToLine(
-                linePoint1: posXY,
-                linePoint2: goalKeeper.reversePosXy,
-                point: opponent.reversePosXy,
-              ) <
-              (25 - shootingStat ~/ 8))
-          .length;
-
-      ///골포스트 까지의 거리
-      double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy);
-
-      ///압박감이 0 이하이면 _actPoint 증가
-      if (evadePressurePoint > evadePressStat / 2) {
-        _actPoint += judgementStat / 5;
-      }
-
-      ///포지션이 골키퍼인 경우
-      if (position == Position.gk) {
-        if (_actPoint < 120)
-          _backToStartPos();
-        else if (availablePlayerToPass.isEmpty) {
-          _clearance(opponent: opponent, team: team);
-        } else {
-          Player target = _getMostAttractivePlayerToPass(players: availablePlayerToPass, opponentPlayers: opponentPlayers);
-          _pass(target, team, opponentPlayers, fixture, evadePressurePoint);
+        if (distanceToPathRoute < visionStat * (evadePressurePoint) / 100 && isOpponentBetween) {
+          opponentInterference++;
         }
       }
 
-      ///TODO:header
-      else if (posXY.x > 35 && posXY.x < 60 && posXY.y > 185) {
-        _shoot(goalKeeper: goalKeeper, fixture: fixture, team: team, opponent: opponent, evadePressurePoint: evadePressurePoint);
-      }
+      return baselineStat ~/ 20 > opponentInterference;
+    }).toList();
 
-      ///주변에 활용 가능한 선수가 안보일 때
-      else if (availablePlayerToPass.isEmpty) {
-        if (evadePressurePoint > evadePressStat) {
-          _dribble(team, evadePressurePoint, opponent);
-        } else {
-          _moveToBetterPos(opponentPlayers);
-        }
-      }
+    ///골포스트 까지의 거리
+    double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy);
 
-      /// actPoint가 10 이하인경우 대기만 가능
-      else if (_actPoint < 10) {
-        _moveToBetterPos(opponentPlayers);
-      } else if (_actPoint < 35) {
-        ///탈압박이 불가능 할 경우
-        if (evadePressurePoint < 30 && role != PlayerRole.goalKeeper) {
-          ///본인 진영일 경우 일단 걷어내기
-          if (posXY.y < 30) {
-            _clearance(opponent: opponent, team: team);
-          } else {
-            _moveToBetterPos(opponentPlayers);
-          }
-
-          ///탈압박이 가능한경우 일단 대기
-        } else {
-          _moveToBetterPos(opponentPlayers);
-        }
-      }
-
-      ///상대 골대 중앙에있으면 슈팅
-      else if (posXY.y > 175 && (posXY.x > 40 && posXY.x < 70)) {
-        _shoot(goalKeeper: goalKeeper, fixture: fixture, team: team, opponent: opponent, evadePressurePoint: evadePressurePoint);
-      }
-
-      ///슈팅 가능한 경우
-      else if (opponentsNumNearShootRout < 5 && ((posXY.x > 30 || posXY.x < 70) || (distanceToGoalPost > 30 && distanceToGoalPost / midRangeShootStat < 1 / 3))) {
-        _shoot(
-          fixture: fixture,
-          team: team,
-          opponent: opponent,
-          evadePressurePoint: evadePressurePoint,
-          goalKeeper: goalKeeper,
-        );
-      }
-
-      ///슈팅이 불가능한 경우
-      else {
-        bool canEvadePressureAndMoveFront = evadePressurePoint + evadePressStat * 0.25 > (200 - posXY.y) * 0.75;
-        bool nearByGoalPost = (posXY.y > 180 && !(posXY.x > 40 && posXY.x < 60));
-        bool batterDribble = _getEvadePressurePoint(this, opponentPlayers, PosXY(posXY.x, posXY.y + maxDistance * 3)) >= _getEvadePressurePoint(this, opponentPlayers, posXY);
-
-        if ((canEvadePressureAndMoveFront || nearByGoalPost) && batterDribble && posXY.y > 120) {
-          _dribble(team, evadePressurePoint, opponent);
-        } else {
-          Player target = _getMostAttractivePlayerToPass(players: availablePlayerToPass, opponentPlayers: opponentPlayers);
-
-          _pass(target, team, opponentPlayers, fixture, evadePressurePoint);
-        }
-      }
-
-      ///공을 가지고 있지 않을 때
-    } else {
-      ///나와 포지션인 같은데 볼과 가까이있는 플레이어 리스트
-      List<Player> nearBallPlayers = ourTeamPlayers
-          .where((player) =>
-              _checkBoundary(
-                targetPos: ball.posXY,
-                otherPos: player.posXY,
-                frontBoundary: 30,
-                backBoundary: -10,
-                distance: 35,
-              ) &&
-              player.position == position)
-          .toList();
-
-      ///나와 포지션이 같은데 나보다 공과 가까이있는 플레이어
-      int nearThanMePlayer = 0;
-
-      for (var player in ourTeamPlayers) {
-        if (!player.hasBall && (ball.posXY.distance(player.startingPoxXY) < ball.posXY.distance(startingPoxXY)) && player.role == role) nearThanMePlayer++;
-      }
-
-      bool isRearGuardPlayer = nearThanMePlayer <
-          switch (role) {
-            PlayerRole.defender => 1,
-            PlayerRole.midfielder => 1,
-            PlayerRole.forward => 0,
-            _ => 0,
-          };
-      bool noBallAroundBall = nearBallPlayers.length <
-          switch (role) {
-            PlayerRole.defender => 1,
-            PlayerRole.midfielder => 1,
-            PlayerRole.forward => 0,
-            _ => 0,
-          };
-
-      bool isBallBehind = posXY.y > ball.posXY.y;
-
-      bool ballDistanceCheck = ball.posXY.distance(posXY) > 20;
-
-      if (noBallAroundBall && isRearGuardPlayer && isBallBehind && ballDistanceCheck) {
-        _moveToBallForPass(ball.posXY);
-      } else if (evadePressurePoint == 100 && posXY.y > 130) {
-        _moveToBetterPos(opponentPlayers);
+    ///포지션이 골키퍼인 경우
+    if (position == Position.gk) {
+      // if (_actPoint < 40)
+      //   _backToStartPos();
+      // else
+      if (availablePlayerToPass.isEmpty) {
+        _clearance();
       } else {
-        List<Player> sortedPlayers = [...opponentPlayers];
-        sortedPlayers.sort((a, b) => a.posXY.y - b.posXY.y > 0 ? 1 : -1);
-        moveForward(sortedPlayers[1]);
+        Player target = _getMostAttractivePlayerToPass(players: availablePlayerToPass, opponentPlayers: opponentPlayers);
+        _pass(target, opponentPlayers, evadePressurePoint);
       }
+
+      return;
+    }
+
+    ///TODO:header
+    if (posXY.x > 35 && posXY.x < 60 && posXY.y > 185) {
+      _shoot(goalKeeper: goalKeeper, evadePressurePoint: evadePressurePoint);
+      return;
+    }
+
+    ///주변에 활용 가능한 선수가 안보일 때
+    if (availablePlayerToPass.isEmpty) {
+      if (evadePressurePoint > evadePressStat) {
+        _dribble(evadePressurePoint);
+      } else {
+        _moveToBetterPos(opponentPlayers);
+      }
+      return;
+    }
+
+    ///탈압박이 불가능 할 경우
+    if (evadePressurePoint < 30 && role != PlayerRole.goalKeeper) {
+        _clearance();
+      ///본인 진영일 경우 일단 걷어내기
+      // if (posXY.y < 30) {
+      //   _clearance();
+      // } else {
+      //   _moveToBetterPos(opponentPlayers);
+      // }
+
+      ///탈압박이 가능한경우 일단 대기
+      return;
+    }
+
+    ///상대 골대 중앙에있으면 슈팅
+    if (posXY.y > 175 && (posXY.x > 40 && posXY.x < 70)) {
+      _shoot(goalKeeper: goalKeeper, evadePressurePoint: evadePressurePoint);
+      return;
+    }
+
+    ///슛을 했을 때 일정경로 이내에 있는 선수의 수 - 슛스텟이 높아질수록 정교해짐
+    int opponentsNumNearShootRout = _currentFixture.allPlayers
+        .where((opponent) =>
+            M().getDistanceFromPointToLine(
+              linePoint1: posXY,
+              linePoint2: goalKeeper.reversePosXy,
+              point: opponent.reversePosXy,
+            ) <
+            (25 - shootingStat ~/ 8))
+        .length;
+
+    ///슈팅 가능한 경우
+    if (opponentsNumNearShootRout < 5 && ((posXY.x > 30 || posXY.x < 70) || (distanceToGoalPost > 30 && distanceToGoalPost / midRangeShootStat < 1 / 3))) {
+      _shoot(
+        evadePressurePoint: evadePressurePoint,
+        goalKeeper: goalKeeper,
+      );
+      return;
+    }
+
+    ///슈팅이 불가능한 경우
+    else {
+      bool canEvadePressureAndMoveFront = evadePressurePoint + evadePressStat * 0.25 > (200 - posXY.y) * 0.75;
+      bool nearByGoalPost = (posXY.y > 180 && !(posXY.x > 40 && posXY.x < 60));
+      bool batterDribble = _getEvadePressurePoint(this, opponentPlayers, PosXY(posXY.x, posXY.y + maxDistance * 3)) >= _getEvadePressurePoint(this, opponentPlayers, posXY);
+
+      // if ((canEvadePressureAndMoveFront || nearByGoalPost) && batterDribble && posXY.y > 120) {
+      if (batterDribble) {
+        _dribble(evadePressurePoint);
+      } else {
+        Player target = _getMostAttractivePlayerToPass(players: availablePlayerToPass, opponentPlayers: opponentPlayers);
+
+        _pass(target, opponentPlayers, evadePressurePoint);
+      }
+      return;
     }
   }
 
-  ///TODO 삭제예정
-  double get actPoint => _actPoint;
+  _attackOffTheBall() {
+    ///우리팀 선수들
+    List<Player> ourTeamPlayers = [...team!.players.where((p) => p.id != id)];
 
-  defend({
-    required ClubInFixture team,
-    required ClubInFixture opponent,
-    required Ball ball,
-    required Fixture fixture,
-  }) {
-    if (fixture.playerWithBall == null) return;
-    bool isNotGoalKick = fixture.playerWithBall?.role != PlayerRole.goalKeeper;
+    ///상대팀 선수들
+    List<Player> opponentPlayers = _opponentTeamCurrentFixture.club.players;
 
-    PosXY ballPos = PosXY(100 - ball.posXY.x, 200 - ball.posXY.y);
-    bool canTackle = ballPos.distance(posXY) < tackleDistance && isNotGoalKick && _actPoint > 250;
+    ///탈압박 점수
+    double evadePressurePoint = _getEvadePressurePoint(this, opponentPlayers);
 
-    int closerPlayerAtBall = team.club.players.where((player) => player.reversePosXy.distance(ball.posXY) < reversePosXy.distance(ball.posXY)).length;
+    ///나와 포지션인 같은데 볼과 가까이있는 플레이어 리스트
+    List<Player> nearBallPlayers = ourTeamPlayers
+        .where((player) =>
+            _checkBoundary(
+              targetPos: _ballPosXY,
+              otherPos: player.posXY,
+              frontBoundary: 30,
+              backBoundary: -10,
+              distance: 35,
+            ) &&
+            player.position == position)
+        .toList();
 
-    bool canPress = (30 + (tactics.pressDistance) + team.club.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < ball.posXY.y / 50;
+    ///나와 포지션이 같은데 나보다 공과 가까이있는 플레이어
+    int nearThanMePlayer = 0;
+
+    for (var player in ourTeamPlayers) {
+      if (!player.hasBall && (_ballPosXY.distance(player.startingPoxXY) < _ballPosXY.distance(startingPoxXY)) && player.role == role) nearThanMePlayer++;
+    }
+
+    bool isRearGuardPlayer = nearThanMePlayer <
+        switch (role) {
+          PlayerRole.defender => 1,
+          PlayerRole.midfielder => 1,
+          PlayerRole.forward => 0,
+          _ => 0,
+        };
+    bool noBallAroundBall = nearBallPlayers.length <
+        switch (role) {
+          PlayerRole.defender => 1,
+          PlayerRole.midfielder => 1,
+          PlayerRole.forward => 0,
+          _ => 0,
+        };
+
+    bool isBallBehind = posXY.y > _ballPosXY.y;
+
+    bool ballDistanceCheck = _ballPosXY.distance(posXY) > 20;
+
+    if (noBallAroundBall && isRearGuardPlayer && isBallBehind && ballDistanceCheck) {
+      _moveToBallForPass(_ballPosXY);
+    } else if (evadePressurePoint == 100 && posXY.y > 130) {
+      _moveToBetterPos(opponentPlayers);
+    } else {
+      List<Player> sortedPlayers = [...opponentPlayers];
+      sortedPlayers.sort((a, b) => a.posXY.y - b.posXY.y > 0 ? 1 : -1);
+      moveForward(sortedPlayers[1]);
+    }
+  }
+
+  defend() {
+    if (_currentFixture.playerWithBall == null) return;
+    bool isNotGoalKick = _currentFixture.playerWithBall?.role != PlayerRole.goalKeeper;
+
+    PosXY ballPos = PosXY(100 - _ballPosXY.x, 200 - _ballPosXY.y);
+    bool canTackle = ballPos.distance(posXY) < tackleDistance && isNotGoalKick;
+
+    int closerPlayerAtBall = team!.players.where((player) => player.reversePosXy.distance(_ballPosXY) < reversePosXy.distance(_ballPosXY)).length;
+
+    bool canPress = (30 + (tactics.pressDistance) + team!.tactics.pressDistance > ballPos.distance(startingPoxXY)) &&
+        isNotGoalKick &&
+        !(ballPos.x == posXY.x && ballPos.y == posXY.y) &&
+        closerPlayerAtBall < _ballPosXY.y / 50;
 
     if (canTackle) {
-      _tackle(fixture.playerWithBall!, team);
+      _tackle(_currentFixture.playerWithBall!);
     } else if (canPress) {
-      pressToBall(ball.posXY);
+      pressToBall(_ballPosXY);
     } else {
-      if (ball.posXY.distance(reversePosXy) > 50 && ballPos.y > posXY.y) {
+      if (_ballPosXY.distance(reversePosXy) > 50 && ballPos.y > posXY.y) {
         _backToStartPos();
       } else {
         moveBack();
@@ -416,7 +407,24 @@ extension PlayerMove on Player {
   _moveToBetterPos(List<Player> opponents) {
     lastAction = PlayerAction.none;
 
-    List<PosXY> poss = List.generate(10, (index) => PosXY.random(posXY.x, posXY.y, 15));
+    double attBonus = 1 *
+        switch (tactics.attackLevel) {
+          PlayLevel.max => 4,
+          PlayLevel.hight => 2,
+          PlayLevel.middle => 1,
+          PlayLevel.low => 0.5,
+          PlayLevel.min => 0.25,
+        } *
+        switch (team?.tactics.attackLevel) {
+          PlayLevel.max => 4,
+          PlayLevel.hight => 2,
+          PlayLevel.middle => 1,
+          PlayLevel.low => 0.5,
+          PlayLevel.min => 0.25,
+          _ => 1,
+        };
+
+    List<PosXY> poss = List.generate(10, (index) => PosXY.random(posXY.x, posXY.y + attBonus, 5));
 
     poss.sort((a, b) => _getEvadePressurePoint(this, opponents, a) - _getEvadePressurePoint(this, opponents, b) > 0 ? 1 : -1);
 
@@ -434,12 +442,12 @@ extension PlayerMove on Player {
     _move(targetPosXY: PosXY.random(posXY.x, posXY.y - maxDistance, 2));
   }
 
-  _dribble(ClubInFixture team, double evadePressurePoint, ClubInFixture opponent) {
+  _dribble(double evadePressurePoint) {
     int tackledPlayerNum = 0;
-    for (var player in opponent.club.players) {
+    for (var player in _opponentTeamCurrentFixture.club.players) {
       if (player.reversePosXy.distance(posXY) < player.tackleDistance * 1.9) {
         tackledPlayerNum++;
-        player._tackle(this, opponent, tackledPlayerNum * 3.8);
+        player._tackle(this, tackledPlayerNum * 3.8);
       }
     }
 
@@ -447,7 +455,7 @@ extension PlayerMove on Player {
       if (tackledPlayerNum > 0) {
         lastAction = PlayerAction.dribble;
         dribbleSuccess();
-        team.dribble++;
+        _myTeamCurrentFixture.dribble++;
       }
 
       PosXY newPos = PosXY.random(posXY.x, posXY.y + maxDistance, 2);
@@ -465,17 +473,14 @@ extension PlayerMove on Player {
     _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.none));
   }
 
-  _clearance({
-    required ClubInFixture team,
-    required ClubInFixture opponent,
-  }) {
+  _clearance() {
     Player receivedPlayer = _findClosetPlayer(
         PosXY(
           R().getDouble(min: 0, max: 100),
           R().getDouble(min: 150, max: 200),
         ),
-        [...team.club.players],
-        [...opponent.club.players]);
+        [...team!.players],
+        [..._opponentTeamCurrentFixture.club.players]);
     hasBall = false;
     receivedPlayer.hasBall = true;
   }
@@ -487,7 +492,7 @@ extension PlayerMove on Player {
     return team.first.posXY.distance(targetPos) < opponents.first.reversePosXy.distance(targetPos) ? team.first : opponents.first;
   }
 
-  _pass(Player target, ClubInFixture team, List<Player> opponents, Fixture fixture, double evadePressurePoint) async {
+  _pass(Player target, List<Player> opponents, double evadePressurePoint) async {
     passTry();
     _turn(target.posXY);
     lastAction = PlayerAction.pass;
@@ -508,22 +513,19 @@ extension PlayerMove on Player {
     if (receivedPlayer.id == target.id) {
       passSuccess();
       target.passedPlayer = this;
-      team.pass += 1;
+      _myTeamCurrentFixture.pass += 1;
     }
     receivedPlayer.hasBall = true;
   }
 
   _shoot({
     required Player goalKeeper,
-    required Fixture fixture,
     required double evadePressurePoint,
-    required ClubInFixture team,
-    required ClubInFixture opponent,
   }) {
     lastAction = PlayerAction.shoot;
     hasBall = false;
     goalKeeper.hasBall = true;
-    team.shoot += 1;
+    _myTeamCurrentFixture.shoot += 1;
     shooting();
 
     double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy);
@@ -539,18 +541,16 @@ extension PlayerMove on Player {
       _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.goal));
       if (passedPlayer != null) _streamController?.add(PlayerActEvent(player: passedPlayer!, action: PlayerAction.assist));
 
-      fixture.scored(
-        scoredClub: team,
-        concedeClub: opponent,
+      _currentFixture.scored(
+        scoredClub: _myTeamCurrentFixture,
+        concedeClub: _opponentTeamCurrentFixture,
         scoredPlayer: this,
         assistPlayer: passedPlayer,
       );
     }
   }
 
-  _tackle(Player targetPlayer, ClubInFixture team, [double tackleBonus = 1]) {
-    _actPoint = 0;
-
+  _tackle(Player targetPlayer, [double tackleBonus = 1]) {
     double tackleSuccessPercent = (tackleStat * 3 * tackleBonus) / (tackleStat * 3 + targetPlayer.dribbleStat + targetPlayer.evadePressStat + 300);
 
     if (tackleSuccessPercent > R().getDouble(max: 1.9)) {
@@ -558,7 +558,7 @@ extension PlayerMove on Player {
       defSuccess();
       targetPlayer.hasBall = false;
       hasBall = true;
-      team.tackle += 1;
+      _myTeamCurrentFixture.tackle += 1;
     } else {}
   }
 

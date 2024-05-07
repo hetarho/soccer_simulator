@@ -215,10 +215,10 @@ class Fixture implements Jsonable {
 
     if (!_streamController.isClosed) {
       for (var player in home.club.players) {
-        player.gameStart(fixture: this, team: home, opposite: away, ball: _ball, isHome: true);
+        player.gameStart(fixture: this);
       }
       for (var player in away.club.players) {
-        player.gameStart(fixture: this, team: away, opposite: home, ball: _ball, isHome: false);
+        player.gameStart(fixture: this);
       }
       _timer?.cancel();
       _timer = Timer.periodic(_playSpeed, (timer) async {
