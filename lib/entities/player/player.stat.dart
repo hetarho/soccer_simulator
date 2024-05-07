@@ -17,7 +17,7 @@ part of 'player.dart';
 /// 침착함
 /// 조직력
 extension PlayerStat on Player {
-  double get maxDistance => sqrt(speed) * 0.85 + 6;
+  double get maxDistance => sqrt(speed) * 0.45 + 2.7;
 
   /// 슛능력치 - 축구지능 + 기술 + 근력 + 침착함 + 체력
   int get shootingStat {

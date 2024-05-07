@@ -59,11 +59,14 @@ class Fixture implements Jsonable {
   ///경기가 시작 되었는지 안되었는지
   bool isGameStart = false;
 
+  /// 현재 골킥인지 여부
+  bool isGoalKick = false;
+
   Duration _playSpeed = const Duration(microseconds: 1000);
 
   late int _playTimeAmount = 10;
 
-  final Ball _ball = Ball();
+  final Ball ball = Ball();
 
   ///경기가 종료 되었는지 안되었는지
   bool get isGameEnd {
@@ -79,8 +82,6 @@ class Fixture implements Jsonable {
   Duration get playSpeed {
     return _playSpeed;
   }
-
-  get ballPosXY => _ball.posXY;
 
   int get homeBallPercent {
     return (max(1, home.hasBallTime) * 100 / max(1, home.hasBallTime + away.hasBallTime)).round();
@@ -99,7 +100,7 @@ class Fixture implements Jsonable {
   }
 
   _setBallPos() {
-    if (playerWithBall != null) _ball.posXY = playerWithBall!.posXY;
+    if (playerWithBall != null) ball.posXY = playerWithBall!.posXY;
   }
 
   updateGameInSimulate() {
@@ -157,7 +158,7 @@ class Fixture implements Jsonable {
     }
 
     concedeClub.club.players.first.hasBall = true;
-    _ball.posXY = PosXY(50, 100);
+    ball.posXY = PosXY(50, 100);
 
     assistPlayer?.assist();
   }
@@ -237,7 +238,7 @@ class Fixture implements Jsonable {
 
   void gameEnd() async {
     playerWithBall?.hasBall = false;
-    _ball.posXY = PosXY(50, 100);
+    ball.posXY = PosXY(50, 100);
 
     for (var player in allPlayers) {
       player.gameEnd();

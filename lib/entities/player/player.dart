@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:soccer_simulator/entities/club.dart';
@@ -14,7 +15,6 @@ import 'package:soccer_simulator/utils/math.dart';
 import 'package:soccer_simulator/utils/function.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:soccer_simulator/entities/ball.dart';
 import 'package:soccer_simulator/entities/fixture/fixture.dart';
 import 'package:soccer_simulator/entities/member.dart';
 import 'package:soccer_simulator/entities/stat.dart';
@@ -89,7 +89,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
   }
 
   Duration get playSpeed {
-    return Duration(microseconds: (_playSpeed.inMicroseconds * 10 / sqrt(judgementStat)).round());
+    return _playSpeed;
   }
 
   Player.create({
@@ -256,7 +256,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
   }
 
   PosXY get _ballPosXY {
-    return _currentFixture.ballPosXY;
+    return _currentFixture.ball.posXY;
   }
 
   /// 트레이팅, 게임시 성장할 수 있는 스텟

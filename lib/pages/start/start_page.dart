@@ -384,7 +384,7 @@ class _State extends ConsumerState<StartPage> {
                               DbManager<SaveSlot> manager = DbManager('saveSlot');
 
                               await manager.delete(slot.id);
-                              _saveSlot = (await manager.getAll() as List).map((e) => SaveSlot.fromJson(e)).toList();
+                              _saveSlot = (manager.getAll()).map((e) => SaveSlot.fromJson(e)).toList();
 
                               setState(() {});
                             },

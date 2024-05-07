@@ -7,7 +7,10 @@ class DbManager<T extends Jsonable> {
   DbManager(this.boxName);
 
   init() async {
-    await Hive.openBox(boxName);
+    Box box = await Hive.openBox(boxName);
+
+    /// Box가 압축되지 않았을 경우가 있어서 추가
+    await box.compact();
   }
 
   add(T data) async {

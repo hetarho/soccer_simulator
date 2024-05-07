@@ -96,7 +96,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   _startAllFixtures() {
     _stopwatch.start();
     for (var e in _fixtures) {
-      e.gameStart();
+      if (!e.isGameEnd) e.gameStart();
     }
   }
 
