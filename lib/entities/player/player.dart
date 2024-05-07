@@ -349,56 +349,10 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
 
   double _currentStamina = 100;
 
-  bool get hasBall => _hasBall;
-
   ///현재 선수의 패스 선택지로서의 매력도
   double attractive = 0.0;
 
-  set hasBall(bool newVal) {
-    ///공을 얻거나 잃으면 활동 포인트 초기화
-
-    if (newVal) {
-      _wait();
-      _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.none));
-    }
-    _hasBall = newVal;
-  }
-
   double rotateDegree = 0;
-
-  // double get teamAttackArea => switch (team?.tactics.attackLevel) {
-  //       PlayLevel.max => 1.3,
-  //       PlayLevel.hight => 1.15,
-  //       PlayLevel.middle => 1,
-  //       PlayLevel.low => 0.9,
-  //       PlayLevel.min => 0.8,
-  //       _ => 1,
-  //     };
-  // double get personalAttackArea => switch (tactics.attackLevel) {
-  //       PlayLevel.max => 1.3,
-  //       PlayLevel.hight => 1.15,
-  //       PlayLevel.middle => 1,
-  //       PlayLevel.low => 0.9,
-  //       PlayLevel.min => 0.8,
-  //       _ => 1,
-  //     };
-
-  // double get teamDefenseArea => switch (team?.tactics.attackLevel) {
-  //       PlayLevel.max => 0.8,
-  //       PlayLevel.hight => 0.9,
-  //       PlayLevel.middle => 1,
-  //       PlayLevel.low => 1.15,
-  //       PlayLevel.min => 1.3,
-  //       _ => 1,
-  //     };
-  // double get personalDefenseArea => switch (tactics.attackLevel) {
-  //       PlayLevel.max => 0.8,
-  //       PlayLevel.hight => 0.9,
-  //       PlayLevel.middle => 1,
-  //       PlayLevel.low => 1.15,
-  //       PlayLevel.min => 1.3,
-  //       _ => 1,
-  //     };
 
   ///이 수치가 높을수록 스타팅포인트에서 이동하기 어려움( 0 = 완전 자유로움 100 = 자리에고정)
   double get _leftFreedom =>
@@ -521,6 +475,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
           national: National.fromString(map['national']),
         ) {
     height = map['height'];
+    backNumber = map['backNumber'];
     bodyType = BodyType.fromString(map['bodyType']);
     soccerIQ = map['soccerIQ'];
     reflex = map['reflex'];
@@ -546,6 +501,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
       'bodyType': bodyType.toString(),
       'soccerIQ': soccerIQ,
       'reflex': reflex,
+      'backNumber': backNumber,
       'speed': speed,
       'flexibility': flexibility,
       'potential': potential,

@@ -142,19 +142,20 @@ extension PlayerStat on Player {
 
   ///판단력 - 축구지능 + 반응속도 + 체력 + 조직력 + 침착함
   int get judgementStat {
-    double res = soccerIQ * 0.3;
+    double res = soccerIQ * 0.2;
     res = res + reflex * 0.2;
     res = res + _currentStamina * 0.2;
     res = res + stat.teamwork * 0.1;
-    res = res + stat.composure * 0.2;
+    res = res + stat.composure * 0.3;
     return res.round();
   }
 
-  ///시야 - 축구지능 + 반응속도 + 침착함
+  ///시야 - 축구지능 + 체력  + 반응속도 + 침착함
   int get visionStat {
-    double res = soccerIQ * 0.6;
-    res = res + reflex * 0.3;
-    res = res + stat.composure * 0.1;
+    double res = soccerIQ * 0.4;
+    res = res + _currentStamina * 0.2;
+    res = res + reflex * 0.1;
+    res = res + stat.composure * 0.3;
     return res.round();
   }
 
@@ -162,12 +163,12 @@ extension PlayerStat on Player {
   int get keepingStat {
     double res = height * 0.15;
     res = res + soccerIQ * 0.1;
-    res = res + reflex * 0.2;
+    res = res + reflex * 0.1;
     res = res + flexibility * 0.05;
-    res = res + stat.gkSkill * 0.4;
+    res = res + stat.gkSkill * 0.5;
     res = res + stat.composure * 0.1;
     return res.round();
   }
 
-  double get tackleDistance => max(8, tackleStat / 25);
+  double get tackleDistance => max(8, tackleStat / 45);
 }
