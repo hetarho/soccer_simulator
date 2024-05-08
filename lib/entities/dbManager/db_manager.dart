@@ -17,12 +17,18 @@ class DbManager<T extends Jsonable> {
     Map<String, dynamic> json = data.toJson();
     Box box = Hive.box(boxName);
     await box.add(json);
+
+    /// Box가 압축되지 않았을 경우가 있어서 추가
+    await box.compact();
   }
 
   put(String key, T data) async {
     Map<String, dynamic> json = data.toJson();
     Box box = Hive.box(boxName);
     await box.put(key, json);
+
+    /// Box가 압축되지 않았을 경우가 있어서 추가
+    await box.compact();
   }
 
   get(String key) async {
@@ -40,6 +46,9 @@ class DbManager<T extends Jsonable> {
   delete(String key) async {
     Box box = Hive.box(boxName);
     var data = await box.delete(key);
+
+    /// Box가 압축되지 않았을 경우가 있어서 추가
+    await box.compact();
     return data;
   }
 }
