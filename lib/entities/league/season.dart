@@ -28,10 +28,6 @@ class Season implements Jsonable {
     return rounds.firstWhere((round) => round.number == _roundNumber);
   }
 
-  bool get isEndSeason {
-    return _roundNumber == rounds.length;
-  }
-
   Season.create({required List<Club> clubs}) {
     clubs.shuffle();
     List<Round> newRounds = [];

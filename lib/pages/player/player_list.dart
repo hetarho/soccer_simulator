@@ -222,6 +222,30 @@ class _TacticsWidgetState extends State<_TacticsWidget> {
         ),
         Row(
           children: [
+            const Text('dribbleLevel'),
+            ...PlayLevel.values.map((e) => ElevatedButton(
+                onPressed: () {
+                  widget.club.tactics.dribbleLevel = e;
+                  setState(() {});
+                },
+                style: widget.club.tactics.dribbleLevel == e ? _buttonStyleSelected : _buttonStyle,
+                child: Text(e.text))),
+          ],
+        ),
+        Row(
+          children: [
+            const Text('shootLevel'),
+            ...PlayLevel.values.map((e) => ElevatedButton(
+                onPressed: () {
+                  widget.club.tactics.shootLevel = e;
+                  setState(() {});
+                },
+                style: widget.club.tactics.shootLevel == e ? _buttonStyleSelected : _buttonStyle,
+                child: Text(e.text))),
+          ],
+        ),
+        Row(
+          children: [
             const Text('free - front'),
             ...PlayLevel.values.map((e) => ElevatedButton(
                 onPressed: () {

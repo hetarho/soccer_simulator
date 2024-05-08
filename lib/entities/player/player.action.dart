@@ -313,13 +313,29 @@ extension PlayerMove on Player {
                 linePoint2: goalKeeper.reversePosXy,
                 point: opponent.reversePosXy,
               ) <
-              (35 - shootingStat / 5);
+              (32 - shootingStat * 0.2);
     }).length;
 
-    /// 경기장 중앙에 있는 경우
-    bool canShortShoot = distanceToGoalPost <= 25 && posXY.x > 35 && posXY.x < 65 && opponentsNumNearShootRout < 4;
+    double shootBonus = switch (tactics.shootLevel) {
+          PlayLevel.min => 0.8,
+          PlayLevel.low => 0.9,
+          PlayLevel.middle => 1,
+          PlayLevel.hight => 1.1,
+          PlayLevel.max => 1.2,
+        } *
+        switch (team?.tactics.shootLevel) {
+          PlayLevel.min => 0.8,
+          PlayLevel.low => 0.9,
+          PlayLevel.middle => 1,
+          PlayLevel.hight => 1.1,
+          PlayLevel.max => 1.2,
+          _ => 1,
+        };
 
-    bool canMidrangeShoot = distanceToGoalPost > 25 && distanceToGoalPost / midRangeShootStat < R().getDouble(max: 0.35);
+    /// 경기장 중앙에 있는 경우
+    bool canShortShoot = distanceToGoalPost <= 30 && posXY.x > 30 && posXY.x < 70 && opponentsNumNearShootRout < R().getDouble(min: 2, max: 6);
+
+    bool canMidrangeShoot = distanceToGoalPost > 30 && distanceToGoalPost / midRangeShootStat < R().getDouble(min: -0.3, max: 1.8 * shootBonus);
 
     ///슈팅 가능한 경우
     if (canShortShoot || canMidrangeShoot) {
@@ -342,14 +358,14 @@ extension PlayerMove on Player {
             > 30 => 0.5,
             _ => 1,
           } *
-          switch (tactics.attackLevel) {
+          switch (tactics.dribbleLevel) {
             PlayLevel.min => 0.8,
             PlayLevel.low => 0.9,
             PlayLevel.middle => 1,
             PlayLevel.hight => 1.1,
             PlayLevel.max => 1.2,
           } *
-          switch (team?.tactics.attackLevel) {
+          switch (team?.tactics.dribbleLevel) {
             PlayLevel.min => 0.8,
             PlayLevel.low => 0.9,
             PlayLevel.middle => 1,
@@ -515,7 +531,7 @@ extension PlayerMove on Player {
     for (var player in _opponentTeamCurrentFixture.club.players) {
       if (player.reversePosXy.distance(posXY) < player.tackleDistance && player.reversePosXy.y > posXY.y && hasBall) {
         tackledPlayerNum++;
-        player._tackle(this, tackledPlayerNum * 340 / dribbleStat);
+        player._tackle(this, tackledPlayerNum * 470 / dribbleStat);
       }
     }
 
@@ -622,11 +638,13 @@ extension PlayerMove on Player {
 
     double distanceToGoalPost = goalKeeper.posXY.distance(reversePosXy);
 
+    if (distanceToGoalPost < 30) distanceToGoalPost = 10;
+
     double stat = distanceToGoalPost < 20 ? shootingStat.toDouble() : shootingStat * ((100 - distanceToGoalPost) / 100) + midRangeShootStat * (distanceToGoalPost / 100);
 
-    double finalShootStat = pow(stat * 0.47 + evadePressurePoint, 0.31 + R().getDouble(max: 1.28)).toDouble();
+    double finalShootStat = pow(stat * 0.29 + evadePressurePoint, 0.32 + R().getDouble(max: 1.43)).toDouble();
 
-    double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.46, max: 2.21);
+    double finalKeepingStat = goalKeeper.keepingStat * R().getDouble(min: 0.44, max: 2.47) + distanceToGoalPost * 2.1;
 
     if (finalShootStat > finalKeepingStat) {
       goal();

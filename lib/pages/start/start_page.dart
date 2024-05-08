@@ -262,6 +262,8 @@ class _State extends ConsumerState<StartPage> {
                         freeLevel: FreeLevel(PlayLevel.max, PlayLevel.max, PlayLevel.max, PlayLevel.max),
                         attackLevel: PlayLevel.max,
                         shortPassLevel: PlayLevel.max,
+                        dribbleLevel: PlayLevel.max,
+                        shootLevel: PlayLevel.max,
                       ),
                     )..createStartingMembers(
                         min: 50,

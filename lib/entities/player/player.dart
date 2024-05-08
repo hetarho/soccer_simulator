@@ -370,9 +370,9 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
         ///midfielder
         Position.lm => 0,
         Position.rm => 60,
-        Position.cm => 50,
-        Position.am => 50,
-        Position.dm => 50,
+        Position.cm => 60,
+        Position.am => 60,
+        Position.dm => 60,
 
         ///defender
         Position.lb => 10,
@@ -396,9 +396,9 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
         ///midfielder
         Position.lm => 60,
         Position.rm => 0,
-        Position.cm => 50,
-        Position.am => 50,
-        Position.dm => 50,
+        Position.cm => 60,
+        Position.am => 60,
+        Position.dm => 60,
 
         ///defender
         Position.lb => 70,
@@ -420,16 +420,16 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
         Position.cf => 10,
 
         ///midfielder
-        Position.lm => 35,
-        Position.rm => 35,
-        Position.cm => 35,
-        Position.am => 35,
-        Position.dm => 35,
+        Position.lm => 20,
+        Position.rm => 20,
+        Position.cm => 50,
+        Position.am => 20,
+        Position.dm => 60,
 
         ///defender
-        Position.lb => 40,
-        Position.rb => 40,
-        Position.cb => 75,
+        Position.lb => 20,
+        Position.rb => 20,
+        Position.cb => 80,
         Position.gk => 99,
       } *
       _freeLevelToDouble(tactics.freeLevel.forward) *
@@ -438,12 +438,12 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
   double get _backwardFreedom =>
       switch (position ?? wantPosition) {
         ///forward
-        Position.lf => 80,
-        Position.lw => 80,
-        Position.rf => 80,
-        Position.rw => 80,
-        Position.st => 80,
-        Position.cf => 80,
+        Position.lf => 75,
+        Position.lw => 75,
+        Position.rf => 75,
+        Position.rw => 75,
+        Position.st => 75,
+        Position.cf => 75,
 
         ///midfielder
         Position.lm => 60,
@@ -453,9 +453,9 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
         Position.dm => 60,
 
         ///defender
-        Position.lb => 0,
-        Position.rb => 0,
-        Position.cb => 0,
+        Position.lb => 80,
+        Position.rb => 80,
+        Position.cb => 80,
         Position.gk => 90,
       } *
       _freeLevelToDouble(tactics.freeLevel.backward) *
