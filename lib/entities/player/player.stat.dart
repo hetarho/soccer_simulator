@@ -62,26 +62,13 @@ extension PlayerStat on Player {
     return res.round();
   }
 
-  /// 드리블 - 축구지능 + 키 + 체형 + 반응속도 + 체력 + 유연성
+  /// 드리블 - 축구지능 +  체형 + 반응속도 + 체력 + 유연성
   int get dribbleStat {
     double res = soccerIQ * 0.3;
-    res = res +
-        switch (height) {
-              < 170 => 100,
-              < 180 => 90,
-              < 190 => 70,
-              _ => 50,
-            } *
-            0.1;
-    res = res +
-        switch (bodyType) {
-              BodyType.slim => 100,
-              BodyType.normal => 70,
-              BodyType.robust => 50,
-            } *
-            0.2;
     res = res + reflex * 0.2;
+    res = res + stat.attSkill * 0.2;
     res = res + flexibility * 0.2;
+    res = res + _currentStamina * 0.1;
     return res.round();
   }
 
@@ -98,19 +85,17 @@ extension PlayerStat on Player {
   ///태클 - 축구지능 + 반응속도 + 체력 + 기술 + 침착함
   int get tackleStat {
     double res = soccerIQ * 0.1;
-    res = res + reflex * 0.1;
     res = res + _currentStamina * 0.05;
-    res = res + stat.defSkill * 0.7;
+    res = res + stat.defSkill * 0.8;
     res = res + stat.composure * 0.05;
     return res.round();
   }
 
-  ///인터셉트 - 축구지능 + 반응속도  + 체력 + 수비기술
+  ///인터셉트 - 축구지능 + 반응속도  +  수비기술
   int get interceptStat {
-    double res = soccerIQ * 0.4;
+    double res = soccerIQ * 0.2;
     res = res + reflex * 0.1;
-    res = res + stat.defSkill * 0.5;
-    res = res + _currentStamina * 0.1;
+    res = res + stat.defSkill * 0.7;
     return res.round();
   }
 
@@ -158,5 +143,5 @@ extension PlayerStat on Player {
     return res.round();
   }
 
-  double get tackleDistance => max(8, tackleStat / 45);
+  double get tackleDistance => min(10, tackleStat / 10);
 }
