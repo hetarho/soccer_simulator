@@ -61,7 +61,7 @@ class _State extends ConsumerState<StartPage> {
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
                         min: 70,
-                        max: 110,
+                        max: 90,
                         formation: Formation.create4231(),
                       );
 
@@ -72,8 +72,8 @@ class _State extends ConsumerState<StartPage> {
                       awayColor: Colors.blue[800]!,
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
-                        min: 80,
-                        max: 100,
+                        min: 70,
+                        max: 90,
                         formation: Formation.create433(),
                       );
 
@@ -84,8 +84,8 @@ class _State extends ConsumerState<StartPage> {
                       awayColor: Colors.blue[900]!,
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
-                        min: 40,
-                        max: 140,
+                        min: 70,
+                        max: 90,
                         formation: Formation.create442(),
                       );
 
@@ -96,8 +96,8 @@ class _State extends ConsumerState<StartPage> {
                       awayColor: const Color.fromRGBO(140, 188, 229, 1),
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
-                        min: 60,
-                        max: 90,
+                        min: 55,
+                        max: 80,
                         formation: Formation.create41212(),
                       );
                     Club tottenham = Club(
@@ -107,8 +107,8 @@ class _State extends ConsumerState<StartPage> {
                       awayColor: const Color.fromRGBO(19, 30, 72, 1),
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
-                        min: 60,
-                        max: 90,
+                        min: 55,
+                        max: 80,
                         formation: Formation.create433(),
                       );
                     Club newcastle = Club(
@@ -118,8 +118,8 @@ class _State extends ConsumerState<StartPage> {
                       awayColor: Colors.white,
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
-                        min: 60,
-                        max: 90,
+                        min: 55,
+                        max: 80,
                         formation: Formation.create532(),
                       );
 
@@ -130,8 +130,8 @@ class _State extends ConsumerState<StartPage> {
                       awayColor: Colors.green[200]!,
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
-                        min: 60,
-                        max: 90,
+                        min: 55,
+                        max: 80,
                         formation: Formation.create4222(),
                       );
 
@@ -142,8 +142,8 @@ class _State extends ConsumerState<StartPage> {
                       awayColor: const Color.fromRGBO(179, 110, 70, 1),
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
-                        min: 60,
-                        max: 90,
+                        min: 55,
+                        max: 80,
                         formation: Formation.create433(),
                       );
                     Club chelsea = Club(
@@ -153,8 +153,8 @@ class _State extends ConsumerState<StartPage> {
                       awayColor: const Color.fromRGBO(80, 70, 85, 1),
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
-                        min: 60,
-                        max: 90,
+                        min: 55,
+                        max: 80,
                         formation: Formation.create3241(),
                       );
 
@@ -166,7 +166,7 @@ class _State extends ConsumerState<StartPage> {
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
                         min: 50,
-                        max: 80,
+                        max: 70,
                         formation: Formation.create352(),
                       );
                     Club wolverhampton = Club(
@@ -177,7 +177,7 @@ class _State extends ConsumerState<StartPage> {
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
                         min: 50,
-                        max: 80,
+                        max: 70,
                         formation: Formation.create352(),
                       );
 
@@ -189,7 +189,7 @@ class _State extends ConsumerState<StartPage> {
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
                         min: 50,
-                        max: 80,
+                        max: 70,
                         formation: Formation.create532(),
                       );
                     Club bournemouth = Club(
@@ -200,7 +200,7 @@ class _State extends ConsumerState<StartPage> {
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
                         min: 50,
-                        max: 80,
+                        max: 70,
                         formation: Formation.create4141(),
                       );
 
@@ -212,7 +212,7 @@ class _State extends ConsumerState<StartPage> {
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
                         min: 50,
-                        max: 80,
+                        max: 70,
                         formation: Formation.create41212(),
                       );
 
@@ -224,7 +224,7 @@ class _State extends ConsumerState<StartPage> {
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
                         min: 50,
-                        max: 80,
+                        max: 70,
                         formation: Formation.create433(),
                       );
 
@@ -235,8 +235,8 @@ class _State extends ConsumerState<StartPage> {
                       awayColor: const Color.fromRGBO(70, 15, 15, 1),
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
-                        min: 40,
-                        max: 80,
+                        min: 50,
+                        max: 65,
                         formation: Formation.create442(),
                       );
 
@@ -247,8 +247,8 @@ class _State extends ConsumerState<StartPage> {
                       awayColor: const Color.fromRGBO(230, 230, 230, 1),
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
-                        min: 40,
-                        max: 80,
+                        min: 50,
+                        max: 65,
                         formation: Formation.create442(),
                       );
 
@@ -264,8 +264,8 @@ class _State extends ConsumerState<StartPage> {
                         shortPassLevel: PlayLevel.max,
                       ),
                     )..createStartingMembers(
-                        min: 40,
-                        max: 80,
+                        min: 50,
+                        max: 65,
                         formation: Formation.create3241(),
                       );
 
@@ -276,8 +276,8 @@ class _State extends ConsumerState<StartPage> {
                       awayColor: const Color.fromRGBO(90, 100, 150, 1),
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
-                        min: 40,
-                        max: 80,
+                        min: 50,
+                        max: 65,
                         formation: Formation.create433(),
                       );
 
@@ -288,8 +288,8 @@ class _State extends ConsumerState<StartPage> {
                       awayColor: const Color.fromRGBO(0, 0, 0, 1),
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
-                        min: 40,
-                        max: 80,
+                        min: 50,
+                        max: 65,
                         formation: Formation.create532(),
                       );
 

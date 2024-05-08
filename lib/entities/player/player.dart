@@ -309,6 +309,9 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
   ///시즌 패스 슈팅 정확도
   int get seasonShootAccuracy => (seasonGoal * 100 / max(1, seasonShooting)).round();
 
+  ///시즌 패스 슈팅 정확도
+  int get seasonIntercept => gameRecord.fold(0, (prev, rec) => prev + rec.intercept);
+
   List<List<PlayerGameRecord>> seasonRecord = [];
 
   Position get wantPosition => _getWantedPositionFromStat(stat);

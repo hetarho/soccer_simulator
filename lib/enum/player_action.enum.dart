@@ -8,6 +8,7 @@ enum PlayerAction {
   dribble('dribble'),
   goal('goal'),
   assist('assist'),
+  intercept('intercept'),
   keeping('keeping');
 
   final String text;

@@ -1,21 +1,5 @@
 part of 'player.dart';
 
-/// base stat
-///
-/// 키
-/// 체형
-/// 축구지능
-/// 반응속도
-/// 스피드
-/// 유연성
-///
-/// 체력
-/// 근력
-/// 공격스킬
-/// 패스스킬
-/// 수비스킬
-/// 침착함
-/// 조직력
 extension PlayerStat on Player {
   double get maxDistance => sqrt(speed) * 0.45 + 2.7;
 
@@ -121,9 +105,13 @@ extension PlayerStat on Player {
     return res.round();
   }
 
-  ///인터셉트 - 축구지능 + 반응속도  + 체력
+  ///인터셉트 - 축구지능 + 반응속도  + 체력 + 수비기술
   int get interceptStat {
-    return 1;
+    double res = soccerIQ * 0.4;
+    res = res + reflex * 0.1;
+    res = res + stat.defSkill * 0.5;
+    res = res + _currentStamina * 0.1;
+    return res.round();
   }
 
   ///압박 - 축구지능 + 체력 + 조직력 + 침착함

@@ -392,6 +392,7 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                   'passT' => b.seasonPassTry,
                   'passS' => b.seasonPassSuccessPercent,
                   'drib' => b.seasonDribbleSuccess,
+                  'inter' => b.seasonIntercept,
                   _ => b.seasonGoal,
                 } -
                 switch (sortBy) {
@@ -404,6 +405,7 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                   'passT' => a.seasonPassTry,
                   'passS' => a.seasonPassSuccessPercent,
                   'drib' => a.seasonDribbleSuccess,
+                  'inter' => a.seasonIntercept,
                   _ => a.seasonGoal,
                 } >
             0
@@ -555,6 +557,13 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                                 });
                               },
                               child: const SizedBox(width: 55, child: Text('drib'))),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _changeSort('inter');
+                                });
+                              },
+                              child: const SizedBox(width: 55, child: Text('inter'))),
                         ],
                       ),
                     ),
@@ -582,6 +591,7 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                                     SizedBox(width: 55, child: Text('${player.seasonPassSuccessPercent}')),
                                     SizedBox(width: 55, child: Text('${player.seasonDefSuccess}')),
                                     SizedBox(width: 55, child: Text('${player.seasonDribbleSuccess}')),
+                                    SizedBox(width: 55, child: Text('${player.seasonIntercept}')),
                                   ],
                                 ),
                               ),

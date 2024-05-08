@@ -137,9 +137,9 @@ extension PlayerMove on Player {
     double attractive = 0;
 
     /// 상대 골대에 가까울 수록 매력도 상승 0 ~ 150
-    attractive += targetPosXY.y / 4;
+    attractive += targetPosXY.y / 6;
     if (targetPosXY.y > 100) attractive += targetPosXY.y / 4;
-    if (targetPosXY.y > 150) attractive += targetPosXY.y / 4;
+    if (targetPosXY.y > 150) attractive += targetPosXY.y / 2;
 
     ///선수가 경기장 앞쪽 중앙에있을 수록 매력도 상승 0 ~ 25
     if (targetPosXY.y > 150 && posXY.x > 40 && posXY.x < 60) {
@@ -249,15 +249,9 @@ extension PlayerMove on Player {
       for (var opponent in opponentPlayers) {
         ///너무 가까운 상대를 제외
         if (opponent.reversePosXy.distance(posXY) > 30) {
-          bool isOpponentBetween = opponent.reversePosXy.x >= min(posXY.x, teamPlayer.posXY.x) &&
-              opponent.reversePosXy.x <= max(posXY.x, teamPlayer.posXY.x) &&
-              opponent.reversePosXy.y >= min(posXY.y, teamPlayer.posXY.y) &&
-              opponent.reversePosXy.y <= max(posXY.y, teamPlayer.posXY.y);
+          bool canNotSee = teamPlayer.posXY.distance(posXY) > (visionStat + evadePressurePoint * 0.5);
 
-          ///패스 길과 해당 선수와의 거리
-          double distanceToPathRoute = M().getDistanceFromPointToLine(linePoint1: posXY, linePoint2: teamPlayer.posXY, point: opponent.reversePosXy);
-
-          if (distanceToPathRoute < visionStat * (evadePressurePoint) / 100 && isOpponentBetween) {
+          if (canNotSee) {
             canPass = false;
             break;
           }
@@ -323,9 +317,9 @@ extension PlayerMove on Player {
     }).length;
 
     /// 경기장 중앙에 있는 경우
-    bool canShortShoot = distanceToGoalPost <= 25 && posXY.x > 35 && posXY.x < 65 && opponentsNumNearShootRout < 3;
+    bool canShortShoot = distanceToGoalPost <= 25 && posXY.x > 35 && posXY.x < 65 && opponentsNumNearShootRout < 4;
 
-    bool canMidrangeShoot = distanceToGoalPost > 25 && distanceToGoalPost / midRangeShootStat < R().getDouble(max: 0.5);
+    bool canMidrangeShoot = distanceToGoalPost > 25 && distanceToGoalPost / midRangeShootStat < R().getDouble(max: 0.35);
 
     ///슈팅 가능한 경우
     if (canShortShoot || canMidrangeShoot) {
@@ -340,7 +334,15 @@ extension PlayerMove on Player {
     else {
       bool nearByGoalPost = (posXY.y > 170 && !(posXY.x > 35 && posXY.x < 65));
 
-      double dribbleBonus = switch (tactics.attackLevel) {
+      double dribbleBonus = switch (dribbleStat) {
+            > 100 => 1.1,
+            > 80 => 1,
+            > 60 => 0.9,
+            > 40 => 0.7,
+            > 30 => 0.5,
+            _ => 1,
+          } *
+          switch (tactics.attackLevel) {
             PlayLevel.min => 0.8,
             PlayLevel.low => 0.9,
             PlayLevel.middle => 1,
@@ -361,8 +363,6 @@ extension PlayerMove on Player {
       double afterDribbleAttractive = _getPosXYAttractive(evadePressStat: evadePressStat, opponentPlayers: opponentPlayers, targetPosXY: PosXY(posXY.x, posXY.y + maxDistance));
 
       bool batterDribble = afterDribbleAttractive * dribbleBonus >= passTargetAttractive;
-
-      if (batterDribble) print('batterDribble');
 
       if (nearByGoalPost || batterDribble) {
         _dribble(evadePressurePoint);
@@ -515,7 +515,7 @@ extension PlayerMove on Player {
     for (var player in _opponentTeamCurrentFixture.club.players) {
       if (player.reversePosXy.distance(posXY) < player.tackleDistance && player.reversePosXy.y > posXY.y && hasBall) {
         tackledPlayerNum++;
-        player._tackle(this, tackledPlayerNum * 3.5);
+        player._tackle(this, tackledPlayerNum * 340 / dribbleStat);
       }
     }
 
@@ -565,28 +565,51 @@ extension PlayerMove on Player {
     _turn(target.posXY);
     lastAction = PlayerAction.pass;
 
-    ///현재 선수 위치와 패스받으려는 선수 위치의 차이
-    double passDistance = target.posXY.distance(posXY);
-
     double baselineStat = _getPassStat(target.posXY);
 
-    ///최종 볼 정확도(낮을수록 정확) 0 ~ 30
-    double ballLandingAccuracy = min(max(0, 50 + passDistance - evadePressurePoint - baselineStat), 30);
+    for (var opponent in opponents) {
+      ///패스 길 사이에 적이 있는지 여부
+      bool isOpponentBetween = opponent.reversePosXy.x >= min(posXY.x, target.posXY.x) &&
+          opponent.reversePosXy.x <= max(posXY.x, target.posXY.x) &&
+          opponent.reversePosXy.y >= min(posXY.y, target.posXY.y) &&
+          opponent.reversePosXy.y <= max(posXY.y, target.posXY.y);
 
-    PosXY ballLandingPos = PosXY.random(target.posXY.x, target.posXY.y, ballLandingAccuracy);
+      ///패스 길과 해당 선수와의 거리
+      double distanceToPathRoute = M().getDistanceFromPointToLine(linePoint1: posXY, linePoint2: target.posXY, point: opponent.reversePosXy);
 
-    hasBall = false;
+      double interceptPercent = (opponent.interceptStat) / (200 + baselineStat * distanceToPathRoute + (opponent.interceptStat));
 
-    _currentFixture.ball.isMoving = true;
-    _currentFixture.ball.moveDistance = passDistance;
-
-    Player receivedPlayer = _findClosetPlayer(ballLandingPos, [target], [...opponents]);
-    if (receivedPlayer.id == target.id) {
-      passSuccess();
-      target.passedPlayer = this;
-      _myTeamCurrentFixture.pass += 1;
+      if (isOpponentBetween && interceptPercent > R().getDouble(max: 2.1)) {
+        opponent._streamController?.add(PlayerActEvent(player: opponent, action: PlayerAction.intercept));
+        opponent.intercept();
+        hasBall = false;
+        opponent.hasBall = true;
+        break;
+      }
     }
-    receivedPlayer.hasBall = true;
+
+    if (hasBall) {
+      hasBall = false;
+
+      ///현재 선수 위치와 패스받으려는 선수 위치의 차이
+      double passDistance = target.posXY.distance(posXY);
+
+      ///최종 볼 정확도(낮을수록 정확) 0 ~ 30
+      double ballLandingAccuracy = min(max(0, 50 + passDistance - evadePressurePoint - baselineStat), 30);
+
+      PosXY ballLandingPos = PosXY.random(target.posXY.x, target.posXY.y, ballLandingAccuracy);
+
+      _currentFixture.ball.isMoving = true;
+      _currentFixture.ball.moveDistance = passDistance;
+
+      Player receivedPlayer = _findClosetPlayer(ballLandingPos, [target], [...opponents]);
+      if (receivedPlayer.id == target.id) {
+        passSuccess();
+        target.passedPlayer = this;
+        _myTeamCurrentFixture.pass += 1;
+      }
+      receivedPlayer.hasBall = true;
+    }
   }
 
   _shoot({
@@ -608,7 +631,7 @@ extension PlayerMove on Player {
     if (finalShootStat > finalKeepingStat) {
       goal();
       _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.goal));
-      if (passedPlayer != null) _streamController?.add(PlayerActEvent(player: passedPlayer!, action: PlayerAction.assist));
+      if (passedPlayer != null) passedPlayer?._streamController?.add(PlayerActEvent(player: passedPlayer!, action: PlayerAction.assist));
 
       _currentFixture.scored(
         scoredClub: _myTeamCurrentFixture,
@@ -624,9 +647,9 @@ extension PlayerMove on Player {
   }
 
   _tackle(Player targetPlayer, [double tackleBonus = 1]) {
-    double tackleSuccessPercent = (tackleStat * 3 * tackleBonus) / (tackleStat * 3 + targetPlayer.dribbleStat + targetPlayer.evadePressStat + 400);
+    double tackleSuccessPercent = tackleStat * tackleBonus / 400;
 
-    if (tackleSuccessPercent > R().getDouble(max: 1.9)) {
+    if (tackleSuccessPercent > R().getDouble(max: 3.7)) {
       lastAction = PlayerAction.tackle;
       defSuccess();
       targetPlayer.hasBall = false;
@@ -663,7 +686,17 @@ extension PlayerMove on Player {
     double distanceToTarget = max(1, PosXY(targetPosXY.x, targetPosXY.y).distance(posXY));
 
     /// 이동할 수 있는 최대 거리 구하기
-    double distanceCanForward = min(distanceToTarget, maxDistance - (hasBall ? 3 : 0));
+    double distanceCanForward = min(distanceToTarget, maxDistance);
+
+    /// 공을 가지고 드리블하는 경우 드리블 스텟에따라 최대 이동거리 변경
+    if (hasBall) {
+      distanceCanForward -= switch (dribbleStat) {
+        > 100 => 0,
+        > 80 => 1,
+        > 60 => 2,
+        _ => 3,
+      };
+    }
 
     /// sine,cosine값 구하기
     double sine = deltaY / distanceToTarget;
@@ -724,6 +757,10 @@ extension PlayerMove on Player {
 
   passSuccess() {
     _currentGameRecord.passSuccess++;
+  }
+
+  intercept() {
+    _currentGameRecord.intercept++;
   }
 
   shooting() {
