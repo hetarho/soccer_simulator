@@ -340,20 +340,19 @@ extension PlayerMove on Player {
     else {
       bool nearByGoalPost = (posXY.y > 170 && !(posXY.x > 35 && posXY.x < 65));
 
-      double dribbleBonus = 1 *
-          switch (tactics.attackLevel) {
-            PlayLevel.min => 1.5,
-            PlayLevel.low => 1.2,
+      double dribbleBonus = switch (tactics.attackLevel) {
+            PlayLevel.min => 0.8,
+            PlayLevel.low => 0.9,
             PlayLevel.middle => 1,
-            PlayLevel.hight => 0.8,
-            PlayLevel.max => 0.6,
+            PlayLevel.hight => 1.1,
+            PlayLevel.max => 1.2,
           } *
           switch (team?.tactics.attackLevel) {
-            PlayLevel.min => 1.5,
-            PlayLevel.low => 1.2,
+            PlayLevel.min => 0.8,
+            PlayLevel.low => 0.9,
             PlayLevel.middle => 1,
-            PlayLevel.hight => 0.8,
-            PlayLevel.max => 0.6,
+            PlayLevel.hight => 1.1,
+            PlayLevel.max => 1.2,
             _ => 1,
           };
       Player passTarget = _getMostAttractivePlayerToPass(players: availablePlayerToPass, opponentPlayers: opponentPlayers);
@@ -361,7 +360,9 @@ extension PlayerMove on Player {
       double passTargetAttractive = _getPosXYAttractive(targetPosXY: passTarget.posXY, opponentPlayers: opponentPlayers, evadePressStat: evadePressStat);
       double afterDribbleAttractive = _getPosXYAttractive(evadePressStat: evadePressStat, opponentPlayers: opponentPlayers, targetPosXY: PosXY(posXY.x, posXY.y + maxDistance));
 
-      bool batterDribble = afterDribbleAttractive >= passTargetAttractive;
+      bool batterDribble = afterDribbleAttractive * dribbleBonus >= passTargetAttractive;
+
+      if (batterDribble) print('batterDribble');
 
       if (nearByGoalPost || batterDribble) {
         _dribble(evadePressurePoint);
@@ -446,7 +447,10 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team!.players.where((player) => player.reversePosXy.distance(_ballPosXY) < reversePosXy.distance(_ballPosXY)).length;
 
-    bool canPress = (30 + (tactics.pressDistance) + team!.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < _ballPosXY.y / 50;
+    bool canPress = (30 + (tactics.pressDistance) + team!.tactics.pressDistance > ballPos.distance(startingPoxXY)) &&
+        isNotGoalKick &&
+        !(ballPos.x == posXY.x && ballPos.y == posXY.y) &&
+        closerPlayerAtBall < _ballPosXY.y / 50;
 
     if (canTackle) {
       _tackle(_currentFixture.playerWithBall!);
@@ -487,7 +491,10 @@ extension PlayerMove on Player {
 
     List<PosXY> poss = List.generate(10, (index) => PosXY.random(posXY.x, posXY.y + attBonus, 5));
 
-    poss.sort((a, b) => _getEvadePressurePoint(evadePressStat: evadePressStat, opponents: opponents, targetPosXY: a) - _getEvadePressurePoint(evadePressStat: evadePressStat, opponents: opponents, targetPosXY: b) > 0 ? 1 : -1);
+    poss.sort((a, b) =>
+        _getEvadePressurePoint(evadePressStat: evadePressStat, opponents: opponents, targetPosXY: a) - _getEvadePressurePoint(evadePressStat: evadePressStat, opponents: opponents, targetPosXY: b) > 0
+            ? 1
+            : -1);
 
     _move(targetPosXY: poss.first);
   }
@@ -508,7 +515,7 @@ extension PlayerMove on Player {
     for (var player in _opponentTeamCurrentFixture.club.players) {
       if (player.reversePosXy.distance(posXY) < player.tackleDistance && player.reversePosXy.y > posXY.y && hasBall) {
         tackledPlayerNum++;
-        player._tackle(this, tackledPlayerNum * 1.5);
+        player._tackle(this, tackledPlayerNum * 3.5);
       }
     }
 
@@ -617,7 +624,7 @@ extension PlayerMove on Player {
   }
 
   _tackle(Player targetPlayer, [double tackleBonus = 1]) {
-    double tackleSuccessPercent = (tackleStat * 3 * tackleBonus) / (tackleStat * 3 + targetPlayer.dribbleStat + targetPlayer.evadePressStat + 200);
+    double tackleSuccessPercent = (tackleStat * 3 * tackleBonus) / (tackleStat * 3 + targetPlayer.dribbleStat + targetPlayer.evadePressStat + 400);
 
     if (tackleSuccessPercent > R().getDouble(max: 1.9)) {
       lastAction = PlayerAction.tackle;
