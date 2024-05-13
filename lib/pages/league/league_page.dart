@@ -68,7 +68,6 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
 
     await _roundSubscription?.cancel();
     _roundSubscription = _roundStream.listen((event) async {
-      _timer = event.time;
       if (event.isGameEnd && _isAutoPlay) {
         _finishedFixtureNum++;
         if (_finishedFixtureNum == _league.clubs.length / 2) {
@@ -87,7 +86,11 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
           _autoPlaying();
         }
       }
-      if (mounted) setState(() {});
+      if (mounted) {
+        setState(() {
+          if (_timer.compareTo(event.time) < 0 || event.time.inMinutes == 0) _timer = event.time;
+        });
+      }
     });
 
     if (mounted) setState(() {});
