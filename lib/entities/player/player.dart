@@ -306,6 +306,9 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
   ///시즌 패스 슈팅 수
   int get seasonShooting => gameRecord.fold(0, (prev, rec) => prev + rec.shooting);
 
+  ///시즌 유효 슈팅 수
+  int get seasonShootOnTarget => gameRecord.fold(0, (prev, rec) => prev + rec.shootOnTarget);
+
   ///시즌 패스 슈팅 정확도
   int get seasonShootAccuracy => (seasonGoal * 100 / max(1, seasonShooting)).round();
 

@@ -391,6 +391,7 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                   'pass' => b.seasonPassSuccess,
                   'def' => b.seasonDefSuccess,
                   'shoot' => b.seasonShooting,
+                  'onTarget' => b.seasonShootOnTarget,
                   'seasonShootAccuracy' => b.seasonShootAccuracy,
                   'passT' => b.seasonPassTry,
                   'passS' => b.seasonPassSuccessPercent,
@@ -404,6 +405,7 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                   'pass' => a.seasonPassSuccess,
                   'def' => a.seasonDefSuccess,
                   'shoot' => a.seasonShooting,
+                  'onTarget' => a.seasonShootOnTarget,
                   'seasonShootAccuracy' => a.seasonShootAccuracy,
                   'passT' => a.seasonPassTry,
                   'passS' => a.seasonPassSuccessPercent,
@@ -514,6 +516,13 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                           GestureDetector(
                               onTap: () {
                                 setState(() {
+                                  _changeSort('onTarget');
+                                });
+                              },
+                              child: const SizedBox(width: 80, child: Text('onTarget'))),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
                                   _changeSort('seasonShootAccuracy');
                                 });
                               },
@@ -587,6 +596,7 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                                     SizedBox(width: 35, child: Text('${player.overall}')),
                                     SizedBox(width: 50, child: Text('${player.seasonGoal}')),
                                     SizedBox(width: 55, child: Text('${player.seasonShooting}')),
+                                    SizedBox(width: 80, child: Text('${player.seasonShootOnTarget}')),
                                     SizedBox(width: 60, child: Text('${player.seasonShootAccuracy}')),
                                     SizedBox(width: 55, child: Text('${player.seasonAssist}')),
                                     SizedBox(width: 55, child: Text('${player.seasonPassSuccess}')),

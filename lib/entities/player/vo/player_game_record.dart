@@ -6,6 +6,7 @@ class PlayerGameRecord {
   late int passSuccess;
   late int intercept;
   late int shooting;
+  late int shootOnTarget;
   late int defSuccess;
   late int saveSuccess;
   late int dribbleSuccess;
@@ -16,6 +17,7 @@ class PlayerGameRecord {
     required this.passSuccess,
     required this.intercept,
     required this.shooting,
+    required this.shootOnTarget,
     required this.defSuccess,
     required this.saveSuccess,
     required this.dribbleSuccess,
@@ -29,6 +31,7 @@ class PlayerGameRecord {
       'passSuccess': passSuccess,
       'intercept': intercept,
       'shooting': shooting,
+      'shootOnTarget': shootOnTarget,
       'defSuccess': defSuccess,
       'saveSuccess': saveSuccess,
       'dribbleSuccess': dribbleSuccess,
@@ -42,6 +45,7 @@ class PlayerGameRecord {
     passSuccess = map['passSuccess'];
     intercept = map['intercept'];
     shooting = map['shooting'];
+    shootOnTarget = map['shootOnTarget'];
     defSuccess = map['defSuccess'];
     saveSuccess = map['saveSuccess'];
     dribbleSuccess = map['dribbleSuccess'];
@@ -54,6 +58,7 @@ class PlayerGameRecord {
     intercept = 0;
     passTry = 0;
     shooting = 0;
+    shootOnTarget = 0;
     defSuccess = 0;
     saveSuccess = 0;
     dribbleSuccess = 0;

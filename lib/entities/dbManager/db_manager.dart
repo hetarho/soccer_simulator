@@ -8,6 +8,7 @@ class DbManager<T extends Jsonable> {
 
   init() async {
     Box box = await Hive.openBox(boxName);
+    // await box.clear();
 
     /// Box가 압축되지 않았을 경우가 있어서 추가
     await box.compact();
