@@ -181,6 +181,10 @@ class Fixture implements Jsonable {
               PlayerAction.goal,
               PlayerAction.assist,
               PlayerAction.shoot,
+              PlayerAction.pass,
+              PlayerAction.tackle,
+              PlayerAction.dribble,
+              PlayerAction.intercept,
             ].contains(event.action) &&
             isGameStart) {
           records.add(FixtureRecord(

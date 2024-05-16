@@ -92,6 +92,10 @@ class Club implements Jsonable {
   int loseStack = 0;
   int noWinStack = 0;
 
+  int get seasonShooting => players.fold(0, (previousValue, element) => previousValue + element.seasonShooting);
+  int get seasonDefSuccess => players.fold(0, (previousValue, element) => previousValue + element.seasonDefSuccess);
+  int get seasonPassSuccess => players.fold(0, (previousValue, element) => previousValue + element.seasonPassSuccess);
+
   ///득점수
   int gf = 0;
 

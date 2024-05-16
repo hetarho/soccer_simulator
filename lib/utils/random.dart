@@ -5,6 +5,10 @@ import 'package:soccer_simulator/enum/national.enum.dart';
 import 'package:soccer_simulator/enum/player.enum.dart';
 
 class R {
+  bool getBool() {
+    return m.Random().nextBool();
+  }
+
   int getInt({
     int min = 0,
     int max = 0,

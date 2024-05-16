@@ -15,9 +15,9 @@ extension PlayerStat on Player {
 
   /// 중거리 슛 - 축구지능 + 기술 + 근력 + 침착함 + 체력
   int get midRangeShootStat {
-    double res = soccerIQ * 0.1;
-    res = res + stat.attSkill * 0.3;
-    res = res + stat.strength * 0.5;
+    double res = soccerIQ * 0.2;
+    res = res + stat.attSkill * 0.25;
+    res = res + stat.strength * 0.45;
     res = res + stat.composure * 0.05;
     res = res + _currentStamina * 0.05;
     return res.round();
