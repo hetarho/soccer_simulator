@@ -36,7 +36,7 @@ class Club implements Jsonable {
     tactics = Tactics.normal();
   }
 
-  Club.copy(Club club) {
+  Club.save(Club club) {
     id = club.id;
     players = club.players;
     nickName = club.nickName;
@@ -50,6 +50,11 @@ class Club implements Jsonable {
     lost = club.lost;
     gf = club.gf;
     ga = club.ga;
+    _seasonShooting = currentSeasonShooting;
+    _seasonDefSuccess = currentSeasonDefSuccess;
+    _seasonPassSuccess = currentSeasonPassSuccess;
+
+
   }
 
   void createStartingMembers({
@@ -92,9 +97,17 @@ class Club implements Jsonable {
   int loseStack = 0;
   int noWinStack = 0;
 
-  int get seasonShooting => players.fold(0, (previousValue, element) => previousValue + element.seasonShooting);
-  int get seasonDefSuccess => players.fold(0, (previousValue, element) => previousValue + element.seasonDefSuccess);
-  int get seasonPassSuccess => players.fold(0, (previousValue, element) => previousValue + element.seasonPassSuccess);
+  int? _seasonShooting;
+  int? _seasonDefSuccess;
+  int? _seasonPassSuccess;
+
+  int get seasonShooting => _seasonShooting == null ? currentSeasonShooting : _seasonShooting!;
+  int get seasonDefSuccess => _seasonDefSuccess == null ? currentSeasonDefSuccess : _seasonDefSuccess!;
+  int get seasonPassSuccess => _seasonPassSuccess == null ? currentSeasonPassSuccess : _seasonPassSuccess!;
+
+  int get currentSeasonShooting => players.fold(0, (previousValue, element) => previousValue + element.seasonShooting);
+  int get currentSeasonDefSuccess => players.fold(0, (previousValue, element) => previousValue + element.seasonDefSuccess);
+  int get currentSeasonPassSuccess => players.fold(0, (previousValue, element) => previousValue + element.seasonPassSuccess);
 
   ///득점수
   int gf = 0;

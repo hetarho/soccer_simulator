@@ -37,6 +37,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   bool _showDetailHistory = false;
   Duration _timer = const Duration(seconds: 0);
   bool _isLoading = false;
+  int _currentBeforeSeason = 1;
 
   @override
   void initState() {
@@ -251,19 +252,17 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                             ),
                           const SizedBox(height: 8),
                           if (_showBeforeLeagueTable)
-                            ..._league.seasons.map(
-                              (season) => Column(
-                                children: [
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(20),
-                                      child: LeagueTableWidget(clubs: season.seasonRecords),
-                                    ),
+                            Column(
+                              children: [
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: LeagueTableWidget(clubs: _league.seasons[_currentBeforeSeason].seasonRecords),
                                   ),
-                                  const SizedBox(height: 8),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(height: 8),
+                              ],
                             ),
                           if (_showDetailHistory)
                             Column(

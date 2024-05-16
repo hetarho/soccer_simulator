@@ -20,7 +20,7 @@ class League implements Jsonable {
   Season get currentSeason => _currentSeason;
 
   endCurrentSeason() {
-    _currentSeason.seasonEnd(table.map((club) => Club.copy(club)).toList());
+    _currentSeason.seasonEnd(table.map((club) => Club.save(club)).toList());
     int ranking = 0;
     for (var club in clubs) {
       club.startNewSeason(seasons.length, ranking++);
