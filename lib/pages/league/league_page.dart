@@ -32,7 +32,6 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   int _finishedFixtureNum = 0;
   bool _showFixtures = false;
   bool _showLeagueTable = false;
-  bool _showBeforeLeagueTable = false;
   bool _showTopScorerTable = false;
   bool _showDetailHistory = false;
   Duration _timer = const Duration(seconds: 0);
@@ -84,7 +83,8 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
           await Future.delayed(Duration.zero);
           _finishedFixtureNum = 0;
           _league.nextRound();
-          _autoPlaying();
+          _initFixture();
+          _startAllFixtures();
         }
       }
       if (mounted) {
@@ -113,48 +113,48 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          ElevatedButton(onPressed: _save, child: const Text('save')),
+        ],
+      ),
       body: Stack(
         children: [
           Column(
             children: [
-              const SizedBox(height: 64),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Column(
                   children: [
                     Row(
                       children: [
-                        ElevatedButton(onPressed: _save, child: const Text('save')),
-                        ElevatedButton(
+                        _StyedButton(
                           onPressed: () async {
                             _startAllFixtures();
                           },
-                          child: const Text('game start'),
+                          child: const Icon(Icons.play_arrow),
                         ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            _league.nextRound();
-                            _initFixture();
-                            if (mounted) setState(() {});
-                          },
-                          child: const Text('다음경기로'),
-                        ),
-                        ElevatedButton(
+                        _StyedButton(
                           onPressed: () async {
                             if (_league.round == 38) {
                               _league.endCurrentSeason();
                               _league.startNewSeason();
                               _save();
-                              if (mounted) setState(() {});
+                            } else {
+                              _league.nextRound();
+                              _initFixture();
                             }
+                            if (mounted) setState(() {});
                           },
-                          child: const Text('다음시즌'),
+                          child: const Text('next'),
                         ),
                         ElevatedButton(
-                          onPressed: () async {
-                            context.pop();
+                          onPressed: () {
+                            setState(() {
+                              _showFixtures = !_showFixtures;
+                            });
                           },
-                          child: const Text('뒤로가기'),
+                          child: const Text('경기들 보기'),
                         ),
                       ],
                     ),
@@ -167,35 +167,6 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                               });
                             },
                             child: const Text('득점')),
-                        ElevatedButton(
-                          onPressed: () async {
-                            if (_isAutoPlay) {
-                              _isAutoPlay = false;
-                            } else {
-                              _autoPlaying();
-                            }
-                          },
-                          child: const Text('자동'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            _isAutoPlaySeason = !_isAutoPlaySeason;
-                            setState(() {});
-                          },
-                          style: ElevatedButton.styleFrom(backgroundColor: _isAutoPlaySeason ? Colors.blue : Colors.black),
-                          child: const Text(
-                            '시즌 자동플레이',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _showFixtures = !_showFixtures;
-                            });
-                          },
-                          child: const Text('경기들 보기'),
-                        ),
                         ElevatedButton(
                           onPressed: () {
                             setState(() {
@@ -215,6 +186,28 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                         ),
                       ],
                     ),
+                    Row(
+                      children: [
+                        const Text('경기 자동'),
+                        Switch(
+                          value: _isAutoPlay,
+                          onChanged: (bool value) {
+                            setState(() {
+                              _isAutoPlay = value;
+                            });
+                          },
+                        ),
+                        const Text('시즌 자동'),
+                        Switch(
+                          value: _isAutoPlaySeason,
+                          onChanged: (bool value) {
+                            setState(() {
+                              _isAutoPlaySeason = value;
+                            });
+                          },
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -250,7 +243,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                             });
                                           }
                                         },
-                                        child: Text('prev')),
+                                        child: const Text('prev')),
                                     Text('season:$_currentBeforeSeason'),
                                     ElevatedButton(
                                         onPressed: () {
@@ -260,14 +253,14 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                             });
                                           }
                                         },
-                                        child: Text('next')),
+                                        child: const Text('next')),
                                     ElevatedButton(
                                         onPressed: () {
                                           setState(() {
                                             _currentBeforeSeason = _league.seasons.length - 1;
                                           });
                                         },
-                                        child: Text('current')),
+                                        child: const Text('current')),
                                   ],
                                 ),
                                 SingleChildScrollView(
@@ -316,6 +309,25 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
             )
         ],
       ),
+    );
+  }
+}
+
+class _StyedButton extends StatelessWidget {
+  const _StyedButton({required this.onPressed, required this.child});
+  final void Function() onPressed;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        minimumSize: const Size(0, 40),
+        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+      ),
+      onPressed: onPressed,
+      child: child,
     );
   }
 }

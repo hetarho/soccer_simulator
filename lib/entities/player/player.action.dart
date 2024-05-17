@@ -695,7 +695,7 @@ extension PlayerMove on Player {
 
     double finalShootStat = stat * (R().getDouble() > 0.6 ? 1 : evadePressurePoint) * (R().getDouble() > 0.65 ? 12.5 : 1);
 
-    bool isShootOnTarget = finalShootStat > R().getDouble(min: 100 / stat, max: 100);
+    bool isShootOnTarget = finalShootStat > R().getDouble(min: 80 / stat, max: 120);
 
     if (isShootOnTarget) {
       shootOnTarget();
@@ -703,7 +703,7 @@ extension PlayerMove on Player {
 
     double finalKeepingStat = goalKeeper.keepingStat + distanceToGoalPost;
 
-    bool isGoal = finalShootStat / finalKeepingStat > R().getDouble(min: 0.15, max: 0.55) && isShootOnTarget;
+    bool isGoal = finalShootStat / finalKeepingStat > R().getDouble(min: 0.15, max: 0.62) && isShootOnTarget;
 
     if (isGoal) {
       goal();
