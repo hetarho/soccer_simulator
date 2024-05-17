@@ -18,6 +18,9 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
+      onExit: (context) {
+        return false;
+      },
       path: '/league',
       builder: (BuildContext context, GoRouterState state) {
         return const LeaguePage();
