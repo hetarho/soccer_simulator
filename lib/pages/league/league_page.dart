@@ -37,7 +37,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   bool _showDetailHistory = false;
   Duration _timer = const Duration(seconds: 0);
   bool _isLoading = false;
-  int _currentBeforeSeason = 1;
+  int _currentBeforeSeason = 0;
 
   @override
   void initState() {
@@ -141,23 +141,14 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            _league.endCurrentSeason();
-                            _league.startNewSeason();
-                            _save();
-                            if (mounted) setState(() {});
+                            if (_league.round == 38) {
+                              _league.endCurrentSeason();
+                              _league.startNewSeason();
+                              _save();
+                              if (mounted) setState(() {});
+                            }
                           },
                           child: const Text('다음시즌'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            _isAutoPlaySeason = !_isAutoPlaySeason;
-                            setState(() {});
-                          },
-                          style: ElevatedButton.styleFrom(backgroundColor: _isAutoPlaySeason ? Colors.blue : Colors.black),
-                          child: const Text(
-                            '시즌 자동플레이',
-                            style: TextStyle(color: Colors.white),
-                          ),
                         ),
                         ElevatedButton(
                           onPressed: () async {
@@ -187,6 +178,17 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                           child: const Text('자동'),
                         ),
                         ElevatedButton(
+                          onPressed: () async {
+                            _isAutoPlaySeason = !_isAutoPlaySeason;
+                            setState(() {});
+                          },
+                          style: ElevatedButton.styleFrom(backgroundColor: _isAutoPlaySeason ? Colors.blue : Colors.black),
+                          child: const Text(
+                            '시즌 자동플레이',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        ElevatedButton(
                           onPressed: () {
                             setState(() {
                               _showFixtures = !_showFixtures;
@@ -197,18 +199,11 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                         ElevatedButton(
                           onPressed: () {
                             setState(() {
+                              _currentBeforeSeason = _league.seasons.length - 1;
                               _showLeagueTable = !_showLeagueTable;
                             });
                           },
                           child: const Text('순위 보기'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _showBeforeLeagueTable = !_showBeforeLeagueTable;
-                            });
-                          },
-                          child: const Text('지난 순위 보기'),
                         ),
                         ElevatedButton(
                           onPressed: () {
@@ -243,22 +238,43 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                             ),
                           if (_showTopScorerTable) PlayerTableWidget(league: _league),
                           if (_showLeagueTable)
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: LeagueTableWidget(clubs: _league.table),
-                              ),
-                            ),
-                          const SizedBox(height: 8),
-                          if (_showBeforeLeagueTable)
                             Column(
                               children: [
+                                Row(
+                                  children: [
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          if (_currentBeforeSeason > 0) {
+                                            setState(() {
+                                              _currentBeforeSeason--;
+                                            });
+                                          }
+                                        },
+                                        child: Text('prev')),
+                                    Text('season:$_currentBeforeSeason'),
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          if (_currentBeforeSeason < _league.seasons.length - 1) {
+                                            setState(() {
+                                              _currentBeforeSeason++;
+                                            });
+                                          }
+                                        },
+                                        child: Text('next')),
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _currentBeforeSeason = _league.seasons.length - 1;
+                                          });
+                                        },
+                                        child: Text('current')),
+                                  ],
+                                ),
                                 SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
                                   child: Padding(
                                     padding: const EdgeInsets.all(20),
-                                    child: LeagueTableWidget(clubs: _league.seasons[_currentBeforeSeason].seasonRecords),
+                                    child: LeagueTableWidget(clubs: _currentBeforeSeason == _league.seasons.length - 1 ? _league.table : _league.seasons[_currentBeforeSeason].seasonRecords),
                                   ),
                                 ),
                                 const SizedBox(height: 8),

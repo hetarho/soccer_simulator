@@ -13,7 +13,7 @@ class League implements Jsonable {
     startNewSeason();
   }
 
-  get round {
+  int get round {
     return _currentSeason.roundNumber;
   }
 
