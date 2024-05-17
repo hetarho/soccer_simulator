@@ -45,6 +45,28 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
     _initFixture();
   }
 
+  _showWidget(String str) {
+    _showFixtures = false;
+    _showLeagueTable = false;
+    _showTopScorerTable = false;
+    _showDetailHistory = false;
+    switch (str) {
+      case 'fixtures':
+        _showFixtures = true;
+        break;
+      case 'league_table':
+        _showLeagueTable = true;
+        break;
+      case 'personal_table':
+        _showTopScorerTable = true;
+        break;
+      case 'history':
+        _showDetailHistory = true;
+        break;
+    }
+    setState(() {});
+  }
+
   _save() async {
     setState(() {
       _isLoading = true;
@@ -104,18 +126,12 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
     }
   }
 
-  _autoPlaying() {
-    _isAutoPlay = true;
-    _initFixture();
-    _startAllFixtures();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          ElevatedButton(onPressed: _save, child: const Text('save')),
+          _StyedButton(onPressed: _save, child: const Text('save')),
         ],
       ),
       body: Stack(
@@ -148,41 +164,37 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                           },
                           child: const Text('next'),
                         ),
-                        ElevatedButton(
+                        _StyedButton(
                           onPressed: () {
-                            setState(() {
-                              _showFixtures = !_showFixtures;
-                            });
+                            _showWidget('fixtures');
                           },
                           child: const Text('경기들 보기'),
                         ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        ElevatedButton(
+                        _StyedButton(
                             onPressed: () {
-                              setState(() {
-                                _showTopScorerTable = !_showTopScorerTable;
-                              });
+                              _showWidget('personal_table');
                             },
                             child: const Text('득점')),
-                        ElevatedButton(
+                        _StyedButton(
                           onPressed: () {
                             setState(() {
                               _currentBeforeSeason = _league.seasons.length - 1;
-                              _showLeagueTable = !_showLeagueTable;
+                              _showWidget('league_table');
                             });
                           },
                           child: const Text('순위 보기'),
                         ),
-                        ElevatedButton(
+                        _StyedButton(
                           onPressed: () {
-                            setState(() {
-                              _showDetailHistory = !_showDetailHistory;
-                            });
+                            _showWidget('history');
                           },
                           child: const Text('역사'),
+                        ),
+                        _StyedButton(
+                          onPressed: () {
+                            _showWidget('');
+                          },
+                          child: const Text('close'),
                         ),
                       ],
                     ),
@@ -234,8 +246,9 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                             Column(
                               children: [
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    ElevatedButton(
+                                    _StyedButton(
                                         onPressed: () {
                                           if (_currentBeforeSeason > 0) {
                                             setState(() {
@@ -245,7 +258,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                         },
                                         child: const Text('prev')),
                                     Text('season:$_currentBeforeSeason'),
-                                    ElevatedButton(
+                                    _StyedButton(
                                         onPressed: () {
                                           if (_currentBeforeSeason < _league.seasons.length - 1) {
                                             setState(() {
@@ -254,7 +267,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                           }
                                         },
                                         child: const Text('next')),
-                                    ElevatedButton(
+                                    _StyedButton(
                                         onPressed: () {
                                           setState(() {
                                             _currentBeforeSeason = _league.seasons.length - 1;

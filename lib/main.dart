@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
           primary: Colors.blue,
           onSurface: Colors.black,
         ),
-        scaffoldBackgroundColor: Colors.white,
+        // scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
       ),
       localizationsDelegates: const [
