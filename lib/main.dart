@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:soccer_simulator/router/routes.dart';
 
@@ -25,8 +26,10 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.blue,
           primary: Colors.blue,
         ),
-        // scaffoldBackgroundColor: Colors.white,
-        useMaterial3: true,
+        textTheme: TextTheme(
+          bodyMedium: GoogleFonts.permanentMarker(),
+          bodyLarge: GoogleFonts.permanentMarker(fontSize: 18),
+        ),
       ),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

@@ -4,6 +4,7 @@ import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/dbManager/db_manager.dart';
 import 'package:soccer_simulator/entities/fixture/fixture.dart';
@@ -153,6 +154,9 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
     }
   }
 
+  bool get _canPlay => _timer.inMinutes == 0;
+  bool get _canNext => _timer.inMinutes == 90;
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -207,28 +211,6 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      ElevatedButton(
-                        onPressed: () async {
-                          _startAllFixtures();
-                        },
-                        child: const Icon(Icons.play_arrow),
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          if (_league.round == 38) {
-                            _league.endCurrentSeason();
-                            _league.startNewSeason();
-                            _save();
-                            await _league.nextRound();
-                            await _initFixture();
-                          } else {
-                            _league.nextRound();
-                            await _initFixture();
-                          }
-                          if (mounted) setState(() {});
-                        },
-                        child: const Text('next'),
-                      ),
                       const Text('경기 자동'),
                       Switch(
                         value: _isAutoPlay,
@@ -275,7 +257,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      ElevatedButton(
+                                      TextButton(
                                         onPressed: () {
                                           if (_currentBeforeSeason > 0) {
                                             setState(() {
@@ -286,7 +268,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                         child: const Icon(Icons.arrow_left),
                                       ),
                                       Text('season:$_currentBeforeSeason'),
-                                      ElevatedButton(
+                                      TextButton(
                                         onPressed: () {
                                           if (_currentBeforeSeason < _league.seasons.length - 1) {
                                             setState(() {
@@ -322,10 +304,23 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                     ...[..._league.clubs]..sort(
                                         (a, b) => a.winner == b.winner ? b.ptsAverage - a.ptsAverage : b.winner - a.winner,
                                       )
-                                  ].map((club) => Row(
-                                        children: [
-                                          Text('${club.name}: 우승${club.winner}회 평균 승점:${club.ptsAverage}'),
-                                        ],
+                                  ].map((club) => DefaultTextStyle(
+                                        style: Theme.of(context).textTheme.bodyLarge!,
+                                        child: Row(
+                                          children: [
+                                            SizedBox(
+                                              width: 60,
+                                              child: Text(club.nickName),
+                                            ),
+                                            SizedBox(
+                                              width: 110,
+                                              child: Text('winner - ${club.winner}'),
+                                            ),
+                                            SizedBox(
+                                              child: Text('pts - ${club.ptsAverage}'),
+                                            ),
+                                          ],
+                                        ),
                                       ))
                                 ],
                               ),
@@ -349,6 +344,64 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                   ),
                 ),
               )
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 40,
+              width: 150,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: _canPlay ? Colors.blue[800] : Colors.blue[100],
+                ),
+                onPressed: () async {
+                  if (_canPlay) _startAllFixtures();
+                },
+                child: Text(
+                  'play',
+                  style: GoogleFonts.permanentMarker(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            SizedBox(
+              height: 40,
+              width: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: _canNext ? Colors.blue[800] : Colors.blue[100],
+                  padding: const EdgeInsets.all(0),
+                ),
+                onPressed: () async {
+                  if (!_canNext) return;
+                  _timer = Duration.zero;
+                  if (_league.round == 38) {
+                    _league.endCurrentSeason();
+                    _league.startNewSeason();
+                    _save();
+                    await _league.nextRound();
+                    await _initFixture();
+                  } else {
+                    _league.nextRound();
+                    await _initFixture();
+                  }
+                  if (mounted) setState(() {});
+                },
+                child: const Icon(
+                  Icons.keyboard_double_arrow_right_rounded,
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ],
         ),
       ),
