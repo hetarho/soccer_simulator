@@ -9,7 +9,6 @@ extension PlayerStat on Player {
     res = res + stat.attSkill * 0.5;
     res = res + stat.strength * 0.1;
     res = res + stat.composure * 0.2;
-    res = res + _currentStamina * 0.05;
     return res.round();
   }
 
@@ -19,7 +18,6 @@ extension PlayerStat on Player {
     res = res + stat.attSkill * 0.25;
     res = res + stat.strength * 0.45;
     res = res + stat.composure * 0.05;
-    res = res + _currentStamina * 0.05;
     return res.round();
   }
 
@@ -28,7 +26,6 @@ extension PlayerStat on Player {
     double res = soccerIQ * 0.5;
     res = res + stat.passSkill * 0.4;
     res = res + stat.composure * 0.05;
-    res = res + _currentStamina * 0.05;
     return res.round();
   }
 
@@ -38,7 +35,6 @@ extension PlayerStat on Player {
     res = res + stat.passSkill * 0.5;
     res = res + stat.teamwork * 0.01;
     res = res + stat.composure * 0.05;
-    res = res + _currentStamina * 0.05;
     return res.round();
   }
 
@@ -48,7 +44,6 @@ extension PlayerStat on Player {
     res = res + stat.passSkill * 0.5;
     res = res + stat.strength * 0.2;
     res = res + stat.composure * 0.05;
-    res = res + _currentStamina * 0.05;
     return res.round();
   }
 
@@ -58,7 +53,6 @@ extension PlayerStat on Player {
     res = res + (height * 0.7) * 0.25;
     res = res + stat.strength * 0.25;
     res = res + stat.attSkill * 0.3;
-    res = res + _currentStamina * 0.1;
     return res.round();
   }
 
@@ -68,7 +62,6 @@ extension PlayerStat on Player {
     res = res + reflex * 0.2;
     res = res + stat.attSkill * 0.2;
     res = res + flexibility * 0.2;
-    res = res + _currentStamina * 0.1;
     return res.round();
   }
 
@@ -77,7 +70,6 @@ extension PlayerStat on Player {
     double res = soccerIQ * 0.4;
     res = res + reflex * 0.25;
     res = res + flexibility * 0.1;
-    res = res + _currentStamina * 0.05;
     res = res + stat.composure * 0.2;
     return res.round();
   }
@@ -85,7 +77,6 @@ extension PlayerStat on Player {
   ///태클 - 축구지능 + 반응속도 + 체력 + 기술 + 침착함
   int get tackleStat {
     double res = soccerIQ * 0.1;
-    res = res + _currentStamina * 0.05;
     res = res + stat.defSkill * 0.8;
     res = res + stat.composure * 0.05;
     return res.round();
@@ -102,7 +93,6 @@ extension PlayerStat on Player {
   ///압박 - 축구지능 + 체력 + 조직력 + 침착함
   int get pressureStat {
     double res = soccerIQ * 0.35;
-    res = res + _currentStamina * 0.3;
     res = res + stat.teamwork * 0.3;
     res = res + stat.composure * 0.05;
     return res.round();
@@ -117,7 +107,6 @@ extension PlayerStat on Player {
   int get judgementStat {
     double res = soccerIQ * 0.2;
     res = res + reflex * 0.2;
-    res = res + _currentStamina * 0.2;
     res = res + stat.teamwork * 0.1;
     res = res + stat.composure * 0.3;
     return res.round();
@@ -126,7 +115,6 @@ extension PlayerStat on Player {
   ///시야 - 축구지능 + 체력  + 반응속도 + 침착함
   int get visionStat {
     double res = soccerIQ * 0.4;
-    res = res + _currentStamina * 0.2;
     res = res + reflex * 0.1;
     res = res + stat.composure * 0.3;
     return res.round();

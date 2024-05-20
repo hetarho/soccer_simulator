@@ -359,9 +359,10 @@ extension PlayerMove on Player {
         };
 
     /// 경기장 중앙에 있는 경우
-    bool canShortShoot = posXY.x > 25 && posXY.x < 75 && opponentsNumNearShootRout < R().getDouble(min: 1.5, max: 12.5 * shootBonus);
+    bool canShortShoot = posXY.x > 30 && posXY.x < 70 && opponentsNumNearShootRout < R().getDouble(min: 0.5, max: 10.5 * shootBonus);
 
-    bool canMidrangeShoot = canShortShoot && pow(distanceToGoalPost, 2) / midRangeShootStat < R().getDouble(min: 15, max: 75 * shootBonus);
+    bool canMidrangeShortShoot = posXY.x > 25 && posXY.x < 75;
+    bool canMidrangeShoot = canMidrangeShortShoot && pow(distanceToGoalPost, 2.05) / midRangeShootStat < R().getDouble(min: 35, max: 120 * shootBonus);
 
     ///슈팅 가능한 경우
     if (distanceToGoalPost < 30 ? canShortShoot : canMidrangeShoot) {
@@ -428,8 +429,10 @@ extension PlayerMove on Player {
       bool isNotClose = opponent.reversePosXy.distance(posXY) > 10;
 
       ///패스 길 사이에 적이 있는지 여부
-      bool isOpponentBetween =
-          opponent.reversePosXy.x >= min(posXY.x, target.posXY.x) && opponent.reversePosXy.x <= max(posXY.x, target.posXY.x) && opponent.reversePosXy.y >= min(posXY.y, target.posXY.y) && opponent.reversePosXy.y <= max(posXY.y, target.posXY.y);
+      bool isOpponentBetween = opponent.reversePosXy.x >= min(posXY.x, target.posXY.x) &&
+          opponent.reversePosXy.x <= max(posXY.x, target.posXY.x) &&
+          opponent.reversePosXy.y >= min(posXY.y, target.posXY.y) &&
+          opponent.reversePosXy.y <= max(posXY.y, target.posXY.y);
 
       ///패스 길과 해당 선수와의 거리
       double distanceToPathRoute = min(1, M().getDistanceFromPointToLine(linePoint1: posXY, linePoint2: target.posXY, point: opponent.reversePosXy));
@@ -514,7 +517,10 @@ extension PlayerMove on Player {
 
     int closerPlayerAtBall = team!.players.where((player) => player.reversePosXy.distance(_ballPosXY) < reversePosXy.distance(_ballPosXY)).length;
 
-    bool canPress = (tactics.pressDistance + team!.tactics.pressDistance > ballPos.distance(startingPoxXY)) && isNotGoalKick && !(ballPos.x == posXY.x && ballPos.y == posXY.y) && closerPlayerAtBall < _ballPosXY.y / 50;
+    bool canPress = (tactics.pressDistance + team!.tactics.pressDistance > ballPos.distance(startingPoxXY)) &&
+        isNotGoalKick &&
+        !(ballPos.x == posXY.x && ballPos.y == posXY.y) &&
+        closerPlayerAtBall < _ballPosXY.y / 50;
 
     if (canTackle) {
       _tackle(_currentFixture.playerWithBall!);
@@ -555,7 +561,10 @@ extension PlayerMove on Player {
 
     List<PosXY> poss = List.generate(5, (index) => PosXY.random(posXY.x, posXY.y + attBonus, 5));
 
-    poss.sort((a, b) => _getEvadePressurePoint(evadePressStat: evadePressStat, opponents: opponents, targetPosXY: a) - _getEvadePressurePoint(evadePressStat: evadePressStat, opponents: opponents, targetPosXY: b) > 0 ? 1 : -1);
+    poss.sort((a, b) =>
+        _getEvadePressurePoint(evadePressStat: evadePressStat, opponents: opponents, targetPosXY: a) - _getEvadePressurePoint(evadePressStat: evadePressStat, opponents: opponents, targetPosXY: b) > 0
+            ? 1
+            : -1);
 
     _move(targetPosXY: poss.first);
   }
@@ -630,8 +639,10 @@ extension PlayerMove on Player {
 
     for (var opponent in opponents) {
       ///패스 길 사이에 적이 있는지 여부
-      bool isOpponentBetween =
-          opponent.reversePosXy.x >= min(posXY.x, target.posXY.x) && opponent.reversePosXy.x <= max(posXY.x, target.posXY.x) && opponent.reversePosXy.y >= min(posXY.y, target.posXY.y) && opponent.reversePosXy.y <= max(posXY.y, target.posXY.y);
+      bool isOpponentBetween = opponent.reversePosXy.x >= min(posXY.x, target.posXY.x) &&
+          opponent.reversePosXy.x <= max(posXY.x, target.posXY.x) &&
+          opponent.reversePosXy.y >= min(posXY.y, target.posXY.y) &&
+          opponent.reversePosXy.y <= max(posXY.y, target.posXY.y);
 
       ///패스 길과 해당 선수와의 거리
       double distanceToPathRoute = min(1, M().getDistanceFromPointToLine(linePoint1: posXY, linePoint2: target.posXY, point: opponent.reversePosXy));
@@ -685,15 +696,15 @@ extension PlayerMove on Player {
 
     double finalShootStat = stat * (R().getDouble() > 0.6 ? 1 : evadePressurePoint) * (R().getDouble() > 0.65 ? 12.5 : 1);
 
-    bool isShootOnTarget = finalShootStat > R().getDouble(min: 80 / stat, max: 120);
+    bool isShootOnTarget = finalShootStat > R().getDouble(min: 80 / stat, max: 130);
 
     if (isShootOnTarget) {
       shootOnTarget();
     }
 
-    double finalKeepingStat = goalKeeper.keepingStat + distanceToGoalPost;
+    double finalKeepingStat = goalKeeper.keepingStat + distanceToGoalPost * 0.65;
 
-    bool isGoal = finalShootStat / finalKeepingStat > R().getDouble(min: 0.15, max: 0.62) && isShootOnTarget;
+    bool isGoal = finalShootStat / finalKeepingStat > R().getDouble(min: 0.13, max: 0.59) && isShootOnTarget;
 
     if (isGoal) {
       goal();

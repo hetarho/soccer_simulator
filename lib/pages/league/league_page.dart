@@ -132,7 +132,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
           await Future.delayed(Duration.zero);
           _finishedFixtureNum = 0;
           _league.nextRound();
-          _initFixture();
+          await _initFixture();
           _startAllFixtures();
         }
       }
@@ -219,9 +219,11 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                             _league.endCurrentSeason();
                             _league.startNewSeason();
                             _save();
+                            await _league.nextRound();
+                            await _initFixture();
                           } else {
                             _league.nextRound();
-                            _initFixture();
+                            await _initFixture();
                           }
                           if (mounted) setState(() {});
                         },
@@ -353,6 +355,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
     );
   }
 }
+
 class ClubInfo extends ConsumerWidget {
   const ClubInfo({super.key, required this.club, required this.showWDL});
   final Club club;
