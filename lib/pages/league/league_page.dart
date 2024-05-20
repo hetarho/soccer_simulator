@@ -130,6 +130,15 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: TextButton(
+          onPressed: () {
+            context.push('/');
+          },
+          child: const Icon(
+            Icons.arrow_back,
+            size: 16,
+          ),
+        ),
         actions: [
           _StyedButton(onPressed: _save, child: const Text('save')),
         ],

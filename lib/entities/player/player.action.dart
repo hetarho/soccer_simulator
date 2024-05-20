@@ -163,10 +163,10 @@ extension PlayerMove on Player {
 
     ///선수와의 거리가 가까울수록 매력도 상승 0 ~ 60점
     attractive += switch (targetPosXY.distance(posXY)) {
-          < 20 => 60,
-          < 35 => 45,
-          < 55 => 30,
-          < 80 => 15,
+          < 20 => 40,
+          < 35 => 30,
+          < 55 => 20,
+          < 80 => 10,
           _ => 0,
         } *
         switch (tactics.shortPassLevel) {
