@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
@@ -34,14 +35,14 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   StreamSubscription<FixtureRecord>? _roundSubscription;
   int _finishedFixtureNum = 0;
   bool _showFixtures = false;
-  bool _showLeagueTable = false;
+  bool _showLeagueTable = true;
   bool _showTopScorerTable = false;
   bool _showDetailHistory = false;
   Duration _timer = const Duration(seconds: 0);
   bool _isLoading = false;
   int _currentBeforeSeason = 0;
 
-  int _selectedBottomNavigationIndex = 0;
+  int _selectedBottomNavigationIndex = 1;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -138,9 +139,11 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
         }
       }
       if (mounted) {
-        setState(() {
-          if (_timer.compareTo(event.time) < 0 || event.time.inMinutes == 0) _timer = event.time;
-        });
+        if (_timer.compareTo(event.time) < 0 || event.time.inMinutes == 0) {
+          setState(() {
+            _timer = event.time;
+          });
+        }
       }
     });
 
@@ -162,7 +165,18 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
     return PopScope(
       canPop: false,
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          flexibleSpace: ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // 블러 효과 설정
+              child: Container(
+                color: Colors.transparent, // 반투명도 설정
+              ),
+            ),
+          ),
           leading: TextButton(
             onPressed: () {
               context.go('/');
@@ -170,6 +184,34 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
             child: const Icon(Icons.arrow_back),
           ),
           actions: [
+            const Text('auto'),
+            SizedBox(
+              width: 40,
+              child: FittedBox(
+                child: Switch(
+                  value: _isAutoPlay,
+                  onChanged: (bool value) {
+                    setState(() {
+                      _isAutoPlay = value;
+                    });
+                  },
+                ),
+              ),
+            ),
+            const Text('skip season'),
+            SizedBox(
+              width: 40,
+              child: FittedBox(
+                child: Switch(
+                  value: _isAutoPlaySeason,
+                  onChanged: (bool value) {
+                    setState(() {
+                      _isAutoPlaySeason = value;
+                    });
+                  },
+                ),
+              ),
+            ),
             TextButton(
               onPressed: () {
                 context.push('/setting');
@@ -184,15 +226,15 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
           type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.book),
+              icon: Icon(Icons.person),
               label: 'Person ',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.book),
+              icon: Icon(Icons.emoji_events),
               label: 'Table',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.search),
+              icon: Icon(Icons.list),
               label: 'Matches',
             ),
             BottomNavigationBarItem(
@@ -207,31 +249,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
           children: [
             Column(
               children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      const Text('경기 자동'),
-                      Switch(
-                        value: _isAutoPlay,
-                        onChanged: (bool value) {
-                          setState(() {
-                            _isAutoPlay = value;
-                          });
-                        },
-                      ),
-                      const Text('시즌 자동'),
-                      Switch(
-                        value: _isAutoPlaySeason,
-                        onChanged: (bool value) {
-                          setState(() {
-                            _isAutoPlaySeason = value;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
+                SizedBox(height: 120),
                 Text('round : ${_league.round} time:${_timer.inMinutes}'),
                 Expanded(
                   child: CustomScrollView(
@@ -255,9 +273,14 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                               Column(
                                 children: [
                                   Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       TextButton(
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.all(0),
+                                          minimumSize: const Size(30, 0),
+                                        ),
                                         onPressed: () {
                                           if (_currentBeforeSeason > 0) {
                                             setState(() {
@@ -265,10 +288,20 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                             });
                                           }
                                         },
-                                        child: const Icon(Icons.arrow_left),
+                                        child: Text(
+                                          '<',
+                                          style: Theme.of(context).textTheme.bodyLarge!,
+                                        ),
                                       ),
-                                      Text('season:$_currentBeforeSeason'),
+                                      Text(
+                                        'season:$_currentBeforeSeason',
+                                        style: Theme.of(context).textTheme.bodyLarge!,
+                                      ),
                                       TextButton(
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.all(0),
+                                          minimumSize: const Size(30, 0),
+                                        ),
                                         onPressed: () {
                                           if (_currentBeforeSeason < _league.seasons.length - 1) {
                                             setState(() {
@@ -276,21 +309,34 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                             });
                                           }
                                         },
-                                        child: const Icon(Icons.arrow_right),
+                                        child: Text(
+                                          '>',
+                                          style: Theme.of(context).textTheme.bodyLarge!,
+                                        ),
                                       ),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _currentBeforeSeason = _league.seasons.length - 1;
-                                            });
-                                          },
-                                          child: const Text('current')),
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.all(0),
+                                          minimumSize: const Size(30, 0),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            _currentBeforeSeason = _league.seasons.length - 1;
+                                          });
+                                        },
+                                        child: Text(
+                                          '>>',
+                                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                                letterSpacing: -4,
+                                              ),
+                                        ),
+                                      )
                                     ],
                                   ),
                                   SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
                                     child: Padding(
-                                      padding: const EdgeInsets.all(20),
+                                      padding: const EdgeInsets.all(4),
                                       child: LeagueTableWidget(clubs: _currentBeforeSeason == _league.seasons.length - 1 ? _league.table : _league.seasons[_currentBeforeSeason].seasonRecords),
                                     ),
                                   ),
@@ -330,6 +376,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 60),
               ],
             ),
             if (_isLoading)
@@ -351,34 +398,33 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              height: 40,
-              width: 150,
+              height: 50,
+              width: 170,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: _canPlay ? Colors.blue[800] : Colors.blue[100],
+                  backgroundColor: _canPlay ? Colors.blue[900]!.withOpacity(0.7) : Colors.grey.withOpacity(0.3),
                 ),
                 onPressed: () async {
                   if (_canPlay) _startAllFixtures();
                 },
                 child: Text(
                   'play',
-                  style: GoogleFonts.permanentMarker(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        letterSpacing: 10.0,
+                        color: Colors.white,
+                      ),
                 ),
               ),
             ),
             const SizedBox(width: 4),
             SizedBox(
-              height: 40,
+              height: 50,
               width: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: _canNext ? Colors.blue[800] : Colors.blue[100],
+                  backgroundColor: _canNext ? Colors.blue[800]!.withOpacity(0.7) : Colors.grey.withOpacity(0.3),
                   padding: const EdgeInsets.all(0),
                 ),
                 onPressed: () async {

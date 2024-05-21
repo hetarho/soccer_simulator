@@ -27,8 +27,10 @@ class MyApp extends StatelessWidget {
           primary: Colors.blue,
         ),
         textTheme: TextTheme(
-          bodyMedium: GoogleFonts.permanentMarker(),
-          bodyLarge: GoogleFonts.permanentMarker(fontSize: 18),
+          headlineMedium: GoogleFonts.rubikMarkerHatch(fontSize: 26),
+          bodySmall: GoogleFonts.rubikMarkerHatch(fontSize: 12),
+          bodyMedium: GoogleFonts.rubikMarkerHatch(),
+          bodyLarge: GoogleFonts.rubikMarkerHatch(fontSize: 18),
         ),
       ),
       localizationsDelegates: const [
