@@ -425,15 +425,18 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                               width: 30,
                                               child: Icon(
                                                 Icons.emoji_events,
-                                                color: club.winner > 10
-                                                    ? Colors.yellow[600]
-                                                    : club.winner > 0
-                                                        ? Colors.grey[400]
-                                                        : Colors.black,
+                                                color: switch (club.winner) {
+                                                  > 20 => Colors.yellow[900],
+                                                  > 15 => Colors.yellow[700],
+                                                  > 10 => Colors.yellow[500],
+                                                  > 5 => Colors.grey[500],
+                                                  > 0 => Colors.grey[300],
+                                                  _ => Colors.black,
+                                                },
                                               ),
                                             ),
                                             SizedBox(
-                                              width: 20,
+                                              width: 30,
                                               child: Text('${club.winner}'),
                                             ),
                                             SizedBox(
