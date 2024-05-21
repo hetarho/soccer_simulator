@@ -61,7 +61,7 @@ class _State extends ConsumerState<StartPage> {
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
                         min: 75,
-                        max: 90,
+                        max: 85,
                         formation: Formation.create4231(),
                       );
 
@@ -73,7 +73,7 @@ class _State extends ConsumerState<StartPage> {
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
                         min: 75,
-                        max: 90,
+                        max: 85,
                         formation: Formation.create433(),
                       );
 
@@ -85,7 +85,7 @@ class _State extends ConsumerState<StartPage> {
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
                         min: 75,
-                        max: 90,
+                        max: 85,
                         formation: Formation.create442(),
                       );
 
@@ -119,7 +119,7 @@ class _State extends ConsumerState<StartPage> {
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
                         min: 75,
-                        max: 85,
+                        max: 80,
                         formation: Formation.create532(),
                       );
 
@@ -143,7 +143,7 @@ class _State extends ConsumerState<StartPage> {
                       tactics: Tactics.normal(),
                     )..createStartingMembers(
                         min: 75,
-                        max: 85,
+                        max: 80,
                         formation: Formation.create433(),
                       );
                     Club chelsea = Club(
