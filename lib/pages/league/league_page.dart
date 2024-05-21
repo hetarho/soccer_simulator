@@ -41,6 +41,8 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   Duration _timer = const Duration(seconds: 0);
   bool _isLoading = false;
   int _currentBeforeSeason = 0;
+  List<Fixture>? _clubFixtures;
+  bool _changeFixtureMode = false;
 
   int _selectedBottomNavigationIndex = 1;
 
@@ -259,11 +261,63 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                             if (_showFixtures)
                               Expanded(
                                 child: Column(
-                                  children: _fixtures
-                                      .map((fixture) => FixtureInfo(
-                                            fixture: fixture,
-                                          ))
-                                      .toList(),
+                                  children: [
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _clubFixtures = null;
+                                              _changeFixtureMode = false;
+                                            });
+                                          },
+                                          child: const Text('current'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _changeFixtureMode = !_changeFixtureMode;
+                                            });
+                                          },
+                                          child: const Text('select club'),
+                                        ),
+                                      ],
+                                    ),
+                                    if (!_changeFixtureMode)
+                                      ...(_clubFixtures ?? _fixtures).map(
+                                        (fixture) => FixtureInfo(
+                                          fixture: fixture,
+                                        ),
+                                      ),
+                                    if (_changeFixtureMode)
+                                      Wrap(
+                                        children: [
+                                          ..._league.clubs.map((club) => Container(
+                                                margin: EdgeInsets.all(4),
+                                                child: ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: club.homeColor,
+                                                    fixedSize: const Size(85, 50),
+                                                  ),
+                                                  onPressed: () {
+                                                    _clubFixtures = _league.currentSeason.rounds
+                                                        .map(
+                                                          (round) => round.fixtures.firstWhere((fixture) => fixture.home.club.id == club.id || fixture.away.club.id == club.id),
+                                                        )
+                                                        .toList();
+                                                    _changeFixtureMode = false;
+                                                    setState(() {});
+                                                  },
+                                                  child: Text(
+                                                    club.nickName,
+                                                    style: TextStyle(color: C().colorDifference(club.homeColor, Colors.white) > 100 ? Colors.white : Colors.black),
+                                                  ),
+                                                ),
+                                              ))
+                                        ],
+                                      ),
+                                  ],
                                 ),
                               ),
                             if (_showTopScorerTable) PlayerTableWidget(league: _league),
@@ -361,15 +415,29 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                         child: Row(
                                           children: [
                                             SizedBox(
-                                              width: 60,
-                                              child: Text(club.nickName),
+                                              width: 50,
+                                              child: Text(
+                                                club.nickName,
+                                                style: TextStyle(color: C().colorDifference(club.homeColor, Colors.white) > 100 ? club.homeColor : club.awayColor),
+                                              ),
                                             ),
                                             SizedBox(
-                                              width: 110,
-                                              child: Text('winner - ${club.winner}'),
+                                              width: 30,
+                                              child: Icon(
+                                                Icons.emoji_events,
+                                                color: club.winner > 10
+                                                    ? Colors.yellow[600]
+                                                    : club.winner > 0
+                                                        ? Colors.grey[400]
+                                                        : Colors.black,
+                                              ),
                                             ),
                                             SizedBox(
-                                              child: Text('pts - ${club.ptsAverage}'),
+                                              width: 20,
+                                              child: Text('${club.winner}'),
+                                            ),
+                                            SizedBox(
+                                              child: Text('/ pts avg - ${club.ptsAverage}'),
                                             ),
                                           ],
                                         ),

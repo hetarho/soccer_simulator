@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
           primary: Colors.blue,
         ),
         textTheme: TextTheme(
+          labelLarge: GoogleFonts.rubikMarkerHatch(fontSize: 16),
           headlineMedium: GoogleFonts.rubikMarkerHatch(fontSize: 26),
           bodySmall: GoogleFonts.rubikMarkerHatch(fontSize: 12),
           bodyMedium: GoogleFonts.rubikMarkerHatch(),

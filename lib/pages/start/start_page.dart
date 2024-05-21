@@ -369,35 +369,39 @@ class _State extends ConsumerState<StartPage> {
               const SizedBox(height: 24),
               ..._saveSlot.map((slot) => Column(
                     children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              ref.read(saveSlotProvider.notifier).state = slot;
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  ref.read(saveSlotProvider.notifier).state = slot;
 
-                              if (context.mounted) context.push('/league');
-                            },
-                            child: Text(slot.id),
-                          ),
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                            onPressed: () async {
-                              DbManager<SaveSlot> manager = DbManager('saveSlot');
-
-                              await manager.delete(slot.id);
-                              _saveSlot = (manager.getAll()).map((e) => SaveSlot.fromJson(e)).toList();
-
-                              setState(() {});
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(0),
-                              backgroundColor: Colors.red[400],
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+                                  if (context.mounted) context.push('/league');
+                                },
+                                child: Text('${slot.club.name} / ${slot.league.seasons.length}'),
+                              ),
                             ),
-                            child: const Text('delete', style: TextStyle(color: Colors.white)),
-                          )
-                        ],
+                            const SizedBox(width: 8),
+                            ElevatedButton(
+                              onPressed: () async {
+                                DbManager<SaveSlot> manager = DbManager('saveSlot');
+
+                                await manager.delete(slot.id);
+                                _saveSlot = (manager.getAll()).map((e) => SaveSlot.fromJson(e)).toList();
+
+                                setState(() {});
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.all(0),
+                                backgroundColor: Colors.red[400],
+                              ),
+                              child: const Text('delete', style: TextStyle(color: Colors.white)),
+                            )
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 16),
                     ],
