@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:soccer_simulator/router/routes.dart';
+import 'package:wakelock/wakelock.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Wakelock.enable();
     return MaterialApp.router(
       title: 'Flutter Demo',
       theme: ThemeData(
