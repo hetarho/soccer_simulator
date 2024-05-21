@@ -165,18 +165,17 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        extendBodyBehindAppBar: true,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.transparent, // AppBar의 배경을 투명하게 설정
           elevation: 0,
-          flexibleSpace: ClipRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // 블러 효과 설정
-              child: Container(
-                color: Colors.transparent, // 반투명도 설정
-              ),
-            ),
-          ),
+          scrolledUnderElevation: 0,
+          // flexibleSpace: ClipRect(
+          //   child: BackdropFilter(
+          //     filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // 블러 효과 설정
+          //     child: Container(),
+          //   ),
+          // ),
+
           leading: TextButton(
             onPressed: () {
               context.go('/');
@@ -249,7 +248,6 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
           children: [
             Column(
               children: [
-                SizedBox(height: 120),
                 Text('round : ${_league.round} time:${_timer.inMinutes}'),
                 Expanded(
                   child: CustomScrollView(
@@ -273,62 +271,70 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                               Column(
                                 children: [
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.all(0),
-                                          minimumSize: const Size(30, 0),
-                                        ),
-                                        onPressed: () {
-                                          if (_currentBeforeSeason > 0) {
-                                            setState(() {
-                                              _currentBeforeSeason--;
-                                            });
-                                          }
-                                        },
-                                        child: Text(
-                                          '<',
-                                          style: Theme.of(context).textTheme.bodyLarge!,
+                                      SizedBox(
+                                        width: 20,
+                                        child: TextButton(
+                                          style: TextButton.styleFrom(
+                                            padding: const EdgeInsets.all(0),
+                                            minimumSize: Size.zero,
+                                          ),
+                                          onPressed: () {
+                                            if (_currentBeforeSeason > 0) {
+                                              setState(() {
+                                                _currentBeforeSeason--;
+                                              });
+                                            }
+                                          },
+                                          child: Text(
+                                            '<',
+                                            style: Theme.of(context).textTheme.bodyLarge!,
+                                          ),
                                         ),
                                       ),
                                       Text(
                                         'season:$_currentBeforeSeason',
                                         style: Theme.of(context).textTheme.bodyLarge!,
                                       ),
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.all(0),
-                                          minimumSize: const Size(30, 0),
-                                        ),
-                                        onPressed: () {
-                                          if (_currentBeforeSeason < _league.seasons.length - 1) {
-                                            setState(() {
-                                              _currentBeforeSeason++;
-                                            });
-                                          }
-                                        },
-                                        child: Text(
-                                          '>',
-                                          style: Theme.of(context).textTheme.bodyLarge!,
+                                      Container(
+                                        width: 20,
+                                        child: TextButton(
+                                          style: TextButton.styleFrom(
+                                            padding: const EdgeInsets.all(0),
+                                            minimumSize: const Size(0, 0),
+                                          ),
+                                          onPressed: () {
+                                            if (_currentBeforeSeason < _league.seasons.length - 1) {
+                                              setState(() {
+                                                _currentBeforeSeason++;
+                                              });
+                                            }
+                                          },
+                                          child: Text(
+                                            '>',
+                                            style: Theme.of(context).textTheme.bodyLarge!,
+                                          ),
                                         ),
                                       ),
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.all(0),
-                                          minimumSize: const Size(30, 0),
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            _currentBeforeSeason = _league.seasons.length - 1;
-                                          });
-                                        },
-                                        child: Text(
-                                          '>>',
-                                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                                letterSpacing: -4,
-                                              ),
+                                      Container(
+                                        width: 20,
+                                        child: TextButton(
+                                          style: TextButton.styleFrom(
+                                            padding: const EdgeInsets.all(0),
+                                            minimumSize: const Size(0, 0),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _currentBeforeSeason = _league.seasons.length - 1;
+                                            });
+                                          },
+                                          child: Text(
+                                            '>>',
+                                            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                                  letterSpacing: -2,
+                                                ),
+                                          ),
                                         ),
                                       )
                                     ],
@@ -370,13 +376,13 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                       ))
                                 ],
                               ),
+                            const SizedBox(height: 60),
                           ],
                         ),
                       )
                     ],
                   ),
                 ),
-                const SizedBox(height: 60),
               ],
             ),
             if (_isLoading)
@@ -442,9 +448,12 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                   }
                   if (mounted) setState(() {});
                 },
-                child: const Icon(
-                  Icons.keyboard_double_arrow_right_rounded,
-                  color: Colors.white,
+                child: Text(
+                  '>>',
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        letterSpacing: -2,
+                        color: Colors.white,
+                      ),
                 ),
               ),
             ),
