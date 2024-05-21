@@ -47,11 +47,17 @@ extension PlayerGrow on Player {
 
   ///실제 경기를 뛰면서 발생하는 스텟 성장 - 출전 포지션에 따라 다르게 성장
   void _growAfterPlay() {
+    /// TODO: 포텐셜 추가 로직
+    if (R().getDouble() > 0.9) _potential++;
+
     //남은 포텐셜이 0보다 커야 성장 가능, 30이상이면 경기시마다 항상 성장
     if (_potential / 30 > Random().nextDouble()) {
       if (Random().nextDouble() > 0.75) {
         _potential -= 1;
         Stat newStat = Stat.playGame(role: role, point: R().getInt(max: 1));
+        _stat.add(newStat);
+      } else if (Random().nextDouble() > 0.85) {
+        Stat newStat = Stat.agingCurve(point: R().getInt(max: 0, min: -1));
         _stat.add(newStat);
       }
     }
