@@ -694,17 +694,17 @@ extension PlayerMove on Player {
 
     int stat = distanceToGoalPost < 30 ? shootingStat : midRangeShootStat;
 
-    double finalShootStat = stat * (R().getDouble() > 0.6 ? 1 : evadePressurePoint) * (R().getDouble() > 0.65 ? 12.5 : 1);
+    double finalShootStat = stat * evadePressurePoint * (R().getDouble(max: 1) > 0.85 ? 3.5 : 1);
 
-    bool isShootOnTarget = finalShootStat > R().getDouble(min: 80 / stat, max: 130);
+    bool isShootOnTarget = finalShootStat > R().getDouble(min: 120.0 - max(stat, 120), max: 120);
 
     if (isShootOnTarget) {
       shootOnTarget();
     }
 
-    double finalKeepingStat = goalKeeper.keepingStat + distanceToGoalPost * 0.65;
+    double finalKeepingStat = goalKeeper.keepingStat * (R().getDouble(max: 1) > 0.9 ? 3.5 : 1) + distanceToGoalPost * 0.75;
 
-    bool isGoal = finalShootStat / finalKeepingStat > R().getDouble(min: 0.13, max: 0.59) && isShootOnTarget;
+    bool isGoal = finalShootStat / finalKeepingStat > R().getDouble(min: 0.12, max: 0.72) && isShootOnTarget;
 
     if (isGoal) {
       goal();

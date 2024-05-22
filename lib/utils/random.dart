@@ -13,7 +13,14 @@ class R {
     int min = 0,
     int max = 0,
   }) {
-    return m.Random().nextInt(m.max(max - min + 1, 0)) + min;
+    int tmp = 0;
+    if (min < 0) {
+      tmp = min;
+      min = 0;
+      max = max - min;
+    }
+
+    return m.Random().nextInt(m.max(max - min + 1, 0)) + min + tmp;
   }
 
   double getDouble({

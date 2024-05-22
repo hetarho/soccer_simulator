@@ -8,6 +8,7 @@ import 'package:soccer_simulator/entities/tactics/tactics.dart';
 import 'package:soccer_simulator/enum/position.enum.dart';
 import 'package:soccer_simulator/extension/color.extension.dart';
 import 'package:soccer_simulator/utils/function.dart';
+import 'package:soccer_simulator/utils/random.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/entities/player/player.dart';
@@ -53,8 +54,6 @@ class Club implements Jsonable {
     _seasonShooting = currentSeasonShooting;
     _seasonDefSuccess = currentSeasonDefSuccess;
     _seasonPassSuccess = currentSeasonPassSuccess;
-
-
   }
 
   void createStartingMembers({
@@ -128,8 +127,24 @@ class Club implements Jsonable {
 
   int get ptsAverage => (clubRecord.fold(0, (curr, record) => curr + record.pts) / max(1, clubRecord.length)).round();
 
+  String get lankAverage => (clubRecord.fold(0, (curr, record) => curr + record.ranking) / max(1, clubRecord.length)).toStringAsFixed(1);
+
   startNewSeason(int season, int ranking) {
     if (season != 0) {
+      for (var player in players) {
+        {
+          player.growAfterSeasonBonus(R().getDouble(max: 1) > 0.75
+              ? switch (ranking) {
+                  <= 1 => 1,
+                  <= 2 => 2,
+                  <= 4 => 1,
+                  <= 7 => 0,
+                  <= 10 => -1,
+                  _ => -2,
+                }
+              : 0);
+        }
+      }
       clubRecord.add(ClubRecord(
         season: season,
         pts: pts,

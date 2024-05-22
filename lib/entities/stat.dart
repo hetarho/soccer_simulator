@@ -39,7 +39,16 @@ class Stat implements Jsonable {
 
   @override
   toString() {
-    return '''TODO''';
+    return '''
+stamina:${stamina}
+strength:${strength}
+attSkill:${attSkill}
+passSkill:${passSkill}
+defSkill:${defSkill}
+gkSkill:${gkSkill}
+composure:${composure}
+teamwork:${teamwork}
+''';
   }
 
   Stat.create({
@@ -64,31 +73,35 @@ class Stat implements Jsonable {
     this.composure = composure ?? R().getInt(max: max, min: min);
     this.teamwork = teamwork ?? R().getInt(max: max, min: min);
 
-    switch (role) {
-      case PlayerRole.forward:
-        this.attSkill += 30;
-        this.defSkill = sqrt(this.defSkill).round() + 10;
-        this.gkSkill -= 30;
-        break;
-      case PlayerRole.midfielder:
-        this.passSkill += 30;
-        this.defSkill -= 30;
-        this.attSkill -= 30;
-        this.gkSkill -= 30;
-        break;
-      case PlayerRole.defender:
-        this.defSkill += 30;
-        this.attSkill = sqrt(this.attSkill).round() + 10;
-        this.gkSkill -= 30;
-        break;
-      case PlayerRole.goalKeeper:
-        this.gkSkill += 30;
-        this.passSkill -= 20;
-        this.defSkill -= 20;
-        this.attSkill -= 30;
-        break;
-      default:
-        break;
+    try {
+      switch (role) {
+        case PlayerRole.forward:
+          this.attSkill += 30;
+          this.defSkill = sqrt(this.defSkill).round() + 10;
+          this.gkSkill -= 30;
+          break;
+        case PlayerRole.midfielder:
+          this.passSkill += 30;
+          this.defSkill -= 30;
+          this.attSkill -= 30;
+          this.gkSkill -= 30;
+          break;
+        case PlayerRole.defender:
+          this.defSkill += 30;
+          this.attSkill = sqrt(this.attSkill).round() + 10;
+          this.gkSkill -= 30;
+          break;
+        case PlayerRole.goalKeeper:
+          this.gkSkill += 30;
+          this.passSkill -= 20;
+          this.defSkill -= 20;
+          this.attSkill -= 30;
+          break;
+        default:
+          break;
+      }
+    } catch (e) {
+      print(e);
     }
   }
 

@@ -28,12 +28,12 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.blue,
           primary: Colors.blue,
         ),
-        textTheme: TextTheme(
-          labelLarge: GoogleFonts.rubikMarkerHatch(fontSize: 16),
-          headlineMedium: GoogleFonts.rubikMarkerHatch(fontSize: 26),
-          bodySmall: GoogleFonts.rubikMarkerHatch(fontSize: 12),
-          bodyMedium: GoogleFonts.rubikMarkerHatch(),
-          bodyLarge: GoogleFonts.rubikMarkerHatch(fontSize: 18),
+        textTheme: const TextTheme(
+          labelLarge: TextStyle(fontFamily: 'Jaro'),
+          headlineMedium: TextStyle(fontFamily: 'Jaro'),
+          bodySmall: TextStyle(fontFamily: 'Jaro'),
+          bodyMedium: TextStyle(fontFamily: 'Jaro'),
+          bodyLarge: TextStyle(fontFamily: 'Jaro'),
         ),
       ),
       localizationsDelegates: const [

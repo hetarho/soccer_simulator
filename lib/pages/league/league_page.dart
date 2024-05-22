@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:async/async.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +12,7 @@ import 'package:soccer_simulator/entities/dbManager/db_manager.dart';
 import 'package:soccer_simulator/entities/fixture/fixture.dart';
 import 'package:soccer_simulator/entities/fixture/vo/fixture_record.dart';
 import 'package:soccer_simulator/entities/league/league.dart';
+import 'package:soccer_simulator/entities/league/season.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
 import 'package:soccer_simulator/entities/saveSlot/save_slot.dart';
 import 'package:soccer_simulator/pages/league/league_table.dart';
@@ -43,6 +45,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   int _currentBeforeSeason = 0;
   List<Fixture>? _clubFixtures;
   bool _changeFixtureMode = false;
+  bool _showTableGraph = false;
 
   int _selectedBottomNavigationIndex = 1;
 
@@ -132,6 +135,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
             _league.endCurrentSeason();
             _league.startNewSeason();
             await _save();
+            _currentBeforeSeason = _league.seasons.length - 1;
           }
           await Future.delayed(Duration.zero);
           _finishedFixtureNum = 0;
@@ -294,7 +298,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                       Wrap(
                                         children: [
                                           ..._league.clubs.map((club) => Container(
-                                                margin: EdgeInsets.all(4),
+                                                margin: const EdgeInsets.all(4),
                                                 child: ElevatedButton(
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor: club.homeColor,
@@ -327,8 +331,14 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            setState(() {});
+                                            _showTableGraph = !_showTableGraph;
+                                          },
+                                          child: const Text('show graph')),
                                       SizedBox(
-                                        width: 20,
+                                        width: 30,
                                         child: TextButton(
                                           style: TextButton.styleFrom(
                                             padding: const EdgeInsets.all(0),
@@ -352,7 +362,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                         style: Theme.of(context).textTheme.bodyLarge!,
                                       ),
                                       Container(
-                                        width: 20,
+                                        width: 30,
                                         child: TextButton(
                                           style: TextButton.styleFrom(
                                             padding: const EdgeInsets.all(0),
@@ -371,8 +381,9 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                           ),
                                         ),
                                       ),
-                                      Container(
-                                        width: 20,
+                                      const SizedBox(width: 8),
+                                      SizedBox(
+                                        width: 30,
                                         child: TextButton(
                                           style: TextButton.styleFrom(
                                             padding: const EdgeInsets.all(0),
@@ -393,60 +404,23 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                       )
                                     ],
                                   ),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(4),
-                                      child: LeagueTableWidget(clubs: _currentBeforeSeason == _league.seasons.length - 1 ? _league.table : _league.seasons[_currentBeforeSeason].seasonRecords),
+                                  if (_showTableGraph)
+                                    SeasonGraphWidget(
+                                      snapshots: _league.seasons[_currentBeforeSeason].seasonSnapshots,
+                                      clubs: _league.clubs,
                                     ),
-                                  ),
+                                  if (!_showTableGraph)
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4),
+                                        child: LeagueTableWidget(clubs: _currentBeforeSeason == _league.seasons.length - 1 ? _league.table : _league.seasons[_currentBeforeSeason].seasonRecords),
+                                      ),
+                                    ),
                                   const SizedBox(height: 8),
                                 ],
                               ),
-                            if (_showDetailHistory)
-                              Column(
-                                children: [
-                                  ...[
-                                    ...[..._league.clubs]..sort(
-                                        (a, b) => a.winner == b.winner ? b.ptsAverage - a.ptsAverage : b.winner - a.winner,
-                                      )
-                                  ].map((club) => DefaultTextStyle(
-                                        style: Theme.of(context).textTheme.bodyLarge!,
-                                        child: Row(
-                                          children: [
-                                            SizedBox(
-                                              width: 50,
-                                              child: Text(
-                                                club.nickName,
-                                                style: TextStyle(color: C().colorDifference(club.homeColor, Colors.white) > 100 ? club.homeColor : club.awayColor),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 30,
-                                              child: Icon(
-                                                Icons.emoji_events,
-                                                color: switch (club.winner) {
-                                                  > 20 => Colors.yellow[900],
-                                                  > 15 => Colors.yellow[700],
-                                                  > 10 => Colors.yellow[500],
-                                                  > 5 => Colors.grey[500],
-                                                  > 0 => Colors.grey[300],
-                                                  _ => Colors.black,
-                                                },
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 30,
-                                              child: Text('${club.winner}'),
-                                            ),
-                                            SizedBox(
-                                              child: Text('/ pts avg - ${club.ptsAverage}'),
-                                            ),
-                                          ],
-                                        ),
-                                      ))
-                                ],
-                              ),
+                            if (_showDetailHistory) HistoryWidget(clubs: [..._league.clubs]),
                             const SizedBox(height: 60),
                           ],
                         ),
@@ -475,12 +449,12 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              height: 50,
+              height: 40,
               width: 170,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: _canPlay ? Colors.blue[900]!.withOpacity(0.7) : Colors.grey.withOpacity(0.3),
+                  backgroundColor: _canPlay ? Colors.red[900]!.withOpacity(0.7) : Colors.grey.withOpacity(0.3),
                 ),
                 onPressed: () async {
                   if (_canPlay) _startAllFixtures();
@@ -488,7 +462,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                 child: Text(
                   'play',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                        letterSpacing: 10.0,
+                        letterSpacing: 2.0,
                         color: Colors.white,
                       ),
                 ),
@@ -496,8 +470,8 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
             ),
             const SizedBox(width: 4),
             SizedBox(
-              height: 50,
-              width: 50,
+              height: 40,
+              width: 40,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -511,6 +485,8 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                     _league.endCurrentSeason();
                     _league.startNewSeason();
                     _save();
+                    _currentBeforeSeason = _league.seasons.length - 1;
+
                     await _league.nextRound();
                     await _initFixture();
                   } else {
@@ -651,6 +627,356 @@ class _FixtureInfoState extends ConsumerState<FixtureInfo> {
                     ),
                   ],
                 ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class HistoryWidget extends StatelessWidget {
+  const HistoryWidget({super.key, required this.clubs});
+  final List<Club> clubs;
+
+  @override
+  Widget build(BuildContext context) {
+    clubs.sort(
+      (a, b) => a.winner == b.winner ? b.ptsAverage - a.ptsAverage : b.winner - a.winner,
+    );
+    return Column(
+      children: [
+        ...clubs.map((club) => DefaultTextStyle(
+              style: Theme.of(context).textTheme.bodyLarge!,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 50,
+                    child: Text(
+                      club.nickName,
+                      style: TextStyle(color: C().colorDifference(club.homeColor, Colors.white) > 100 ? club.homeColor : club.awayColor),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 30,
+                    child: Icon(
+                      Icons.emoji_events,
+                      color: switch (club.winner) {
+                        > 20 => Colors.yellow[900],
+                        > 15 => Colors.yellow[700],
+                        > 10 => Colors.yellow[500],
+                        > 5 => Colors.grey[500],
+                        > 0 => Colors.grey[300],
+                        _ => Colors.black,
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: 30,
+                    child: Text('${club.winner}'),
+                  ),
+                  SizedBox(
+                    child: Text('/ lank avg - ${club.lankAverage}'),
+                  ),
+                  SizedBox(
+                    child: Text('/ pts avg - ${club.ptsAverage}'),
+                  ),
+                ],
+              ),
+            ))
+      ],
+    );
+  }
+}
+
+class SeasonGraphWidget extends StatefulWidget {
+  const SeasonGraphWidget({super.key, required this.snapshots, required this.clubs});
+  final List<List<SeasonSnapShot>> snapshots;
+  final List<Club> clubs;
+
+  @override
+  State<SeasonGraphWidget> createState() => _SeasonGraphWidgetState();
+}
+
+class _SeasonGraphWidgetState extends State<SeasonGraphWidget> {
+  List<Color> gradientColors = [
+    Colors.blue,
+    Colors.green,
+  ];
+
+  bool showAvg = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        if (widget.snapshots.isNotEmpty)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              width: 100 + widget.snapshots.length * 40,
+              height: 400,
+              child: LineChart(
+                showAvg ? avgData() : mainData(),
+                duration: Duration.zero,
+              ),
+            ),
+          ),
+        SizedBox(
+          width: 60,
+          height: 34,
+          child: TextButton(
+            onPressed: () {
+              setState(() {
+                showAvg = !showAvg;
+              });
+            },
+            child: Text(
+              'avg',
+              style: TextStyle(
+                fontSize: 12,
+                color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget bottomTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 16,
+    );
+    Widget text;
+    switch (value.toInt()) {
+      case 10:
+        text = const Text('10', style: style);
+        break;
+      case 19:
+        text = const Text('19', style: style);
+        break;
+      case 29:
+        text = const Text('29', style: style);
+        break;
+      case 38:
+        text = const Text('38', style: style);
+        break;
+      default:
+        text = const Text('');
+        break;
+    }
+
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      child: text,
+    );
+  }
+
+  Widget leftTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 15,
+    );
+    String text;
+    switch (value.toInt()) {
+      case 20:
+        text = '1';
+        break;
+      case 15:
+        text = '5';
+        break;
+      case 10:
+        text = '10';
+        break;
+      case 5:
+        text = '15';
+        break;
+      default:
+        return Container();
+    }
+
+    return Text(text, style: style, textAlign: TextAlign.left);
+  }
+
+  Widget rightTitleWidgets(double value, TitleMeta meta) {
+    if (widget.snapshots.isEmpty) return Text('');
+    List<SeasonSnapShot> lastSnaps = widget.snapshots.last;
+    Club club = value == 20 ? Club.empty() : lastSnaps[19 - value.round()].club;
+
+    TextStyle style = TextStyle(
+      fontWeight: FontWeight.bold,
+      color: club.homeColor,
+      fontSize: 15,
+    );
+
+    return Text(value == 20 ? '' : club.nickName, style: style, textAlign: TextAlign.center);
+  }
+
+  LineChartData mainData() {
+    return LineChartData(
+        gridData: const FlGridData(
+          show: true,
+          horizontalInterval: 1,
+          verticalInterval: 1,
+        ),
+        titlesData: FlTitlesData(
+          show: true,
+          rightTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: 1,
+              getTitlesWidget: rightTitleWidgets,
+              reservedSize: 50,
+            ),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: false,
+              reservedSize: 20,
+              interval: 1,
+              getTitlesWidget: bottomTitleWidgets,
+            ),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: false,
+              interval: 1,
+              getTitlesWidget: leftTitleWidgets,
+              reservedSize: 20,
+            ),
+          ),
+        ),
+        lineTouchData: LineTouchData(
+          enabled: false,
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipItems: (touchedSpots) {
+              return touchedSpots.map((touchedSpot) {
+                return LineTooltipItem(
+                  'x: ${touchedSpot.x}\ny: ${touchedSpot.y}',
+                  const TextStyle(color: Colors.red),
+                );
+              }).toList();
+            },
+          ),
+        ),
+        borderData: FlBorderData(
+          show: true,
+          border: Border.all(color: const Color(0xff37434d)),
+        ),
+        minX: 1,
+        maxX: widget.snapshots.length.toDouble(),
+        minY: 0,
+        maxY: 20,
+        lineBarsData: widget.clubs.map((club) {
+          double index = 1;
+          return LineChartBarData(
+            spots: widget.snapshots.map((snapList) {
+              SeasonSnapShot snapshot = snapList.firstWhere((snap) => snap.club.id == club.id);
+              return FlSpot(index++, 20 - snapshot.rank.toDouble());
+            }).toList(),
+            isCurved: true,
+            color: club.homeColor,
+            barWidth: 3,
+            curveSmoothness: 0,
+            isStrokeCapRound: true,
+            dotData: const FlDotData(
+              show: false,
+            ),
+          );
+        }).toList());
+  }
+
+  LineChartData avgData() {
+    return LineChartData(
+      lineTouchData: const LineTouchData(enabled: false),
+      gridData: FlGridData(
+        show: true,
+        drawHorizontalLine: true,
+        verticalInterval: 1,
+        horizontalInterval: 1,
+        getDrawingVerticalLine: (value) {
+          return const FlLine(
+            color: Color(0xff37434d),
+            strokeWidth: 1,
+          );
+        },
+        getDrawingHorizontalLine: (value) {
+          return const FlLine(
+            color: Color(0xff37434d),
+            strokeWidth: 1,
+          );
+        },
+      ),
+      titlesData: FlTitlesData(
+        show: true,
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 30,
+            getTitlesWidget: bottomTitleWidgets,
+            interval: 1,
+          ),
+        ),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: leftTitleWidgets,
+            reservedSize: 42,
+            interval: 1,
+          ),
+        ),
+        topTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+      ),
+      borderData: FlBorderData(
+        show: true,
+        border: Border.all(color: const Color(0xff37434d)),
+      ),
+      minX: 0,
+      maxX: 11,
+      minY: 0,
+      maxY: 6,
+      lineBarsData: [
+        LineChartBarData(
+          spots: const [
+            FlSpot(0, 3.44),
+            FlSpot(2.6, 3.44),
+            FlSpot(4.9, 3.44),
+            FlSpot(6.8, 3.44),
+            FlSpot(8, 3.44),
+            FlSpot(9.5, 3.44),
+            FlSpot(11, 3.44),
+          ],
+          isCurved: true,
+          gradient: LinearGradient(
+            colors: [
+              ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!,
+              ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!,
+            ],
+          ),
+          barWidth: 5,
+          isStrokeCapRound: true,
+          dotData: const FlDotData(
+            show: false,
+          ),
+          belowBarData: BarAreaData(
+            show: true,
+            gradient: LinearGradient(
+              colors: [
+                ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!.withOpacity(0.1),
+                ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!.withOpacity(0.1),
               ],
             ),
           ),

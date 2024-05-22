@@ -20,19 +20,23 @@ class LeagueTableWidget extends ConsumerWidget {
             bottom: BorderSide(color: Colors.black),
           )),
           child: DefaultTextStyle(
+            textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall!,
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(width: 25, child: Text('')),
-                SizedBox(width: 80, child: Text('name')),
+                SizedBox(width: 70, child: Text('name')),
                 SizedBox(width: 35, child: Text('pts')),
-                SizedBox(width: 35, child: Text('win')),
-                SizedBox(width: 40, child: Text('draw')),
-                SizedBox(width: 35, child: Text('lose')),
-                SizedBox(width: 35, child: Text('gf')),
-                SizedBox(width: 35, child: Text('ga')),
-                SizedBox(width: 35, child: Text('gd')),
+                SizedBox(width: 4),
+                SizedBox(width: 18, child: Text('w')),
+                SizedBox(width: 18, child: Text('d')),
+                SizedBox(width: 18, child: Text('l')),
+                SizedBox(width: 8),
+                SizedBox(width: 20, child: Text('gf')),
+                SizedBox(width: 20, child: Text('ga')),
+                SizedBox(width: 25, child: Text('gd')),
+                SizedBox(width: 4),
                 SizedBox(width: 50, child: Text('shoot')),
                 SizedBox(width: 50, child: Text('tackle')),
                 SizedBox(width: 50, child: Text('pass')),
@@ -57,6 +61,7 @@ class LeagueTableWidget extends ConsumerWidget {
                       alignment: Alignment.center,
                       children: [
                         DefaultTextStyle(
+                          textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                 color: Colors.black.withOpacity(0.1),
                                 fontSize: 15,
@@ -64,15 +69,18 @@ class LeagueTableWidget extends ConsumerWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              SizedBox(width: 25, child: Text('$index.')),
-                              SizedBox(width: 80, child: Text('${club.nickName}(${club.overall})')),
+                              SizedBox(width: 25, child: Text('$index')),
+                              SizedBox(width: 70, child: Text('${club.nickName}(${club.overall})')),
                               SizedBox(width: 35, child: Text('${club.pts}')),
-                              SizedBox(width: 35, child: Text('${club.won}')),
-                              SizedBox(width: 40, child: Text('${club.drawn}')),
-                              SizedBox(width: 35, child: Text('${club.lost}')),
-                              SizedBox(width: 35, child: Text('${club.gf}')),
-                              SizedBox(width: 35, child: Text('${club.ga}')),
-                              SizedBox(width: 35, child: Text('${club.gd}')),
+                              const SizedBox(width: 4),
+                              SizedBox(width: 18, child: Text('${club.won}')),
+                              SizedBox(width: 18, child: Text('${club.drawn}')),
+                              SizedBox(width: 18, child: Text('${club.lost}')),
+                              SizedBox(width: 8),
+                              SizedBox(width: 20, child: Text('${club.gf}')),
+                              SizedBox(width: 20, child: Text('${club.ga}')),
+                              SizedBox(width: 25, child: Text('${club.gd}')),
+                              SizedBox(width: 4),
                               SizedBox(width: 50, child: Text((club.seasonShooting / (club.won + club.drawn + club.lost)).toStringAsFixed(2))),
                               SizedBox(width: 50, child: Text((club.seasonDefSuccess / (club.won + club.drawn + club.lost)).toStringAsFixed(2))),
                               SizedBox(width: 50, child: Text((club.seasonPassSuccess / (club.won + club.drawn + club.lost)).toStringAsFixed(2))),
@@ -80,21 +88,43 @@ class LeagueTableWidget extends ConsumerWidget {
                           ),
                         ),
                         DefaultTextStyle(
-                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                color: C().colorDifference(club.homeColor, Colors.white) > 100 ? club.homeColor.withOpacity(0.7) : club.awayColor,
-                              ),
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              SizedBox(width: 25, child: Text('${index++}.')),
-                              SizedBox(width: 80, child: Text('${club.nickName}(${club.overall})')),
+                              SizedBox(width: 25, child: Text('${index++}')),
+                              SizedBox(
+                                  width: 70,
+                                  child: Text('${club.nickName}(${club.overall})',
+                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                            color: C().colorDifference(club.homeColor, Colors.white) > 100 ? club.homeColor.withOpacity(0.7) : club.awayColor,
+                                          ))),
                               SizedBox(width: 35, child: Text('${club.pts}')),
-                              SizedBox(width: 35, child: Text('${club.won}')),
-                              SizedBox(width: 40, child: Text('${club.drawn}')),
-                              SizedBox(width: 35, child: Text('${club.lost}')),
-                              SizedBox(width: 35, child: Text('${club.gf}')),
-                              SizedBox(width: 35, child: Text('${club.ga}')),
-                              SizedBox(width: 35, child: Text('${club.gd}')),
+                              SizedBox(width: 4),
+                              SizedBox(width: 18, child: Text('${club.won}')),
+                              SizedBox(width: 18, child: Text('${club.drawn}')),
+                              SizedBox(width: 18, child: Text('${club.lost}')),
+                              SizedBox(width: 8),
+                              SizedBox(
+                                  width: 20,
+                                  child: Text(
+                                    '${club.gf}',
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
+                              SizedBox(
+                                  width: 20,
+                                  child: Text(
+                                    '${club.ga}',
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
+                              SizedBox(
+                                  width: 25,
+                                  child: Text(
+                                    '${club.gd}',
+                                    style: TextStyle(color: club.gd > 0 ? Colors.blue[700] : Colors.red[700]),
+                                  )),
+                              SizedBox(width: 4),
                               SizedBox(width: 50, child: Text((club.seasonShooting / (club.won + club.drawn + club.lost)).toStringAsFixed(2))),
                               SizedBox(width: 50, child: Text((club.seasonDefSuccess / (club.won + club.drawn + club.lost)).toStringAsFixed(2))),
                               SizedBox(width: 50, child: Text((club.seasonPassSuccess / (club.won + club.drawn + club.lost)).toStringAsFixed(2))),

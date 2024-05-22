@@ -57,17 +57,67 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(18.0),
-      child: Row(
-        children: [
-          DefaultTextStyle(
-            style: const TextStyle(
-              fontSize: 17,
-              color: Colors.black,
+    return Row(
+      children: [
+        DefaultTextStyle(
+          style: Theme.of(context).textTheme.bodyMedium!,
+          textAlign: TextAlign.center,
+          child: Container(
+            color: Colors.grey[200],
+            child: Column(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                      border: Border(
+                    bottom: BorderSide(color: Colors.black),
+                  )),
+                  // ignore: prefer_const_constructors
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      SizedBox(width: 50, child: Text('club')),
+                      SizedBox(width: 65, child: Text('name')),
+                      SizedBox(width: 40, child: Text('pos')),
+                    ],
+                  ),
+                ),
+                ..._allPlayer
+                    .map((player) => GestureDetector(
+                          onTap: () {
+                            ref.read(playerProvider.notifier).state = player;
+                            context.push('/players/detail');
+                          },
+                          child: Container(
+                            decoration: const BoxDecoration(
+                                border: Border(
+                              bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
+                            )),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width: 50,
+                                  child: Text(
+                                    player.team?.nickName ?? 'none',
+                                    style: TextStyle(color: player.team?.homeColor),
+                                  ),
+                                ),
+                                SizedBox(width: 65, child: Text(player.name, overflow: TextOverflow.ellipsis)),
+                                SizedBox(width: 40, child: Text('${player.position}')),
+                              ],
+                            ),
+                          ),
+                        ))
+                    .toList()
+              ],
             ),
-            child: Container(
-              color: const Color.fromARGB(255, 229, 229, 229),
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DefaultTextStyle(
+              style: Theme.of(context).textTheme.bodyMedium!,
               child: Column(
                 children: [
                   Container(
@@ -75,13 +125,93 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                         border: Border(
                       bottom: BorderSide(color: Colors.black),
                     )),
-                    // ignore: prefer_const_constructors
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        SizedBox(width: 50, child: Text('club')),
-                        SizedBox(width: 65, child: Text('name')),
-                        SizedBox(width: 40, child: Text('pos')),
+                      children: [
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _changeSort('ov');
+                              });
+                            },
+                            child: const SizedBox(width: 50, child: Text('ov'))),
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _changeSort('goal');
+                              });
+                            },
+                            child: const SizedBox(width: 50, child: Text('goal'))),
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _changeSort('shoot');
+                              });
+                            },
+                            child: const SizedBox(width: 55, child: Text('shoot'))),
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _changeSort('onTarget');
+                              });
+                            },
+                            child: const SizedBox(width: 80, child: Text('onTarget'))),
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _changeSort('seasonShootAccuracy');
+                              });
+                            },
+                            child: const SizedBox(width: 60, child: Text('shootA'))),
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _changeSort('assist');
+                              });
+                            },
+                            child: const SizedBox(width: 55, child: Text('assist'))),
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _changeSort('pass');
+                              });
+                            },
+                            child: const SizedBox(width: 55, child: Text('pass'))),
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _changeSort('passT');
+                              });
+                            },
+                            child: const SizedBox(width: 55, child: Text('passT'))),
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _changeSort('passS');
+                              });
+                            },
+                            child: const SizedBox(width: 55, child: Text('passS'))),
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _changeSort('def');
+                              });
+                            },
+                            child: const SizedBox(width: 55, child: Text('def'))),
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _changeSort('drib');
+                              });
+                            },
+                            child: const SizedBox(width: 55, child: Text('drib'))),
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _changeSort('inter');
+                              });
+                            },
+                            child: const SizedBox(width: 55, child: Text('inter'))),
                       ],
                     ),
                   ),
@@ -99,9 +229,18 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  SizedBox(width: 50, child: Text(player.team?.nickName ?? 'none')),
-                                  SizedBox(width: 65, child: Text(player.name, overflow: TextOverflow.ellipsis)),
-                                  SizedBox(width: 40, child: Text('${player.position}')),
+                                  SizedBox(width: 35, child: Text('${player.overall}')),
+                                  SizedBox(width: 50, child: Text('${player.seasonGoal}')),
+                                  SizedBox(width: 55, child: Text('${player.seasonShooting}')),
+                                  SizedBox(width: 80, child: Text('${player.seasonShootOnTarget}')),
+                                  SizedBox(width: 60, child: Text('${player.seasonShootAccuracy}')),
+                                  SizedBox(width: 55, child: Text('${player.seasonAssist}')),
+                                  SizedBox(width: 55, child: Text('${player.seasonPassSuccess}')),
+                                  SizedBox(width: 55, child: Text('${player.seasonPassTry}')),
+                                  SizedBox(width: 55, child: Text('${player.seasonPassSuccessPercent}')),
+                                  SizedBox(width: 55, child: Text('${player.seasonDefSuccess}')),
+                                  SizedBox(width: 55, child: Text('${player.seasonDribbleSuccess}')),
+                                  SizedBox(width: 55, child: Text('${player.seasonIntercept}')),
                                 ],
                               ),
                             ),
@@ -111,149 +250,8 @@ class _TableWidgetState extends ConsumerState<PlayerTableWidget> {
               ),
             ),
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DefaultTextStyle(
-                style: const TextStyle(
-                  fontSize: 17,
-                  color: Colors.black,
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: const BoxDecoration(
-                          border: Border(
-                        bottom: BorderSide(color: Colors.black),
-                      )),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _changeSort('ov');
-                                });
-                              },
-                              child: const SizedBox(width: 50, child: Text('ov'))),
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _changeSort('goal');
-                                });
-                              },
-                              child: const SizedBox(width: 50, child: Text('goal'))),
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _changeSort('shoot');
-                                });
-                              },
-                              child: const SizedBox(width: 55, child: Text('shoot'))),
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _changeSort('onTarget');
-                                });
-                              },
-                              child: const SizedBox(width: 80, child: Text('onTarget'))),
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _changeSort('seasonShootAccuracy');
-                                });
-                              },
-                              child: const SizedBox(width: 60, child: Text('shootA'))),
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _changeSort('assist');
-                                });
-                              },
-                              child: const SizedBox(width: 55, child: Text('assist'))),
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _changeSort('pass');
-                                });
-                              },
-                              child: const SizedBox(width: 55, child: Text('pass'))),
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _changeSort('passT');
-                                });
-                              },
-                              child: const SizedBox(width: 55, child: Text('passT'))),
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _changeSort('passS');
-                                });
-                              },
-                              child: const SizedBox(width: 55, child: Text('passS'))),
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _changeSort('def');
-                                });
-                              },
-                              child: const SizedBox(width: 55, child: Text('def'))),
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _changeSort('drib');
-                                });
-                              },
-                              child: const SizedBox(width: 55, child: Text('drib'))),
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _changeSort('inter');
-                                });
-                              },
-                              child: const SizedBox(width: 55, child: Text('inter'))),
-                        ],
-                      ),
-                    ),
-                    ..._allPlayer
-                        .map((player) => GestureDetector(
-                              onTap: () {
-                                ref.read(playerProvider.notifier).state = player;
-                                context.push('/players/detail');
-                              },
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                    border: Border(
-                                  bottom: BorderSide(color: Color.fromARGB(255, 187, 187, 187)),
-                                )),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(width: 35, child: Text('${player.overall}')),
-                                    SizedBox(width: 50, child: Text('${player.seasonGoal}')),
-                                    SizedBox(width: 55, child: Text('${player.seasonShooting}')),
-                                    SizedBox(width: 80, child: Text('${player.seasonShootOnTarget}')),
-                                    SizedBox(width: 60, child: Text('${player.seasonShootAccuracy}')),
-                                    SizedBox(width: 55, child: Text('${player.seasonAssist}')),
-                                    SizedBox(width: 55, child: Text('${player.seasonPassSuccess}')),
-                                    SizedBox(width: 55, child: Text('${player.seasonPassTry}')),
-                                    SizedBox(width: 55, child: Text('${player.seasonPassSuccessPercent}')),
-                                    SizedBox(width: 55, child: Text('${player.seasonDefSuccess}')),
-                                    SizedBox(width: 55, child: Text('${player.seasonDribbleSuccess}')),
-                                    SizedBox(width: 55, child: Text('${player.seasonIntercept}')),
-                                  ],
-                                ),
-                              ),
-                            ))
-                        .toList()
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

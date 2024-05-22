@@ -1,15 +1,56 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/dbManager/jsonable_interface.dart';
 import 'package:soccer_simulator/entities/fixture/club_in_fixture.dart';
 import 'package:soccer_simulator/entities/fixture/fixture.dart';
 import 'package:soccer_simulator/entities/league/round.dart';
 
+class SeasonSnapShot implements Jsonable {
+  late final Club club;
+  late final int pts;
+  late final int rank;
+  SeasonSnapShot({
+    required this.club,
+    required this.pts,
+    required this.rank,
+  });
+  
+  SeasonSnapShot.fromJson(Map<dynamic, dynamic> map, List<Club> clubs) {
+    club = Club.fromJson(map['club']);
+    pts = map['pts'];
+    rank = map['rank'];
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'club': club.toJson(),
+      'pts': pts,
+      'rank': rank,
+    };
+  }
+}
+
 class Season implements Jsonable {
   late List<Round> rounds;
   int _roundNumber = 1;
   List<Club> seasonRecords = [];
 
+  List<List<SeasonSnapShot>> seasonSnapshots = [];
+
+  _addSnapShot(List<Club> clubs) {
+    int index = 1;
+    seasonSnapshots.add(clubs
+        .map((club) => SeasonSnapShot(
+              club: club,
+              pts: club.pts,
+              rank: index++,
+            ))
+        .toList());
+  }
+
   seasonEnd(List<Club> clubs) {
+    _addSnapShot(clubs);
     seasonRecords = clubs;
     rounds = [];
   }
@@ -20,8 +61,9 @@ class Season implements Jsonable {
     return _roundNumber;
   }
 
-  nextRound() {
+  nextRound(List<Club> clubs) {
     if (_roundNumber < rounds.length) _roundNumber++;
+    _addSnapShot(clubs);
   }
 
   Round get currentRound {

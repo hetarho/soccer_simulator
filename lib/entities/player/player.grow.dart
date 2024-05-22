@@ -21,10 +21,10 @@ extension PlayerGrow on Player {
       double personalSuccessPercent = coachAbility * (1 - teamTrainingTypePercent);
       double teamSuccessPercent = coachAbility * teamTrainingTypePercent;
 
-      int personalGrowPoint = personalSuccessPercent ~/ (Random().nextDouble() + 0.03);
-      int teamGrowPoint = teamSuccessPercent ~/ (Random().nextDouble() + 0.03);
+      int personalGrowPoint = personalSuccessPercent ~/ (R().getDouble(max: 1) + 0.03);
+      int teamGrowPoint = teamSuccessPercent ~/ (R().getDouble(max: 1) + 0.03);
 
-      if (teamGrowPoint > 0 && _potential / 20 > Random().nextDouble()) {
+      if (teamGrowPoint > 0 && _potential / 20 > R().getDouble(max: 1)) {
         _potential -= 1;
         Stat newStat = Stat.training(
           type: teamTrainingTypes,
@@ -34,7 +34,7 @@ extension PlayerGrow on Player {
         _stat.add(newStat);
         _stat.add(Stat(teamwork: 1));
       }
-      if (personalGrowPoint > 0 && _potential / 20 > Random().nextDouble()) {
+      if (personalGrowPoint > 0 && _potential / 20 > R().getDouble(max: 1)) {
         _potential -= 1;
         Stat newStat = Stat.training(
           type: personalTrainingTypes,
@@ -45,18 +45,32 @@ extension PlayerGrow on Player {
     }
   }
 
+  growAfterSeasonBonus(int point) {
+    Stat newStat = Stat(
+      attSkill: point,
+      composure: point,
+      defSkill: point,
+      gkSkill: point,
+      passSkill: point,
+      stamina: point,
+      strength: point,
+      teamwork: point,
+    );
+    _stat.add(newStat);
+  }
+
   ///실제 경기를 뛰면서 발생하는 스텟 성장 - 출전 포지션에 따라 다르게 성장
   void _growAfterPlay() {
     /// TODO: 포텐셜 추가 로직
-    if (R().getDouble() > 0.9) _potential++;
+    if (R().getDouble(max: 1) > 0.8) _potential++;
 
     //남은 포텐셜이 0보다 커야 성장 가능, 30이상이면 경기시마다 항상 성장
-    if (_potential / 30 > Random().nextDouble()) {
-      if (Random().nextDouble() > 0.75) {
+    if (_potential / 30 > R().getDouble(max: 1)) {
+      if (R().getDouble(max: 1) > 0.75) {
         _potential -= 1;
-        Stat newStat = Stat.playGame(role: role, point: R().getInt(max: 1));
+        Stat newStat = Stat.playGame(role: role, point: R().getInt(max: 2));
         _stat.add(newStat);
-      } else if (Random().nextDouble() > 0.85) {
+      } else if (R().getDouble(max: 1) > 0.6) {
         Stat newStat = Stat.agingCurve(point: R().getInt(max: 0, min: -1));
         _stat.add(newStat);
       }
