@@ -46,6 +46,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   List<Fixture>? _clubFixtures;
   bool _changeFixtureMode = false;
   bool _showTableGraph = false;
+  bool _showRankGraph = false;
 
   int _selectedBottomNavigationIndex = 1;
 
@@ -420,7 +421,17 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                   const SizedBox(height: 8),
                                 ],
                               ),
-                            if (_showDetailHistory) HistoryWidget(clubs: [..._league.clubs]),
+                            if (_showDetailHistory) ...[
+                              ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _showRankGraph = !_showRankGraph;
+                                    });
+                                  },
+                                  child: Text('show graph')),
+                              if (_showRankGraph) RankGraphWidget(clubRanks: _league.seasons.sublist(0,_league.seasons.length-2).map((season) => season.seasonRecords).toList(), clubs: [..._league.clubs]),
+                              if (!_showRankGraph) HistoryWidget(clubs: [..._league.clubs]),
+                            ],
                             const SizedBox(height: 60),
                           ],
                         ),
@@ -678,14 +689,308 @@ class HistoryWidget extends StatelessWidget {
                     child: Text('${club.winner}'),
                   ),
                   SizedBox(
-                    child: Text('/ lank avg - ${club.lankAverage}'),
+                    child: Text('lank avg - ${club.lankAverage}'),
                   ),
                   SizedBox(
-                    child: Text('/ pts avg - ${club.ptsAverage}'),
+                    child: Text(' | pts avg - ${club.ptsAverage}'),
                   ),
                 ],
               ),
             ))
+      ],
+    );
+  }
+}
+
+class RankGraphWidget extends StatefulWidget {
+  const RankGraphWidget({super.key, required this.clubRanks, required this.clubs});
+  final List<List<Club>> clubRanks;
+  final List<Club> clubs;
+
+  @override
+  State<RankGraphWidget> createState() => _RankGraphWidgetState();
+}
+
+class _RankGraphWidgetState extends State<RankGraphWidget> {
+  List<Color> gradientColors = [
+    Colors.blue,
+    Colors.green,
+  ];
+  bool showAvg = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        if (widget.clubRanks.isNotEmpty)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              width: 100 + widget.clubRanks.length * 40,
+              height: 400,
+              child: LineChart(
+                showAvg ? avgData() : mainData(),
+                duration: Duration.zero,
+              ),
+            ),
+          ),
+        SizedBox(
+          width: 60,
+          height: 34,
+          child: TextButton(
+            onPressed: () {
+              setState(() {
+                showAvg = !showAvg;
+              });
+            },
+            child: Text(
+              'avg',
+              style: TextStyle(
+                fontSize: 12,
+                color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget bottomTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 16,
+    );
+    Widget text;
+    switch (value.toInt()) {
+      case 10:
+        text = const Text('10', style: style);
+        break;
+      case 19:
+        text = const Text('19', style: style);
+        break;
+      case 29:
+        text = const Text('29', style: style);
+        break;
+      case 38:
+        text = const Text('38', style: style);
+        break;
+      default:
+        text = const Text('');
+        break;
+    }
+
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      child: text,
+    );
+  }
+
+  Widget leftTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 15,
+    );
+    String text;
+    switch (value.toInt()) {
+      case 20:
+        text = '1';
+        break;
+      case 15:
+        text = '5';
+        break;
+      case 10:
+        text = '10';
+        break;
+      case 5:
+        text = '15';
+        break;
+      default:
+        return Container();
+    }
+
+    return Text(text, style: style, textAlign: TextAlign.left);
+  }
+
+  Widget rightTitleWidgets(double value, TitleMeta meta) {
+    if (widget.clubRanks.isEmpty) return Text('');
+    List<Club> lastSnaps = widget.clubRanks.last;
+    Club club = value == 20 ? Club.empty() : lastSnaps[19 - value.round()];
+
+    TextStyle style = TextStyle(
+      fontWeight: FontWeight.bold,
+      color: club.homeColor,
+      fontSize: 15,
+    );
+
+    return Text(value == 20 ? '' : club.nickName, style: style, textAlign: TextAlign.center);
+  }
+
+  LineChartData mainData() {
+    return LineChartData(
+        gridData: const FlGridData(
+          show: true,
+          horizontalInterval: 1,
+          verticalInterval: 1,
+        ),
+        titlesData: FlTitlesData(
+          show: true,
+          rightTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: 1,
+              getTitlesWidget: rightTitleWidgets,
+              reservedSize: 50,
+            ),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: false,
+              reservedSize: 20,
+              interval: 1,
+              getTitlesWidget: bottomTitleWidgets,
+            ),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: false,
+              interval: 1,
+              getTitlesWidget: leftTitleWidgets,
+              reservedSize: 20,
+            ),
+          ),
+        ),
+        lineTouchData: LineTouchData(
+          enabled: false,
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipItems: (touchedSpots) {
+              return touchedSpots.map((touchedSpot) {
+                return LineTooltipItem(
+                  'x: ${touchedSpot.x}\ny: ${touchedSpot.y}',
+                  const TextStyle(color: Colors.red),
+                );
+              }).toList();
+            },
+          ),
+        ),
+        borderData: FlBorderData(
+          show: true,
+          border: Border.all(color: const Color(0xff37434d)),
+        ),
+        minX: 1,
+        maxX: widget.clubRanks.length.toDouble(),
+        minY: 0,
+        maxY: 20,
+        lineBarsData: widget.clubs.map((club) {
+          double season = 1;
+          return LineChartBarData(
+            spots: widget.clubRanks.map((clubs) {
+              int rank = clubs.indexWhere((club2) => club2.id == club.id);
+              return FlSpot(season++, 20 - rank.toDouble());
+            }).toList(),
+            isCurved: true,
+            color: club.homeColor,
+            barWidth: 3,
+            curveSmoothness: 0,
+            isStrokeCapRound: true,
+            dotData: const FlDotData(
+              show: false,
+            ),
+          );
+        }).toList());
+  }
+
+  LineChartData avgData() {
+    return LineChartData(
+      lineTouchData: const LineTouchData(enabled: false),
+      gridData: FlGridData(
+        show: true,
+        drawHorizontalLine: true,
+        verticalInterval: 1,
+        horizontalInterval: 1,
+        getDrawingVerticalLine: (value) {
+          return const FlLine(
+            color: Color(0xff37434d),
+            strokeWidth: 1,
+          );
+        },
+        getDrawingHorizontalLine: (value) {
+          return const FlLine(
+            color: Color(0xff37434d),
+            strokeWidth: 1,
+          );
+        },
+      ),
+      titlesData: FlTitlesData(
+        show: true,
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 30,
+            getTitlesWidget: bottomTitleWidgets,
+            interval: 1,
+          ),
+        ),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: leftTitleWidgets,
+            reservedSize: 42,
+            interval: 1,
+          ),
+        ),
+        topTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+      ),
+      borderData: FlBorderData(
+        show: true,
+        border: Border.all(color: const Color(0xff37434d)),
+      ),
+      minX: 0,
+      maxX: 11,
+      minY: 0,
+      maxY: 6,
+      lineBarsData: [
+        LineChartBarData(
+          spots: const [
+            FlSpot(0, 3.44),
+            FlSpot(2.6, 3.44),
+            FlSpot(4.9, 3.44),
+            FlSpot(6.8, 3.44),
+            FlSpot(8, 3.44),
+            FlSpot(9.5, 3.44),
+            FlSpot(11, 3.44),
+          ],
+          isCurved: true,
+          gradient: LinearGradient(
+            colors: [
+              ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!,
+              ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!,
+            ],
+          ),
+          barWidth: 5,
+          isStrokeCapRound: true,
+          dotData: const FlDotData(
+            show: false,
+          ),
+          belowBarData: BarAreaData(
+            show: true,
+            gradient: LinearGradient(
+              colors: [
+                ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!.withOpacity(0.1),
+                ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!.withOpacity(0.1),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

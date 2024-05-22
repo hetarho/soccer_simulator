@@ -123,7 +123,7 @@ class Club implements Jsonable {
     return won * 3 + drawn;
   }
 
-  int get winner => clubRecord.where((record) => record.ranking == 0).length;
+  int get winner => clubRecord.where((record) => record.ranking == 1).length;
 
   int get ptsAverage => (clubRecord.fold(0, (curr, record) => curr + record.pts) / max(1, clubRecord.length)).round();
 
