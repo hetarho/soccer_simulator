@@ -14,8 +14,8 @@ class SeasonSnapShot implements Jsonable {
     required this.pts,
     required this.rank,
   });
-  
-  SeasonSnapShot.fromJson(Map<dynamic, dynamic> map, List<Club> clubs) {
+
+  SeasonSnapShot.fromJson(Map<dynamic, dynamic> map) {
     club = Club.fromJson(map['club']);
     pts = map['pts'];
     rank = map['rank'];
@@ -117,6 +117,7 @@ class Season implements Jsonable {
     rounds = (map['rounds'] as List).map((e) => Round.fromJson(e, clubs)).toList();
     _roundNumber = map['_roundNumber'];
     seasonRecords = (map['seasonRecords'] as List).map((e) => Club.fromJson(e)).toList();
+    seasonSnapshots = (map['seasonRecords'] as List).map((e) => (e as List).map((snap) => SeasonSnapShot.fromJson(snap)).toList()).toList();
   }
 
   @override
@@ -125,6 +126,7 @@ class Season implements Jsonable {
       'rounds': rounds.map((e) => e.toJson()).toList(),
       '_roundNumber': _roundNumber,
       'seasonRecords': seasonRecords.map((e) => e.toJson()).toList(),
+      'seasonSnapshots': seasonSnapshots.map((e) => e.map((snap) => snap.toJson()).toList()).toList(),
     };
   }
 }

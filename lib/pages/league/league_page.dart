@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:async/async.dart';
@@ -428,8 +429,9 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                                       _showRankGraph = !_showRankGraph;
                                     });
                                   },
-                                  child: Text('show graph')),
-                              if (_showRankGraph) RankGraphWidget(clubRanks: _league.seasons.sublist(0,_league.seasons.length-2).map((season) => season.seasonRecords).toList(), clubs: [..._league.clubs]),
+                                  child: const Text('show graph')),
+                              if (_showRankGraph)
+                                RankGraphWidget(clubRanks: _league.seasons.sublist(0, max(0, _league.seasons.length - 1)).map((season) => season.seasonRecords).toList(), clubs: [..._league.clubs]),
                               if (!_showRankGraph) HistoryWidget(clubs: [..._league.clubs]),
                             ],
                             const SizedBox(height: 60),
@@ -712,48 +714,22 @@ class RankGraphWidget extends StatefulWidget {
 }
 
 class _RankGraphWidgetState extends State<RankGraphWidget> {
-  List<Color> gradientColors = [
-    Colors.blue,
-    Colors.green,
-  ];
-  bool showAvg = false;
+  String? _selectedClubId;
+  List<String> _selectedClubIds = [];
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        if (widget.clubRanks.isNotEmpty)
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              width: 100 + widget.clubRanks.length * 40,
-              height: 400,
-              child: LineChart(
-                showAvg ? avgData() : mainData(),
-                duration: Duration.zero,
-              ),
-            ),
-          ),
-        SizedBox(
-          width: 60,
-          height: 34,
-          child: TextButton(
-            onPressed: () {
-              setState(() {
-                showAvg = !showAvg;
-              });
-            },
-            child: Text(
-              'avg',
-              style: TextStyle(
-                fontSize: 12,
-                color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white,
-              ),
-            ),
-          ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        width: 100 + widget.clubRanks.length * 40,
+        height: 400,
+        child: LineChart(
+          mainData(),
+          duration: Duration.zero,
         ),
-      ],
+      ),
     );
   }
 
@@ -814,17 +790,36 @@ class _RankGraphWidgetState extends State<RankGraphWidget> {
   }
 
   Widget rightTitleWidgets(double value, TitleMeta meta) {
-    if (widget.clubRanks.isEmpty) return Text('');
+    if (widget.clubRanks.isEmpty) return const Text('');
     List<Club> lastSnaps = widget.clubRanks.last;
-    Club club = value == 20 ? Club.empty() : lastSnaps[19 - value.round()];
+    Club club = lastSnaps[19 - value.round()];
 
     TextStyle style = TextStyle(
       fontWeight: FontWeight.bold,
       color: club.homeColor,
-      fontSize: 15,
+      // fontSize: _selectedClubId == club.id ? 20 : 15,
+      fontSize: _selectedClubIds.contains(club.id) ? 20 : 15,
+      shadows: [
+        Shadow(
+          offset: const Offset(0, 0),
+          blurRadius: 0.1,
+          color: Colors.black.withOpacity(0.5),
+        )
+      ],
     );
 
-    return Text(value == 20 ? '' : club.nickName, style: style, textAlign: TextAlign.center);
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (_selectedClubIds.contains(club.id)) {
+            _selectedClubIds = _selectedClubIds.where((id) => id != club.id).toList();
+          } else {
+            _selectedClubIds.add(club.id);
+          }
+        });
+      },
+      child: Text(club.nickName, style: style, textAlign: TextAlign.center),
+    );
   }
 
   LineChartData mainData() {
@@ -884,115 +879,26 @@ class _RankGraphWidgetState extends State<RankGraphWidget> {
         minX: 1,
         maxX: widget.clubRanks.length.toDouble(),
         minY: 0,
-        maxY: 20,
+        maxY: 19,
         lineBarsData: widget.clubs.map((club) {
           double season = 1;
           return LineChartBarData(
             spots: widget.clubRanks.map((clubs) {
               int rank = clubs.indexWhere((club2) => club2.id == club.id);
-              return FlSpot(season++, 20 - rank.toDouble());
+              return FlSpot(season++, 19 - rank.toDouble());
             }).toList(),
             isCurved: true,
-            color: club.homeColor,
-            barWidth: 3,
-            curveSmoothness: 0,
+            color: _selectedClubIds.isEmpty || _selectedClubIds.contains(club.id) ? club.homeColor : Colors.grey[400],
+            preventCurveOverShooting: true,
+            barWidth: 5,
+            curveSmoothness: 0.25,
             isStrokeCapRound: true,
+            shadow: const Shadow(),
             dotData: const FlDotData(
               show: false,
             ),
           );
         }).toList());
-  }
-
-  LineChartData avgData() {
-    return LineChartData(
-      lineTouchData: const LineTouchData(enabled: false),
-      gridData: FlGridData(
-        show: true,
-        drawHorizontalLine: true,
-        verticalInterval: 1,
-        horizontalInterval: 1,
-        getDrawingVerticalLine: (value) {
-          return const FlLine(
-            color: Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-        getDrawingHorizontalLine: (value) {
-          return const FlLine(
-            color: Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-      ),
-      titlesData: FlTitlesData(
-        show: true,
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 30,
-            getTitlesWidget: bottomTitleWidgets,
-            interval: 1,
-          ),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            getTitlesWidget: leftTitleWidgets,
-            reservedSize: 42,
-            interval: 1,
-          ),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: const Color(0xff37434d)),
-      ),
-      minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
-      lineBarsData: [
-        LineChartBarData(
-          spots: const [
-            FlSpot(0, 3.44),
-            FlSpot(2.6, 3.44),
-            FlSpot(4.9, 3.44),
-            FlSpot(6.8, 3.44),
-            FlSpot(8, 3.44),
-            FlSpot(9.5, 3.44),
-            FlSpot(11, 3.44),
-          ],
-          isCurved: true,
-          gradient: LinearGradient(
-            colors: [
-              ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!,
-              ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!,
-            ],
-          ),
-          barWidth: 5,
-          isStrokeCapRound: true,
-          dotData: const FlDotData(
-            show: false,
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              colors: [
-                ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!.withOpacity(0.1),
-                ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!.withOpacity(0.1),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
   }
 }
 
@@ -1006,49 +912,20 @@ class SeasonGraphWidget extends StatefulWidget {
 }
 
 class _SeasonGraphWidgetState extends State<SeasonGraphWidget> {
-  List<Color> gradientColors = [
-    Colors.blue,
-    Colors.green,
-  ];
-
-  bool showAvg = false;
-
+  String? _selectedClubId;
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        if (widget.snapshots.isNotEmpty)
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              width: 100 + widget.snapshots.length * 40,
-              height: 400,
-              child: LineChart(
-                showAvg ? avgData() : mainData(),
-                duration: Duration.zero,
-              ),
-            ),
-          ),
-        SizedBox(
-          width: 60,
-          height: 34,
-          child: TextButton(
-            onPressed: () {
-              setState(() {
-                showAvg = !showAvg;
-              });
-            },
-            child: Text(
-              'avg',
-              style: TextStyle(
-                fontSize: 12,
-                color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white,
-              ),
-            ),
-          ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        width: 100 + widget.snapshots.length * 20,
+        height: 400,
+        child: LineChart(
+          mainData(),
+          duration: Duration.zero,
         ),
-      ],
+      ),
     );
   }
 
@@ -1109,17 +986,31 @@ class _SeasonGraphWidgetState extends State<SeasonGraphWidget> {
   }
 
   Widget rightTitleWidgets(double value, TitleMeta meta) {
-    if (widget.snapshots.isEmpty) return Text('');
+    if (widget.snapshots.isEmpty) return const Text('');
     List<SeasonSnapShot> lastSnaps = widget.snapshots.last;
-    Club club = value == 20 ? Club.empty() : lastSnaps[19 - value.round()].club;
+    Club club = lastSnaps[19 - value.round()].club;
 
     TextStyle style = TextStyle(
       fontWeight: FontWeight.bold,
       color: club.homeColor,
-      fontSize: 15,
+      fontSize: _selectedClubId == club.id ? 20 : 15,
+      shadows: [
+        Shadow(
+          offset: const Offset(0, 0),
+          blurRadius: 0.1,
+          color: Colors.black.withOpacity(0.5),
+        )
+      ],
     );
 
-    return Text(value == 20 ? '' : club.nickName, style: style, textAlign: TextAlign.center);
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedClubId = _selectedClubId == club.id ? null : club.id;
+        });
+      },
+      child: Text(club.nickName, style: style, textAlign: TextAlign.center),
+    );
   }
 
   LineChartData mainData() {
@@ -1179,7 +1070,7 @@ class _SeasonGraphWidgetState extends State<SeasonGraphWidget> {
         minX: 1,
         maxX: widget.snapshots.length.toDouble(),
         minY: 0,
-        maxY: 20,
+        maxY: 19,
         lineBarsData: widget.clubs.map((club) {
           double index = 1;
           return LineChartBarData(
@@ -1188,105 +1079,16 @@ class _SeasonGraphWidgetState extends State<SeasonGraphWidget> {
               return FlSpot(index++, 20 - snapshot.rank.toDouble());
             }).toList(),
             isCurved: true,
-            color: club.homeColor,
-            barWidth: 3,
-            curveSmoothness: 0,
+            color: _selectedClubId == null || _selectedClubId == club.id ? club.homeColor : Colors.grey[400],
+            preventCurveOverShooting: true,
+            barWidth: 5,
+            curveSmoothness: 0.25,
             isStrokeCapRound: true,
+            shadow: const Shadow(),
             dotData: const FlDotData(
               show: false,
             ),
           );
         }).toList());
-  }
-
-  LineChartData avgData() {
-    return LineChartData(
-      lineTouchData: const LineTouchData(enabled: false),
-      gridData: FlGridData(
-        show: true,
-        drawHorizontalLine: true,
-        verticalInterval: 1,
-        horizontalInterval: 1,
-        getDrawingVerticalLine: (value) {
-          return const FlLine(
-            color: Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-        getDrawingHorizontalLine: (value) {
-          return const FlLine(
-            color: Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-      ),
-      titlesData: FlTitlesData(
-        show: true,
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 30,
-            getTitlesWidget: bottomTitleWidgets,
-            interval: 1,
-          ),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            getTitlesWidget: leftTitleWidgets,
-            reservedSize: 42,
-            interval: 1,
-          ),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: const Color(0xff37434d)),
-      ),
-      minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
-      lineBarsData: [
-        LineChartBarData(
-          spots: const [
-            FlSpot(0, 3.44),
-            FlSpot(2.6, 3.44),
-            FlSpot(4.9, 3.44),
-            FlSpot(6.8, 3.44),
-            FlSpot(8, 3.44),
-            FlSpot(9.5, 3.44),
-            FlSpot(11, 3.44),
-          ],
-          isCurved: true,
-          gradient: LinearGradient(
-            colors: [
-              ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!,
-              ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!,
-            ],
-          ),
-          barWidth: 5,
-          isStrokeCapRound: true,
-          dotData: const FlDotData(
-            show: false,
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              colors: [
-                ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!.withOpacity(0.1),
-                ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!.withOpacity(0.1),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
   }
 }
