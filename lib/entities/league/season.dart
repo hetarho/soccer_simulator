@@ -117,7 +117,7 @@ class Season implements Jsonable {
     rounds = (map['rounds'] as List).map((e) => Round.fromJson(e, clubs)).toList();
     _roundNumber = map['_roundNumber'];
     seasonRecords = (map['seasonRecords'] as List).map((e) => Club.fromJson(e)).toList();
-    seasonSnapshots = (map['seasonRecords'] as List).map((e) => (e as List).map((snap) => SeasonSnapShot.fromJson(snap)).toList()).toList();
+    seasonSnapshots = (map['seasonSnapshots'] as List).map((e) => (e as List).map((snap) => SeasonSnapShot.fromJson(snap)).toList()).toList();
   }
 
   @override
