@@ -95840,13 +95840,13 @@ q.n(0,e,!0)
 q.n(0,d,!1)}B.b.Dc(h);++i
 s.push(new A.hz(h,i))
 B.b.d1(a0,1,B.b.ep(a0))}this.a=s},
-a5g(a,b){var s=this,r="seasonRecords",q=J.am(a),p=t.j,o=J.dv(p.a(q.i(a,"rounds")),new A.amZ(b),t.uv)
-s.a=A.O(o,!0,A.o(o).h("ad.E"))
-s.b=q.i(a,"_roundNumber")
-o=J.dv(p.a(q.i(a,r)),new A.an_(),t.nQ)
-s.c=A.O(o,!0,A.o(o).h("ad.E"))
-q=J.dv(p.a(q.i(a,r)),new A.an0(),t.fq)
-s.d=A.O(q,!0,A.o(q).h("ad.E"))},
+a5g(a,b){var s=this,r=J.am(a),q=t.j,p=J.dv(q.a(r.i(a,"rounds")),new A.amZ(b),t.uv)
+s.a=A.O(p,!0,A.o(p).h("ad.E"))
+s.b=r.i(a,"_roundNumber")
+p=J.dv(q.a(r.i(a,"seasonRecords")),new A.an_(),t.nQ)
+s.c=A.O(p,!0,A.o(p).h("ad.E"))
+r=J.dv(q.a(r.i(a,"seasonSnapshots")),new A.an0(),t.fq)
+s.d=A.O(r,!0,A.o(r).h("ad.E"))},
 bE(){var s,r,q,p,o=this,n=o.a
 n===$&&A.b()
 s=A.K(n).h("F<1,au<k,@>>")
