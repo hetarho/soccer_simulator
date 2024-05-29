@@ -68,10 +68,10 @@ extension PlayerGrow on Player {
     if (_potential / 30 > R().getDouble(max: 1)) {
       if (R().getDouble(max: 1) > 0.75) {
         _potential -= 1;
-        Stat newStat = Stat.playGame(role: role, point: R().getInt(max: 2));
+        Stat newStat = Stat.playGame(role: role, point: R().getInt(max: 3));
         _stat.add(newStat);
       } else if (R().getDouble(max: 1) > 0.6) {
-        Stat newStat = Stat.agingCurve(point: R().getInt(max: 0, min: -1));
+        Stat newStat = Stat.agingCurve(role: role, point: R().getInt(max: 1, min: -2));
         _stat.add(newStat);
       }
     }

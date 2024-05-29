@@ -41,7 +41,8 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
   bool _showLeagueTable = true;
   bool _showTopScorerTable = false;
   bool _showDetailHistory = false;
-  Duration _timer = const Duration(seconds: 0);
+
+  final ValueNotifier<Duration> _timer = ValueNotifier<Duration>(const Duration(seconds: 0));
   bool _isLoading = false;
   int _currentBeforeSeason = 0;
   List<Fixture>? _clubFixtures;
@@ -147,10 +148,9 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
         }
       }
       if (mounted) {
-        if (_timer.compareTo(event.time) < 0 || event.time.inMinutes == 0) {
-          setState(() {
-            _timer = event.time;
-          });
+        if (_timer.value.inMinutes - event.time.inMinutes < 0 || event.time.inMinutes == 0) {
+          _timer.value = event.time;
+          if (event.time.inMinutes == 0 || event.time.inMinutes == 90) setState(() {});
         }
       }
     });
@@ -165,8 +165,8 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
     }
   }
 
-  bool get _canPlay => _timer.inMinutes == 0;
-  bool get _canNext => _timer.inMinutes == 90;
+  bool get _canPlay => _timer.value.inMinutes == 0;
+  bool get _canNext => _timer.value.inMinutes == 90;
 
   @override
   Widget build(BuildContext context) {
@@ -256,7 +256,12 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
           children: [
             Column(
               children: [
-                Text('round : ${_league.round} time:${_timer.inMinutes}'),
+                ValueListenableBuilder<Duration>(
+                  valueListenable: _timer,
+                  builder: (context, value, child) {
+                    return Text('round : ${_league.round} time:${_timer.value.inMinutes}');
+                  },
+                ),
                 Expanded(
                   child: CustomScrollView(
                     slivers: [
@@ -493,7 +498,7 @@ class _MyHomePageState extends ConsumerState<LeaguePage> {
                 ),
                 onPressed: () async {
                   if (!_canNext) return;
-                  _timer = Duration.zero;
+                  _timer.value = Duration.zero;
                   if (_league.round == 38) {
                     _league.endCurrentSeason();
                     _league.startNewSeason();

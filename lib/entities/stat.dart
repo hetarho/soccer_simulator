@@ -145,20 +145,20 @@ teamwork:${teamwork}
   }) {
     switch (role) {
       case PlayerRole.forward:
-        attSkill = point + R().getInt(max: point, min: 0);
-        passSkill = point + R().getInt(max: point, min: 0);
+        attSkill = R().getInt(max: point, min: 0);
+        passSkill = R().getInt(max: point, min: 0);
         break;
       case PlayerRole.midfielder:
-        attSkill = point + R().getInt(max: point, min: 0);
-        passSkill = point + R().getInt(max: point, min: 0);
-        defSkill = point + R().getInt(max: point, min: 0);
+        attSkill = R().getInt(max: point, min: 0);
+        passSkill = R().getInt(max: point, min: 0);
+        defSkill = R().getInt(max: point, min: 0);
         break;
       case PlayerRole.defender:
-        passSkill = point + R().getInt(max: point, min: 0);
-        defSkill = point + R().getInt(max: point, min: 0);
+        passSkill = R().getInt(max: point, min: 0);
+        defSkill = R().getInt(max: point, min: 0);
         break;
       case PlayerRole.goalKeeper:
-        gkSkill = point + R().getInt(max: point, min: 0);
+        gkSkill = R().getInt(max: point, min: 0);
       default:
     }
     teamwork = R().getInt(max: point, min: 0);
@@ -166,13 +166,26 @@ teamwork:${teamwork}
 
   Stat.agingCurve({
     required int point,
+    required PlayerRole role,
   }) {
-    stamina = R().getInt(max: 0, min: point);
-    strength = R().getInt(max: 0, min: point);
-    attSkill = R().getInt(max: 0, min: point);
-    passSkill = R().getInt(max: 0, min: point);
-    defSkill = R().getInt(max: 0, min: point);
-    gkSkill = R().getInt(max: 0, min: point);
+    switch (role) {
+      case PlayerRole.forward:
+        attSkill = R().getInt(max: 0, min: point);
+        passSkill = R().getInt(max: 0, min: point);
+        break;
+      case PlayerRole.midfielder:
+        attSkill = R().getInt(max: 0, min: point);
+        passSkill = R().getInt(max: 0, min: point);
+        defSkill = R().getInt(max: 0, min: point);
+        break;
+      case PlayerRole.defender:
+        passSkill = R().getInt(max: 0, min: point);
+        defSkill = R().getInt(max: 0, min: point);
+        break;
+      case PlayerRole.goalKeeper:
+        gkSkill = R().getInt(max: 0, min: point);
+      default:
+    }
   }
 
   ///체력
