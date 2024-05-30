@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:soccer_simulator/data/data_source/dto/league_dto.dart';
 import 'package:soccer_simulator/domain/entities/club.dart';
 import 'package:soccer_simulator/domain/entities/fixture/fixture.dart';
@@ -15,11 +16,14 @@ class League {
   ///소속 국가
   final National national;
 
+  final int level;
+
   ///최초 생성시 새 시즌 생성
   League({
     required this.id,
     required this.name,
     required this.national,
+    required this.level,
   }) {
     startNewSeason();
   }
@@ -53,20 +57,20 @@ class League {
 
   ///현재 시즌 종료
   endCurrentSeason() {
-    currentSeason.seasonEnd(table.map((club) => Club.save(club)).toList());
-    int ranking = 1;
-    for (var club in clubs) {
-      club.startNewSeason(seasons.length, ranking++);
-      for (var player in club.players) {
-        player.newSeason();
-      }
-    }
+    // currentSeason.seasonEnd(table.map((club) => Club.save(club)).toList());
+    // int ranking = 1;
+    // for (var club in clubs) {
+    //   club.startNewSeason(seasons.length, ranking++);
+    //   for (var player in club.players) {
+    //     player.newSeason();
+    //   }
+    // }
   }
 
   ///새 시즌 시작
   startNewSeason() {
-    if (!seasons.last.isSeasonEnd) return;
-    seasons.add(Season.create(clubs: clubs));
+    // if (!seasons.last.isSeasonEnd) return;
+    // seasons.add(Season.create(clubs: clubs));
   }
 
   ///다음 경기 불러오기
@@ -100,5 +104,6 @@ class League {
   League.fromDto(LeagueDto dto)
       : id = dto.id,
         name = dto.name,
+        level = dto.level,
         national = dto.national;
 }

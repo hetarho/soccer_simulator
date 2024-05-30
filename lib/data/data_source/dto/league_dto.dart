@@ -10,6 +10,7 @@ class LeagueDto with _$LeagueDto {
     required int id,
     required String name,
     required National national,
+    required int level,
   }) = _LeagueDto;
 
   factory LeagueDto.fromJson(Map<String, dynamic> json) => _$LeagueDtoFromJson(json);

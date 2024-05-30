@@ -23,6 +23,7 @@ mixin _$LeagueDto {
   int get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   National get national => throw _privateConstructorUsedError;
+  int get level => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -35,7 +36,7 @@ abstract class $LeagueDtoCopyWith<$Res> {
   factory $LeagueDtoCopyWith(LeagueDto value, $Res Function(LeagueDto) then) =
       _$LeagueDtoCopyWithImpl<$Res, LeagueDto>;
   @useResult
-  $Res call({int id, String name, National national});
+  $Res call({int id, String name, National national, int level});
 }
 
 /// @nodoc
@@ -54,6 +55,7 @@ class _$LeagueDtoCopyWithImpl<$Res, $Val extends LeagueDto>
     Object? id = null,
     Object? name = null,
     Object? national = null,
+    Object? level = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -68,6 +70,10 @@ class _$LeagueDtoCopyWithImpl<$Res, $Val extends LeagueDto>
           ? _value.national
           : national // ignore: cast_nullable_to_non_nullable
               as National,
+      level: null == level
+          ? _value.level
+          : level // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -80,7 +86,7 @@ abstract class _$$LeagueDtoImplCopyWith<$Res>
       __$$LeagueDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name, National national});
+  $Res call({int id, String name, National national, int level});
 }
 
 /// @nodoc
@@ -97,6 +103,7 @@ class __$$LeagueDtoImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? national = null,
+    Object? level = null,
   }) {
     return _then(_$LeagueDtoImpl(
       id: null == id
@@ -111,6 +118,10 @@ class __$$LeagueDtoImplCopyWithImpl<$Res>
           ? _value.national
           : national // ignore: cast_nullable_to_non_nullable
               as National,
+      level: null == level
+          ? _value.level
+          : level // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -119,7 +130,10 @@ class __$$LeagueDtoImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$LeagueDtoImpl implements _LeagueDto {
   const _$LeagueDtoImpl(
-      {required this.id, required this.name, required this.national});
+      {required this.id,
+      required this.name,
+      required this.national,
+      required this.level});
 
   factory _$LeagueDtoImpl.fromJson(Map<String, dynamic> json) =>
       _$$LeagueDtoImplFromJson(json);
@@ -130,10 +144,12 @@ class _$LeagueDtoImpl implements _LeagueDto {
   final String name;
   @override
   final National national;
+  @override
+  final int level;
 
   @override
   String toString() {
-    return 'LeagueDto(id: $id, name: $name, national: $national)';
+    return 'LeagueDto(id: $id, name: $name, national: $national, level: $level)';
   }
 
   @override
@@ -144,12 +160,13 @@ class _$LeagueDtoImpl implements _LeagueDto {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.national, national) ||
-                other.national == national));
+                other.national == national) &&
+            (identical(other.level, level) || other.level == level));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, national);
+  int get hashCode => Object.hash(runtimeType, id, name, national, level);
 
   @JsonKey(ignore: true)
   @override
@@ -169,7 +186,8 @@ abstract class _LeagueDto implements LeagueDto {
   const factory _LeagueDto(
       {required final int id,
       required final String name,
-      required final National national}) = _$LeagueDtoImpl;
+      required final National national,
+      required final int level}) = _$LeagueDtoImpl;
 
   factory _LeagueDto.fromJson(Map<String, dynamic> json) =
       _$LeagueDtoImpl.fromJson;
@@ -180,6 +198,8 @@ abstract class _LeagueDto implements LeagueDto {
   String get name;
   @override
   National get national;
+  @override
+  int get level;
   @override
   @JsonKey(ignore: true)
   _$$LeagueDtoImplCopyWith<_$LeagueDtoImpl> get copyWith =>

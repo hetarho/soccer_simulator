@@ -27,7 +27,12 @@ class MyApp extends StatelessWidget {
         ),
         textTheme: const TextTheme(
           labelLarge: TextStyle(fontFamily: 'Jaro'),
+          titleLarge: TextStyle(fontFamily: 'Jaro'),
+          titleMedium: TextStyle(fontFamily: 'Jaro'),
+          titleSmall: TextStyle(fontFamily: 'Jaro'),
+          headlineLarge: TextStyle(fontFamily: 'Jaro'),
           headlineMedium: TextStyle(fontFamily: 'Jaro'),
+          headlineSmall: TextStyle(fontFamily: 'Jaro'),
           bodySmall: TextStyle(fontFamily: 'Jaro'),
           bodyMedium: TextStyle(fontFamily: 'Jaro'),
           bodyLarge: TextStyle(fontFamily: 'Jaro'),

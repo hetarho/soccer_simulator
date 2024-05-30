@@ -11,6 +11,7 @@ _$LeagueDtoImpl _$$LeagueDtoImplFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       national: $enumDecode(_$NationalEnumMap, json['national']),
+      level: (json['level'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$LeagueDtoImplToJson(_$LeagueDtoImpl instance) =>
@@ -18,6 +19,7 @@ Map<String, dynamic> _$$LeagueDtoImplToJson(_$LeagueDtoImpl instance) =>
       'id': instance.id,
       'name': instance.name,
       'national': _$NationalEnumMap[instance.national]!,
+      'level': instance.level,
     };
 
 const _$NationalEnumMap = {
