@@ -1,5 +1,5 @@
-import 'package:soccer_simulator/entities/pos/pos.dart';
-import 'package:soccer_simulator/enum/position.enum.dart';
+import 'package:soccer_simulator/domain/entities/pos/pos.dart';
+import 'package:soccer_simulator/domain/enum/position.enum.dart';
 
 Position getPositionFromPosXY(PosXY posXY) {
   Position position;

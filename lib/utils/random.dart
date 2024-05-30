@@ -1,8 +1,8 @@
 import 'dart:math' as m;
 
-import 'package:soccer_simulator/entities/formation/formation.dart';
-import 'package:soccer_simulator/enum/national.enum.dart';
-import 'package:soccer_simulator/enum/player.enum.dart';
+import 'package:soccer_simulator/domain/entities/formation/formation.dart';
+import 'package:soccer_simulator/domain/enum/national.enum.dart';
+import 'package:soccer_simulator/domain/enum/player.enum.dart';
 
 class R {
   bool getBool() {

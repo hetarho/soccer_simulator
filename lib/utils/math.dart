@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:soccer_simulator/entities/pos/pos.dart';
+import 'package:soccer_simulator/domain/entities/pos/pos.dart';
 
 class M {
   /// 두 점을 지나는 직선과 제3의 점과의 거리를 계산합니다.

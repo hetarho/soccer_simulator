@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:soccer_simulator/router/routes.dart';
+import 'package:soccer_simulator/ui/router/routes.dart';
 import 'package:wakelock/wakelock.dart';
 
 void main() async {
