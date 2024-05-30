@@ -7,8 +7,8 @@ import 'package:soccer_simulator/entities/player/player.dart';
 class League implements Jsonable {
   List<Season> seasons = [];
   bool _seasonEnd = true;
+  List<Club> clubs = [];
   late Season _currentSeason;
-  late List<Club> clubs;
   League({required this.clubs}) {
     startNewSeason();
   }

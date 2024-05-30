@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:soccer_simulator/router/routes.dart';
 import 'package:wakelock/wakelock.dart';
 
 void main() async {
-  await Hive.initFlutter();
   runApp(
     const ProviderScope(
       child: MyApp(),

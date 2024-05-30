@@ -11,7 +11,7 @@ final GoRouter router = GoRouter(
   routes: <RouteBase>[
     GoRoute(
       path: '/',
-      onExit: (context) {
+      onExit: (context, state) {
         return false;
       },
       builder: (BuildContext context, GoRouterState state) {
