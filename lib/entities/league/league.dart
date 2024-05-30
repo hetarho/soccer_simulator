@@ -1,26 +1,60 @@
+import 'package:soccer_simulator/datasource/dto/league_dto.dart';
 import 'package:soccer_simulator/entities/club.dart';
 import 'package:soccer_simulator/entities/dbManager/jsonable_interface.dart';
 import 'package:soccer_simulator/entities/fixture/fixture.dart';
 import 'package:soccer_simulator/entities/league/season.dart';
 import 'package:soccer_simulator/entities/player/player.dart';
+import 'package:soccer_simulator/enum/national.enum.dart';
 
-class League implements Jsonable {
-  List<Season> seasons = [];
-  bool _seasonEnd = true;
-  List<Club> clubs = [];
-  late Season _currentSeason;
-  League({required this.clubs}) {
+class League {
+  ///아이디
+  final int id;
+
+  ///리그 이름
+  final String name;
+
+  ///소속 국가
+  final National national;
+
+  ///최초 생성시 새 시즌 생성
+  League({
+    required this.id,
+    required this.name,
+    required this.national,
+  }) {
     startNewSeason();
   }
 
-  int get round {
-    return _currentSeason.roundNumber;
+  /// 해당 리그의 시즌
+  List<Season> seasons = [];
+
+  ///해당 리그에 소속된 클럽
+  List<Club> _clubs = [];
+
+  List<Club> get clubs => _clubs;
+
+  ///승격, 강등으로 인한 클럽 교체
+  changeClub({
+    required List<Club> insertClub,
+    required List<Club> removeClub,
+  }) {
+    _clubs = [
+      ..._clubs.where((club) => !removeClub.contains(club.id)),
+      ...insertClub,
+    ];
   }
 
-  Season get currentSeason => _currentSeason;
+  ///리그가 몇라운드까지 진행됐는지
+  int get round {
+    return currentSeason.roundNumber;
+  }
 
+  ///리그의 현재 시즌
+  Season get currentSeason => seasons.last;
+
+  ///현재 시즌 종료
   endCurrentSeason() {
-    _currentSeason.seasonEnd(table.map((club) => Club.save(club)).toList());
+    currentSeason.seasonEnd(table.map((club) => Club.save(club)).toList());
     int ranking = 1;
     for (var club in clubs) {
       club.startNewSeason(seasons.length, ranking++);
@@ -28,24 +62,25 @@ class League implements Jsonable {
         player.newSeason();
       }
     }
-    _seasonEnd = true;
   }
 
+  ///새 시즌 시작
   startNewSeason() {
-    if (!_seasonEnd) return;
-    _currentSeason = Season.create(clubs: clubs);
-    seasons.add(_currentSeason);
-    _seasonEnd = false;
+    if (!seasons.last.isSeasonEnd) return;
+    seasons.add(Season.create(clubs: clubs));
   }
 
+  ///다음 경기 불러오기
   List<Fixture> getNextFixtures() {
-    return _currentSeason.currentRound.fixtures;
+    return currentSeason.currentRound.fixtures;
   }
 
+  ///다음 라운드로
   nextRound() {
-    if (_currentSeason.currentRound.isAllGameEnd) _currentSeason.nextRound(table.map((club) => Club.save(club)).toList());
+    if (currentSeason.currentRound.isAllGameEnd) currentSeason.nextRound(table.map((club) => Club.save(club)).toList());
   }
 
+  ///리그 테이블 불러오기
   List<Club> get table {
     clubs.sort((a, b) {
       if (a.pts != b.pts) {
@@ -63,19 +98,8 @@ class League implements Jsonable {
 
   List<Player> get allPlayer => clubs.map((e) => e.players).expand((element) => element).toList();
 
-  League.fromJson(Map<dynamic, dynamic> map) {
-    clubs = (map['clubs'] as List).map((e) => Club.fromJson(e)).toList();
-    seasons = (map['seasons'] as List).map((e) => Season.fromJson(e, clubs)).toList();
-    if (seasons.isNotEmpty) _currentSeason = seasons.last;
-    _seasonEnd = map['_seasonEnd'];
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'seasons': seasons.map((e) => e.toJson()).toList(),
-      '_seasonEnd': _seasonEnd,
-      'clubs': clubs.map((e) => e.toJson()).toList(),
-    };
-  }
+  League.fromDto(LeagueDto dto)
+      : id = dto.id,
+        name = dto.name,
+        national = dto.national;
 }
