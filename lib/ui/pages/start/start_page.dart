@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soccer_simulator/data/data_source/save_slot_local_data_source.dart';
+import 'package:soccer_simulator/data/repositories/interfaces/save_slot_data_source.dart';
+import 'package:soccer_simulator/data/repositories/save_slot_repository.dart';
 import 'package:soccer_simulator/domain/entities/club.dart';
 import 'package:soccer_simulator/domain/entities/dbManager/db_manager.dart';
 import 'package:soccer_simulator/domain/entities/formation/formation.dart';
 import 'package:soccer_simulator/domain/entities/saveSlot/save_slot.dart';
 import 'package:soccer_simulator/domain/entities/tactics/tactics.dart';
 import 'package:soccer_simulator/domain/enum/play_level.enum.dart';
+import 'package:soccer_simulator/domain/use_case/save_slot_use_case.dart';
 import 'package:soccer_simulator/ui/providers/providers.dart';
 
 class StartPage extends ConsumerStatefulWidget {
@@ -29,12 +33,41 @@ class _State extends ConsumerState<StartPage> {
     ///데이터베이스 initialize
     await DbManager.init();
 
+    ///dbManager 객체 생성
+    DbManager dbManager = DbManager();
+
+    ///data source 의존성 주입을 통해 객체 생성
+    SaveSlotDataSource saveSlotDataSource = SaveSlotLocalDataSource(dbManager);
+
+    /// repository 의존성 주입을 통해 객체 생성
+    SaveSlotRepository saveSlotRepository = SaveSlotRepository(saveSlotDataSource);
+
+    /// use case 의존성 주입을 통해 객체 생성
+    SaveSlotUseCase saveSlotUseCase = SaveSlotUseCase(saveSlotRepository);
+
+    ref.read(saveSlotUsecaseProvider.notifier).state = saveSlotUseCase;
+
+    _saveSlot = await saveSlotUseCase.getAllSaveSlot();
+
+    setState(() {});
+
     // DbManager<SaveSlot> manager = DbManager('saveSlot');
     // await manager.init();
     // await _refresh();
   }
 
   _refresh() async {
+    SaveSlotUseCase? usecase = ref.read(saveSlotUsecaseProvider);
+
+    if (usecase != null) {
+      int res = await usecase.addSaveSlot(
+        date: DateTime.now(),
+        selectedLeagueId: 1,
+        selectedClubId: 1,
+      );
+      print(res);
+    }
+
     // DbManager<SaveSlot> manager = DbManager('saveSlot');
     // _saveSlot = manager.getAll().map((e) => SaveSlot.fromJson(e)).toList();
     // setState(() {});

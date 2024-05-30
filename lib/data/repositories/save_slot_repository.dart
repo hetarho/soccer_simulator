@@ -1,3 +1,4 @@
+import 'package:soccer_simulator/data/data_source/dto/save_slot_dto.dart';
 import 'package:soccer_simulator/data/repositories/interfaces/save_slot_data_source.dart';
 
 class SaveSlotRepository {
@@ -5,23 +6,23 @@ class SaveSlotRepository {
 
   SaveSlotRepository(this.dataSource);
 
-  Future<int> addSaveSlot(Map<String, dynamic> saveSlotData) {
-    return dataSource.addSaveSlot(saveSlotData);
+  Future<int> addSaveSlot({required DateTime date, required int selectedLeagueId, required int selectedClubId}) {
+    return dataSource.addSaveSlot(date: date, selectedLeagueId: selectedLeagueId, selectedClubId: selectedClubId);
   }
 
-  Future<Map<String, dynamic>?> getSaveSlot(int id) {
-    return dataSource.getSaveSlot(id);
+  Future<SaveSlotDto?> getSaveSlot({required int id}) {
+    return dataSource.getSaveSlot(id: id);
   }
 
-  Future<int> updateSaveSlot(int id, Map<String, dynamic> saveSlotData) {
-    return dataSource.updateSaveSlot(id, saveSlotData);
+  Future<int> updateSaveSlot({required int id, required DateTime date, required int selectedLeagueId, required int selectedClubId}) {
+    return dataSource.updateSaveSlot(id: id, date: date, selectedLeagueId: selectedLeagueId, selectedClubId: selectedClubId);
   }
 
-  Future<int> deleteSaveSlot(int id) {
-    return dataSource.deleteSaveSlot(id);
+  Future<int> deleteSaveSlot({required int id}) {
+    return dataSource.deleteSaveSlot(id: id);
   }
 
-  Future<List<Map<String, dynamic>>> getAllSaveSlots() {
+  Future<List<SaveSlotDto>> getAllSaveSlots() {
     return dataSource.getAllSaveSlots();
   }
 }
