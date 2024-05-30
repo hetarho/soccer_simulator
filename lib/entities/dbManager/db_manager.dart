@@ -1,55 +1,47 @@
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:soccer_simulator/entities/dbManager/jsonable_interface.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
-class DbManager<T extends Jsonable> {
-  final String boxName;
+class DbManager {
+  static Database? _database;
 
-  DbManager(this.boxName);
+  static Future<void> init() async {
+    var databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'local_db.db');
 
-  init() async {
-    Box box = await Hive.openBox(boxName);
-    // await box.clear();
-
-    /// Box가 압축되지 않았을 경우가 있어서 추가
-    await box.compact();
+    _database = await openDatabase(
+      path,
+      version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute('''
+        CREATE TABLE league (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT
+        )
+        ''');
+        await db.execute('''
+        CREATE TABLE club (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT,
+          league_id INTEGER,
+          FOREIGN KEY (league_id) REFERENCES league (id)
+        )
+        ''');
+        await db.execute('''
+        CREATE TABLE player (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT,
+          club_id INTEGER,
+          FOREIGN KEY (club_id) REFERENCES club (id)
+        )
+        ''');
+      },
+    );
   }
 
-  add(T data) async {
-    Map<String, dynamic> json = data.toJson();
-    Box box = Hive.box(boxName);
-    await box.add(json);
-
-    /// Box가 압축되지 않았을 경우가 있어서 추가
-    await box.compact();
-  }
-
-  put(String key, T data) async {
-    Map<String, dynamic> json = data.toJson();
-    Box box = Hive.box(boxName);
-    await box.put(key, json);
-
-    /// Box가 압축되지 않았을 경우가 있어서 추가
-    await box.compact();
-  }
-
-  get(String key) async {
-    Box box = Hive.box(boxName);
-    var data = await box.get(key);
-    return data;
-  }
-
-  List getAll() {
-    Box box = Hive.box(boxName);
-    List data = box.values.toList();
-    return data;
-  }
-
-  delete(String key) async {
-    Box box = Hive.box(boxName);
-    var data = await box.delete(key);
-
-    /// Box가 압축되지 않았을 경우가 있어서 추가
-    await box.compact();
-    return data;
+  Future<Database> getDatabase() async {
+    if (_database == null) {
+      await init();
+    }
+    return _database!;
   }
 }
