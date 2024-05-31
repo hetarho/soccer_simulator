@@ -15,12 +15,10 @@ class SaveSlotUseCase {
 
   Future<int> addSaveSlot({
     required DateTime date,
-    required int selectedLeagueId,
     required int selectedClubId,
   }) async {
     int id = await repository.addSaveSlot(
       date: date,
-      selectedLeagueId: selectedLeagueId,
       selectedClubId: selectedClubId,
     );
 

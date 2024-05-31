@@ -62,7 +62,6 @@ class _State extends ConsumerState<StartPage> {
     if (usecase != null) {
       int res = await usecase.addSaveSlot(
         date: DateTime.now(),
-        selectedLeagueId: 1,
         selectedClubId: 1,
       );
       print(res);
@@ -151,7 +150,7 @@ class _State extends ConsumerState<StartPage> {
 
                                   if (context.mounted) context.push('/league');
                                 },
-                                child: Text('${slot.selectedClubId} / ${slot.selectedLeagueId}'),
+                                child: Text('${slot.selectedClubId} '),
                               ),
                             ),
                             const SizedBox(width: 8),

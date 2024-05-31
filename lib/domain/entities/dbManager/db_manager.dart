@@ -19,7 +19,6 @@ class DbManager {
         CREATE TABLE saveSlot (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           date TEXT,
-          selectedLeagueId INTEGER,
           selectedClubId INTEGER
         )
         ''');

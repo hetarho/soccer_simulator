@@ -9,7 +9,6 @@ import 'package:soccer_simulator/domain/enum/position.enum.dart';
 import 'package:soccer_simulator/ui/extension/color.extension.dart';
 import 'package:soccer_simulator/utils/function.dart';
 import 'package:soccer_simulator/utils/random.dart';
-import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/domain/entities/player/player.dart';
 
@@ -23,7 +22,6 @@ class Club implements Jsonable {
   }) {
     this.tactics = tactics ?? Tactics.normal();
     color = homeColor;
-    id = const Uuid().v4();
   }
 
   Club.empty({

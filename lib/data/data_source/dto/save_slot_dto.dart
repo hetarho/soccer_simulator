@@ -8,7 +8,6 @@ class SaveSlotDto with _$SaveSlotDto {
   const factory SaveSlotDto({
     required int id,
     required DateTime date,
-    required int selectedLeagueId,
     required int selectedClubId,
   }) = _SaveSlotDto;
 

@@ -22,7 +22,6 @@ SaveSlotDto _$SaveSlotDtoFromJson(Map<String, dynamic> json) {
 mixin _$SaveSlotDto {
   int get id => throw _privateConstructorUsedError;
   DateTime get date => throw _privateConstructorUsedError;
-  int get selectedLeagueId => throw _privateConstructorUsedError;
   int get selectedClubId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -37,7 +36,7 @@ abstract class $SaveSlotDtoCopyWith<$Res> {
           SaveSlotDto value, $Res Function(SaveSlotDto) then) =
       _$SaveSlotDtoCopyWithImpl<$Res, SaveSlotDto>;
   @useResult
-  $Res call({int id, DateTime date, int selectedLeagueId, int selectedClubId});
+  $Res call({int id, DateTime date, int selectedClubId});
 }
 
 /// @nodoc
@@ -55,7 +54,6 @@ class _$SaveSlotDtoCopyWithImpl<$Res, $Val extends SaveSlotDto>
   $Res call({
     Object? id = null,
     Object? date = null,
-    Object? selectedLeagueId = null,
     Object? selectedClubId = null,
   }) {
     return _then(_value.copyWith(
@@ -67,10 +65,6 @@ class _$SaveSlotDtoCopyWithImpl<$Res, $Val extends SaveSlotDto>
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      selectedLeagueId: null == selectedLeagueId
-          ? _value.selectedLeagueId
-          : selectedLeagueId // ignore: cast_nullable_to_non_nullable
-              as int,
       selectedClubId: null == selectedClubId
           ? _value.selectedClubId
           : selectedClubId // ignore: cast_nullable_to_non_nullable
@@ -87,7 +81,7 @@ abstract class _$$SaveSlotDtoImplCopyWith<$Res>
       __$$SaveSlotDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, DateTime date, int selectedLeagueId, int selectedClubId});
+  $Res call({int id, DateTime date, int selectedClubId});
 }
 
 /// @nodoc
@@ -103,7 +97,6 @@ class __$$SaveSlotDtoImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? date = null,
-    Object? selectedLeagueId = null,
     Object? selectedClubId = null,
   }) {
     return _then(_$SaveSlotDtoImpl(
@@ -115,10 +108,6 @@ class __$$SaveSlotDtoImplCopyWithImpl<$Res>
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      selectedLeagueId: null == selectedLeagueId
-          ? _value.selectedLeagueId
-          : selectedLeagueId // ignore: cast_nullable_to_non_nullable
-              as int,
       selectedClubId: null == selectedClubId
           ? _value.selectedClubId
           : selectedClubId // ignore: cast_nullable_to_non_nullable
@@ -131,10 +120,7 @@ class __$$SaveSlotDtoImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SaveSlotDtoImpl implements _SaveSlotDto {
   const _$SaveSlotDtoImpl(
-      {required this.id,
-      required this.date,
-      required this.selectedLeagueId,
-      required this.selectedClubId});
+      {required this.id, required this.date, required this.selectedClubId});
 
   factory _$SaveSlotDtoImpl.fromJson(Map<String, dynamic> json) =>
       _$$SaveSlotDtoImplFromJson(json);
@@ -144,13 +130,11 @@ class _$SaveSlotDtoImpl implements _SaveSlotDto {
   @override
   final DateTime date;
   @override
-  final int selectedLeagueId;
-  @override
   final int selectedClubId;
 
   @override
   String toString() {
-    return 'SaveSlotDto(id: $id, date: $date, selectedLeagueId: $selectedLeagueId, selectedClubId: $selectedClubId)';
+    return 'SaveSlotDto(id: $id, date: $date, selectedClubId: $selectedClubId)';
   }
 
   @override
@@ -160,16 +144,13 @@ class _$SaveSlotDtoImpl implements _SaveSlotDto {
             other is _$SaveSlotDtoImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.date, date) || other.date == date) &&
-            (identical(other.selectedLeagueId, selectedLeagueId) ||
-                other.selectedLeagueId == selectedLeagueId) &&
             (identical(other.selectedClubId, selectedClubId) ||
                 other.selectedClubId == selectedClubId));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, date, selectedLeagueId, selectedClubId);
+  int get hashCode => Object.hash(runtimeType, id, date, selectedClubId);
 
   @JsonKey(ignore: true)
   @override
@@ -189,7 +170,6 @@ abstract class _SaveSlotDto implements SaveSlotDto {
   const factory _SaveSlotDto(
       {required final int id,
       required final DateTime date,
-      required final int selectedLeagueId,
       required final int selectedClubId}) = _$SaveSlotDtoImpl;
 
   factory _SaveSlotDto.fromJson(Map<String, dynamic> json) =
@@ -199,8 +179,6 @@ abstract class _SaveSlotDto implements SaveSlotDto {
   int get id;
   @override
   DateTime get date;
-  @override
-  int get selectedLeagueId;
   @override
   int get selectedClubId;
   @override

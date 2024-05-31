@@ -8,11 +8,10 @@ class SaveSlotLocalDataSource implements SaveSlotDataSource {
   SaveSlotLocalDataSource(this.dbManager);
 
   @override
-  Future<int> addSaveSlot({required DateTime date, required int selectedLeagueId, required int selectedClubId}) async {
+  Future<int> addSaveSlot({required DateTime date, required int selectedClubId}) async {
     final db = await dbManager.getDatabase();
     final saveSlotData = {
       'date': date.toIso8601String(),
-      'selectedLeagueId': selectedLeagueId,
       'selectedClubId': selectedClubId,
     };
     return await db.insert('saveSlot', saveSlotData);
@@ -29,11 +28,10 @@ class SaveSlotLocalDataSource implements SaveSlotDataSource {
   }
 
   @override
-  Future<int> updateSaveSlot({required int id, required DateTime date, required int selectedLeagueId, required int selectedClubId}) async {
+  Future<int> updateSaveSlot({required int id, required DateTime date, required int selectedClubId}) async {
     final db = await dbManager.getDatabase();
     final saveSlotData = {
       'date': date.toIso8601String(),
-      'selectedLeagueId': selectedLeagueId,
       'selectedClubId': selectedClubId,
     };
     return await db.update('saveSlot', saveSlotData, where: 'id = ?', whereArgs: [id]);

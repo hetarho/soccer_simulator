@@ -6,16 +6,16 @@ class SaveSlotRepository {
 
   SaveSlotRepository(this.dataSource);
 
-  Future<int> addSaveSlot({required DateTime date, required int selectedLeagueId, required int selectedClubId}) {
-    return dataSource.addSaveSlot(date: date, selectedLeagueId: selectedLeagueId, selectedClubId: selectedClubId);
+  Future<int> addSaveSlot({required DateTime date, required int selectedClubId}) {
+    return dataSource.addSaveSlot(date: date, selectedClubId: selectedClubId);
   }
 
   Future<SaveSlotDto?> getSaveSlot({required int id}) {
     return dataSource.getSaveSlot(id: id);
   }
 
-  Future<int> updateSaveSlot({required int id, required DateTime date, required int selectedLeagueId, required int selectedClubId}) {
-    return dataSource.updateSaveSlot(id: id, date: date, selectedLeagueId: selectedLeagueId, selectedClubId: selectedClubId);
+  Future<int> updateSaveSlot({required int id, required DateTime date, required int selectedClubId}) {
+    return dataSource.updateSaveSlot(id: id, date: date, selectedClubId: selectedClubId);
   }
 
   Future<int> deleteSaveSlot({required int id}) {
