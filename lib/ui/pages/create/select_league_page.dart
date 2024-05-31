@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:soccer_simulator/const/leagues_seed_data.dart';
+import 'package:soccer_simulator/domain/enum/national.enum.dart';
 import 'package:soccer_simulator/ui/pages/create/select_club_page.dart';
 import 'package:soccer_simulator/ui/providers/providers.dart';
 
@@ -35,6 +36,16 @@ class _SelectLeaguePageState extends ConsumerState<SelectLeaguePage> {
     portugalLeagueSeedData;
   }
 
+  List<List<Color>> bgColors = const [
+    [Color.fromRGBO(156, 39, 176, 1), Color.fromRGBO(0, 243, 220, 1)],
+    [Color.fromRGBO(239, 108, 32, 1), Color.fromRGBO(255, 255, 31, 1)],
+    [Color.fromRGBO(39, 86, 217, 1), Color.fromRGBO(60, 214, 235, 1)],
+    [Color.fromRGBO(107, 21, 21, 1), Color.fromRGBO(255, 0, 0, 1)],
+    [Color.fromRGBO(17, 33, 58, 1), Color.fromRGBO(197, 250, 60, 1)],
+    [Color.fromRGBO(168, 33, 146, 1), Color.fromRGBO(45, 199, 120, 1)],
+    [Color.fromRGBO(0, 123, 255, 1), Color.fromRGBO(255, 204, 153, 1)],
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,42 +63,49 @@ class _SelectLeaguePageState extends ConsumerState<SelectLeaguePage> {
                 seeds: englandLeagueSeedData,
                 selectedSeed: selectedSeed,
                 onClick: _onClickLeague,
+                colors: bgColors[0],
               ),
               const Gap(24),
               _LeagueInNational(
                 seeds: spainLeagueSeedData,
                 selectedSeed: selectedSeed,
                 onClick: _onClickLeague,
-              ),
-              const Gap(24),
-              _LeagueInNational(
-                seeds: germanyLeagueSeedData,
-                selectedSeed: selectedSeed,
-                onClick: _onClickLeague,
+                colors: bgColors[1],
               ),
               const Gap(24),
               _LeagueInNational(
                 seeds: italyLeagueSeedData,
                 selectedSeed: selectedSeed,
                 onClick: _onClickLeague,
+                colors: bgColors[2],
+              ),
+              const Gap(24),
+              _LeagueInNational(
+                seeds: germanyLeagueSeedData,
+                selectedSeed: selectedSeed,
+                onClick: _onClickLeague,
+                colors: bgColors[3],
               ),
               const Gap(24),
               _LeagueInNational(
                 seeds: franceLeagueSeedData,
                 selectedSeed: selectedSeed,
                 onClick: _onClickLeague,
+                colors: bgColors[4],
               ),
               const Gap(24),
               _LeagueInNational(
                 seeds: netherlandsLeagueSeedData,
                 selectedSeed: selectedSeed,
                 onClick: _onClickLeague,
+                colors: bgColors[5],
               ),
               const Gap(24),
               _LeagueInNational(
                 seeds: portugalLeagueSeedData,
                 selectedSeed: selectedSeed,
                 onClick: _onClickLeague,
+                colors: bgColors[6],
               ),
             ],
           ),
@@ -104,7 +122,16 @@ class _SelectLeaguePageState extends ConsumerState<SelectLeaguePage> {
                 height: 68,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: Colors.purple,
+                  color: switch (selectedSeed) {
+                    _ when selectedSeed?.national == National.england => bgColors[0][0],
+                    _ when selectedSeed?.national == National.spain => bgColors[1][0],
+                    _ when selectedSeed?.national == National.italy => bgColors[2][0],
+                    _ when selectedSeed?.national == National.germany => bgColors[3][0],
+                    _ when selectedSeed?.national == National.france => bgColors[4][0],
+                    _ when selectedSeed?.national == National.netherlands => bgColors[5][0],
+                    _ when selectedSeed?.national == National.portugal => bgColors[6][0],
+                    _ => Colors.black,
+                  },
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.35),
@@ -131,8 +158,9 @@ class _LeagueInNational extends StatelessWidget {
   final List<LeagueSeedData> seeds;
   final LeagueSeedData? selectedSeed;
   final void Function(LeagueSeedData seed) onClick;
+  final List<Color> colors;
 
-  const _LeagueInNational({required this.seeds, required this.selectedSeed, required this.onClick});
+  const _LeagueInNational({required this.seeds, required this.selectedSeed, required this.onClick, required this.colors});
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +177,7 @@ class _LeagueInNational extends StatelessWidget {
               onTap: () {
                 onClick(seed);
               },
-              child: _LeagueCard(seed: seed, isSelected: seed == selectedSeed),
+              child: _LeagueCard(seed: seed, isSelected: seed == selectedSeed, colors: colors),
             )),
       ],
     );
@@ -159,8 +187,9 @@ class _LeagueInNational extends StatelessWidget {
 class _LeagueCard extends StatelessWidget {
   final LeagueSeedData seed;
   final bool isSelected;
+  final List<Color> colors;
 
-  const _LeagueCard({required this.seed, required this.isSelected});
+  const _LeagueCard({required this.seed, required this.isSelected, required this.colors});
 
   @override
   Widget build(BuildContext context) {
@@ -171,21 +200,22 @@ class _LeagueCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: Stack(
         children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 400),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromRGBO(156, 39, 176, isSelected ? 1 : 0.6),
-                  Color.fromRGBO(0, 243, 220, isSelected ? 1 : 0.6),
-                ],
-                stops: [
-                  0.2,
-                  0.8,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: isSelected ? 1 : 0.5,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 400),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  colors: colors,
+                  stops: [
+                    isSelected ? 0.3 : 0.1,
+                    isSelected ? 0.8 : 0.5,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
               ),
             ),
           ),
