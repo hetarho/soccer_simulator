@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soccer_simulator/const/club_seed_data.dart';
 import 'package:soccer_simulator/const/leagues_seed_data.dart';
-import 'package:soccer_simulator/domain/entities/tactics/tactics.dart';
-import 'package:soccer_simulator/domain/enum/national.enum.dart';
+import 'package:soccer_simulator/ui/pages/create/create_save_slot_page.dart';
 import 'package:soccer_simulator/ui/providers/providers.dart';
 
 class SelectClubPage extends ConsumerStatefulWidget {
@@ -33,189 +32,6 @@ class _SelectClubPageState extends ConsumerState<SelectClubPage> {
           .toList();
       _seedClubs = seeds;
 
-      List<ClubSeedData> _epl = [
-        ClubSeedData(
-          name: 'arsenal',
-          nickName: 'ARS',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(239, 1, 7, 1),
-          awayColor: const Color.fromRGBO(212, 233, 79, 1),
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'astonVilla',
-          nickName: 'AV',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(149, 191, 229, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'bournemouth',
-          nickName: 'BOU',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(239, 1, 7, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'brentford',
-          nickName: 'BFD',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(227, 6, 19, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'brighton',
-          nickName: 'BHA',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(0, 87, 184, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'chelsea',
-          nickName: 'CHE',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(3, 70, 148, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'crystalPalace',
-          nickName: 'CP',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(27, 69, 143, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'everton',
-          nickName: 'EVE',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(0, 51, 153, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'folham',
-          nickName: 'FUL',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(0, 0, 0, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'Ipswich Town',
-          nickName: 'IPS',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(0, 51, 160, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'leister city',
-          nickName: 'LEI',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(0, 48, 144, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'liverfpool',
-          nickName: 'LIV',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(200, 16, 46, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'manchesterCity',
-          nickName: 'MCI',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(108, 171, 221, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'manchesterUnited',
-          nickName: 'MUN',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(218, 41, 28, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'newcastle',
-          nickName: 'NEW',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(36, 31, 32, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'nottingham',
-          nickName: 'NOF',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(229, 50, 51, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'south hampton',
-          nickName: 'SOU',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(215, 25, 32, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'tottenham',
-          nickName: 'TOT',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(19, 34, 87, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'westHam',
-          nickName: 'WHU',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(122, 38, 58, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-        ClubSeedData(
-          name: 'wolverhampton',
-          nickName: 'WOV',
-          national: National.england,
-          level: 0,
-          homeColor: const Color.fromRGBO(253, 185, 19, 1),
-          awayColor: Colors.cyan,
-          tactics: Tactics.normal(),
-        ),
-      ];
-      _seedClubs = _epl;
       setState(() {});
     }
   }
@@ -228,7 +44,7 @@ class _SelectClubPageState extends ConsumerState<SelectClubPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16).add(const EdgeInsets.only(bottom: 60)),
+          padding: const EdgeInsets.all(16).add(const EdgeInsets.only(bottom: 80, top: 16)),
           child: Column(
             children: _seedClubs
                 .map(
@@ -236,6 +52,7 @@ class _SelectClubPageState extends ConsumerState<SelectClubPage> {
                     onTap: () {
                       setState(() {
                         selectedSeed = seed;
+                        ref.read(createSaveSlotProvider.notifier).state.selectedClubSeed = seed;
                       });
                     },
                     child: _ClubCard(seed: seed, isSelected: selectedSeed == seed),
@@ -249,14 +66,14 @@ class _SelectClubPageState extends ConsumerState<SelectClubPage> {
           ? null
           : GestureDetector(
               onTap: () {
-                context.push(SelectClubPage.routes);
+                context.push(CreateSaveSlotPage.routes);
               },
               child: Container(
                 width: double.infinity,
-                height: 68,
+                height: 80,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: Colors.purple,
+                  color: selectedSeed?.homeColor,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.35),
@@ -269,7 +86,7 @@ class _SelectClubPageState extends ConsumerState<SelectClubPage> {
                 child: const Text(
                   'SELECT',
                   style: TextStyle(
-                    fontSize: 36,
+                    fontSize: 44,
                     color: Colors.white,
                   ),
                 ),
@@ -290,7 +107,7 @@ class _ClubCard extends StatelessWidget {
     return Container(
       alignment: Alignment.centerLeft,
       width: double.infinity,
-      height: 60,
+      height: 68,
       margin: const EdgeInsets.only(bottom: 12),
       child: Stack(
         children: [
@@ -341,7 +158,7 @@ class _ClubCard extends StatelessWidget {
             padding: const EdgeInsets.only(left: 16),
             child: Text(
               seed.nickName,
-              style: const TextStyle(fontSize: 18, color: Colors.white),
+              style: const TextStyle(fontSize: 28, color: Colors.white),
             ),
           ),
         ],

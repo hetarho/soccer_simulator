@@ -56,7 +56,7 @@ class _SelectLeaguePageState extends ConsumerState<SelectLeaguePage> {
       backgroundColor: Colors.grey[200],
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16).add(const EdgeInsets.only(bottom: 60)),
+          padding: const EdgeInsets.all(16).add(const EdgeInsets.only(bottom: 120, top: 16)),
           child: Column(
             children: [
               _LeagueInNational(
@@ -119,7 +119,7 @@ class _SelectLeaguePageState extends ConsumerState<SelectLeaguePage> {
               },
               child: Container(
                 width: double.infinity,
-                height: 68,
+                height: 80,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: switch (selectedSeed) {
@@ -144,7 +144,7 @@ class _SelectLeaguePageState extends ConsumerState<SelectLeaguePage> {
                 child: const Text(
                   'SELECT',
                   style: TextStyle(
-                    fontSize: 36,
+                    fontSize: 44,
                     color: Colors.white,
                   ),
                 ),
