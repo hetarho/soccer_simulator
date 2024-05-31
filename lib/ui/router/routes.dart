@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soccer_simulator/ui/pages/create/select_club_page.dart';
 import 'package:soccer_simulator/ui/pages/create/select_league_page.dart';
 import 'package:soccer_simulator/ui/pages/fixture/fixture_page.dart';
 import 'package:soccer_simulator/ui/pages/league/league_page.dart';
@@ -41,6 +42,12 @@ final GoRouter router = GoRouter(
       path: '/selectLeague',
       builder: (BuildContext context, GoRouterState state) {
         return const SelectLeaguePage();
+      },
+    ),
+    GoRoute(
+      path: SelectClubPage.routes,
+      builder: (BuildContext context, GoRouterState state) {
+        return const SelectClubPage();
       },
     ),
     GoRoute(

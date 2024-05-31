@@ -102,20 +102,20 @@ class _State extends ConsumerState<StartPage> {
                   child: const Text('create slot')),
               ElevatedButton(
                   onPressed: () async {
-                    List<Club> clubs = List.generate(
-                      20,
-                      (index) => Club(
-                        name: 't$index',
-                        nickName: 't$index',
-                        homeColor: const Color.fromARGB(255, 0, 60, 140),
-                        awayColor: const Color.fromRGBO(70, 15, 15, 1),
-                        tactics: Tactics.normal(),
-                      )..createStartingMembers(
-                          min: index < 10 ? 50 : 80,
-                          max: index < 10 ? 50 : 80,
-                          formation: Formation.create433(),
-                        ),
-                    );
+                    // List<Club> clubs = List.generate(
+                    //   20,
+                    //   (index) => Club(
+                    //     name: 't$index',
+                    //     nickName: 't$index',
+                    //     homeColor: const Color.fromARGB(255, 0, 60, 140),
+                    //     awayColor: const Color.fromRGBO(70, 15, 15, 1),
+                    //     tactics: Tactics.normal(),
+                    //   )..createStartingMembers(
+                    //       min: index < 10 ? 50 : 80,
+                    //       max: index < 10 ? 50 : 80,
+                    //       formation: Formation.create433(),
+                    //     ),
+                    // );
 
                     // League league = League(clubs: clubs);
 

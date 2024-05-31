@@ -16,6 +16,7 @@ class League {
   ///소속 국가
   final National national;
 
+  ///몇부 리그인지 0 => 1부리그
   final int level;
 
   ///최초 생성시 새 시즌 생성

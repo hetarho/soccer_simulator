@@ -5,6 +5,7 @@ import 'package:random_name_generator/random_name_generator.dart';
 import 'package:soccer_simulator/domain/entities/dbManager/jsonable_interface.dart';
 import 'package:soccer_simulator/domain/entities/formation/formation.dart';
 import 'package:soccer_simulator/domain/entities/tactics/tactics.dart';
+import 'package:soccer_simulator/domain/enum/national.enum.dart';
 import 'package:soccer_simulator/domain/enum/position.enum.dart';
 import 'package:soccer_simulator/ui/extension/color.extension.dart';
 import 'package:soccer_simulator/utils/function.dart';
@@ -18,6 +19,8 @@ class Club implements Jsonable {
     required this.nickName,
     required this.homeColor,
     required this.awayColor,
+    required this.national,
+    required this.level,
     Tactics? tactics,
   }) {
     this.tactics = tactics ?? Tactics.normal();
@@ -28,6 +31,8 @@ class Club implements Jsonable {
     this.id = '',
     this.name = '',
     this.nickName = '',
+    this.national = National.algeria,
+    this.level = 0,
     this.color = Colors.black,
     this.homeColor = Colors.black,
     this.awayColor = Colors.black,
@@ -38,6 +43,8 @@ class Club implements Jsonable {
   Club.save(Club club) {
     id = club.id;
     players = club.players;
+    level = club.level;
+    national = club.national;
     nickName = club.nickName;
     color = club.color;
     tactics = club.tactics;
@@ -75,6 +82,13 @@ class Club implements Jsonable {
   }
 
   late final String id;
+
+  ///소속 국가
+  late final National national;
+
+  ///몇부 리그인지 0 => 1부리그
+  late int level;
+
   late String name;
   late String nickName;
   late Color color;
@@ -251,7 +265,6 @@ class Club implements Jsonable {
       'lost': lost,
       'winStack': winStack,
       'noLoseStack': noLoseStack,
-      
       'loseStack': loseStack,
       'noWinStack': noWinStack,
       'gf': gf,
