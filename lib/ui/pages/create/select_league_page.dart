@@ -37,7 +37,7 @@ class _SelectLeaguePageState extends ConsumerState<SelectLeaguePage> {
   }
 
   List<List<Color>> bgColors = const [
-    [Color.fromRGBO(156, 39, 176, 1), Color.fromRGBO(0, 243, 220, 1)],
+    [Color.fromRGBO(201, 97, 220, 1), Color.fromRGBO(103, 244, 230, 1)],
     [Color.fromRGBO(239, 108, 32, 1), Color.fromRGBO(255, 255, 31, 1)],
     [Color.fromRGBO(39, 86, 217, 1), Color.fromRGBO(60, 214, 235, 1)],
     [Color.fromRGBO(107, 21, 21, 1), Color.fromRGBO(255, 0, 0, 1)],
@@ -225,9 +225,13 @@ class _LeagueCard extends StatelessWidget {
               duration: const Duration(milliseconds: 300),
               width: isSelected ? 125 : 90,
               height: isSelected ? 125 : 90,
-              child: Image.asset(
-                'assets/images/logo/league/pl.png',
-                fit: BoxFit.cover,
+              child: AnimatedOpacity(
+                opacity: isSelected ? 1 : 0.5,
+                duration: const Duration(milliseconds: 300),
+                child: Image.asset(
+                  'assets/images/logo/league/pl.png',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
