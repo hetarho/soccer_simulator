@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:soccer_simulator/domain/entities/club.dart';
+import 'package:soccer_simulator/domain/entities/club/club.dart';
 import 'package:soccer_simulator/ui/providers/providers.dart';
 import 'package:soccer_simulator/utils/color.dart';
 

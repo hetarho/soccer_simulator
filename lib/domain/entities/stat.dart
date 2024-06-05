@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:soccer_simulator/domain/entities/dbManager/jsonable_interface.dart';
+
 import 'package:soccer_simulator/domain/enum/position.enum.dart';
 import 'package:soccer_simulator/domain/enum/training_type.enum.dart';
 import 'package:soccer_simulator/utils/random.dart';
@@ -16,7 +16,7 @@ import 'package:soccer_simulator/utils/random.dart';
 /// 90 ~ 120 리그 탑급 플레이어
 ///
 /// 120 ~ 월드클래스
-class Stat implements Jsonable {
+class Stat  {
   Stat({
     int? stamina,
     int? strength,

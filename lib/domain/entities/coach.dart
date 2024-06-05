@@ -1,8 +1,8 @@
-import 'package:soccer_simulator/domain/entities/dbManager/jsonable_interface.dart';
+
 import 'package:soccer_simulator/domain/entities/member.dart';
 import 'package:soccer_simulator/domain/enum/play_style.enum.dart';
 
-class Coach extends Member implements Jsonable {
+class Coach extends Member  {
   Coach({
     required super.name,
     required super.birthDay,

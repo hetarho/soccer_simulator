@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'package:soccer_simulator/domain/entities/dbManager/jsonable_interface.dart';
+
 import 'package:soccer_simulator/utils/random.dart';
 
-class PosXY implements Jsonable {
+class PosXY  {
   double _x = 0;
   double _y = 0;
   PosXY(double x, double y) {

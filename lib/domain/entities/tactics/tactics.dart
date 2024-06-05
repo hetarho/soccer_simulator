@@ -1,7 +1,6 @@
-import 'package:soccer_simulator/domain/entities/dbManager/jsonable_interface.dart';
 import 'package:soccer_simulator/domain/enum/play_level.enum.dart';
 
-class Tactics implements Jsonable {
+class Tactics {
   Tactics({
     required this.pressDistance,
     required this.freeLevel,
@@ -30,30 +29,9 @@ class Tactics implements Jsonable {
 
   ///슛을 신중하게 하는지 여부
   late PlayLevel shootLevel;
-
-  Tactics.fromJson(Map<dynamic, dynamic> map) {
-    pressDistance = map['pressDistance'];
-    freeLevel = FreeLevel.fromJson(map['freeLevel']);
-    attackLevel = PlayLevel.fromString(map['attackLevel']);
-    shortPassLevel = PlayLevel.fromString(map['shortPassLevel']);
-    dribbleLevel = PlayLevel.fromString(map['dribbleLevel']);
-    shootLevel = PlayLevel.fromString(map['shootLevel']);
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'pressDistance': pressDistance,
-      'freeLevel': freeLevel.toJson(),
-      'attackLevel': attackLevel.toString(),
-      'shortPassLevel': shortPassLevel.toString(),
-      'dribbleLevel': dribbleLevel.toString(),
-      'shootLevel': shootLevel.toString(),
-    };
-  }
 }
 
-class FreeLevel implements Jsonable {
+class FreeLevel {
   late PlayLevel forward;
   late PlayLevel backward;
   late PlayLevel left;
@@ -66,22 +44,5 @@ class FreeLevel implements Jsonable {
     backward = PlayLevel.middle;
     left = PlayLevel.middle;
     right = PlayLevel.middle;
-  }
-
-  FreeLevel.fromJson(Map<dynamic, dynamic> map) {
-    forward = PlayLevel.fromString(map['forward']);
-    backward = PlayLevel.fromString(map['backward']);
-    left = PlayLevel.fromString(map['left']);
-    right = PlayLevel.fromString(map['right']);
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'forward': forward.toString(),
-      'backward': backward.toString(),
-      'left': left.toString(),
-      'right': right.toString(),
-    };
   }
 }

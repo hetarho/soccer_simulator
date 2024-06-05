@@ -1,8 +1,11 @@
-import 'package:soccer_simulator/domain/entities/club.dart';
-import 'package:soccer_simulator/domain/entities/dbManager/jsonable_interface.dart';
+import 'dart:ui';
 
-class ClubInFixture implements Jsonable {
-  late final Club club;
+import 'package:soccer_simulator/domain/entities/club/club.dart';
+
+class ClubInFixture {
+  final int id;
+  final Club club;
+  Color uniformColor;
   int _scoredGoal = 0;
   int hasBallTime = 0;
   int shoot = 0;
@@ -12,11 +15,11 @@ class ClubInFixture implements Jsonable {
 
   score() {
     _scoredGoal += 1;
-    club.gf++;
+    club.currentSeasonStat.scored();
   }
 
   concede() {
-    club.ga++;
+    club.currentSeasonStat.conceded();
   }
 
   get goal {
@@ -24,32 +27,8 @@ class ClubInFixture implements Jsonable {
   }
 
   ClubInFixture({
+    required this.id,
     required this.club,
+    required this.uniformColor,
   });
-
-  ClubInFixture.empty() {
-    club = Club.empty();
-  }
-
-  ClubInFixture.fromJson(Map<dynamic, dynamic> map, this.club) {
-    _scoredGoal = map['_scoredGoal'];
-    hasBallTime = map['hasBallTime'];
-    shoot = map['shoot'];
-    pass = map['pass'];
-    tackle = map['tackle'];
-    dribble = map['dribble'];
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'club': club.toJson(),
-      '_scoredGoal': _scoredGoal,
-      'hasBallTime': hasBallTime,
-      'shoot': shoot,
-      'pass': pass,
-      'tackle': tackle,
-      'dribble': dribble,
-    };
-  }
 }

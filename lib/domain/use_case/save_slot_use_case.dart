@@ -10,7 +10,7 @@ class SaveSlotUseCase {
   Future<List<SaveSlot>> getAllSaveSlot() async {
     List<SaveSlotDto> data = await repository.getAllSaveSlots();
 
-    return data.map((dto) => SaveSlot.fromDto(dto)).toList();
+    return data.map((dto) => SaveSlot(id: dto.id, date: dto.date, selectedClubId: dto.selectedClubId)).toList();
   }
 
   Future<int> addSaveSlot({

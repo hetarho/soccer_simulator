@@ -11,6 +11,7 @@ import 'package:soccer_simulator/ui/providers/providers.dart';
 
 class SelectLeaguePage extends ConsumerStatefulWidget {
   const SelectLeaguePage({super.key});
+  static String routes = '/selectLeague';
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SelectLeaguePageState();

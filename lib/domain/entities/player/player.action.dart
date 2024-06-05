@@ -18,11 +18,11 @@ extension PlayerMove on Player {
 
     double judgementBonus = 50 / judgementStat;
 
-    if (_currentFixture.isGoalKick) await Future.delayed(Duration(milliseconds: playSpeed.inMilliseconds * 3));
+    if (_currentFixture!.isGoalKick) await Future.delayed(Duration(milliseconds: playSpeed.inMilliseconds * 3));
 
-    if (_currentFixture.ball.isMoving) {
-      await Future.delayed(Duration(milliseconds: (playSpeed.inMilliseconds * _currentFixture.ball.ballSpeed * judgementBonus).round()));
-      _currentFixture.ball.isMoving = false;
+    if (_currentFixture!.ball.isMoving) {
+      await Future.delayed(Duration(milliseconds: (playSpeed.inMilliseconds * _currentFixture!.ball.ballSpeed * judgementBonus).round()));
+      _currentFixture!.ball.isMoving = false;
     } else if (!hasBall) {
       await Future.delayed(Duration(milliseconds: (playSpeed.inMilliseconds * judgementBonus * 2).round()));
     }
@@ -33,7 +33,7 @@ extension PlayerMove on Player {
   _play() {
     _timer?.cancel();
     _timer = Timer.periodic(playSpeed, (timer) async {
-      playTime = _currentFixture.playTime;
+      playTime = _currentFixture!.playTime;
       bool teamHasBall = team!.players.where((player) => player.hasBall).isNotEmpty;
       lastAction = null;
 
@@ -242,7 +242,7 @@ extension PlayerMove on Player {
 
   _attackOnTheBall() {
     ///골킥 초기화
-    _currentFixture.isGoalKick = false;
+    _currentFixture!.isGoalKick = false;
 
     ///우리팀 선수들
     List<Player> ourTeamPlayers = [...team!.players.where((p) => p.id != id)];
@@ -509,8 +509,8 @@ extension PlayerMove on Player {
   }
 
   _defend() {
-    if (_currentFixture.playerWithBall == null) return;
-    bool isNotGoalKick = _currentFixture.playerWithBall?.role != PlayerRole.goalKeeper;
+    if (_currentFixture!.playerWithBall == null) return;
+    bool isNotGoalKick = _currentFixture!.playerWithBall?.role != PlayerRole.goalKeeper;
 
     PosXY ballPos = PosXY(100 - _ballPosXY.x, 200 - _ballPosXY.y);
     bool canTackle = ballPos.distance(posXY) < tackleDistance && isNotGoalKick;
@@ -523,7 +523,7 @@ extension PlayerMove on Player {
         closerPlayerAtBall < _ballPosXY.y / 50;
 
     if (canTackle) {
-      _tackle(_currentFixture.playerWithBall!);
+      _tackle(_currentFixture!.playerWithBall!);
     } else if (canPress) {
       _pressToBall(_ballPosXY);
     } else {
@@ -669,8 +669,8 @@ extension PlayerMove on Player {
 
       PosXY ballLandingPos = PosXY.random(target.posXY.x, target.posXY.y, ballLandingAccuracy);
 
-      _currentFixture.ball.isMoving = true;
-      _currentFixture.ball.moveDistance = passDistance;
+      _currentFixture!.ball.isMoving = true;
+      _currentFixture!.ball.moveDistance = passDistance;
 
       Player receivedPlayer = _findClosetPlayer(ballLandingPos, [target], [...opponents]);
       if (receivedPlayer.id == target.id) {
@@ -711,14 +711,14 @@ extension PlayerMove on Player {
       _streamController?.add(PlayerActEvent(player: this, action: PlayerAction.goal));
       if (passedPlayer != null) passedPlayer?._streamController?.add(PlayerActEvent(player: passedPlayer!, action: PlayerAction.assist));
 
-      _currentFixture.scored(
+      _currentFixture!.scored(
         scoredClub: _myTeamCurrentFixture,
         concedeClub: _opponentTeamCurrentFixture,
         scoredPlayer: this,
         assistPlayer: passedPlayer,
       );
     } else {
-      _currentFixture.isGoalKick = true;
+      _currentFixture!.isGoalKick = true;
       hasBall = false;
       goalKeeper.hasBall = true;
     }

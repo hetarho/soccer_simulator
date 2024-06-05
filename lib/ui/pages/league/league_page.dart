@@ -6,7 +6,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:soccer_simulator/domain/entities/club.dart';
+import 'package:soccer_simulator/domain/entities/club/club.dart';
 import 'package:soccer_simulator/domain/entities/dbManager/db_manager.dart';
 import 'package:soccer_simulator/domain/entities/fixture/fixture.dart';
 import 'package:soccer_simulator/domain/entities/fixture/vo/fixture_record.dart';

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:soccer_simulator/domain/entities/club.dart';
-import 'package:soccer_simulator/domain/entities/dbManager/jsonable_interface.dart';
+import 'package:soccer_simulator/domain/entities/club/club.dart';
+
 import 'package:soccer_simulator/domain/entities/fixture/club_in_fixture.dart';
 import 'package:soccer_simulator/domain/entities/player/vo/player_act_event.dart';
 import 'package:soccer_simulator/domain/entities/player/vo/player_game_record.dart';
@@ -12,7 +12,6 @@ import 'package:soccer_simulator/domain/enum/play_level.enum.dart';
 import 'package:soccer_simulator/domain/enum/player_action.enum.dart';
 import 'package:soccer_simulator/utils/math.dart';
 import 'package:soccer_simulator/utils/function.dart';
-import 'package:uuid/uuid.dart';
 
 import 'package:soccer_simulator/domain/entities/fixture/fixture.dart';
 import 'package:soccer_simulator/domain/entities/member.dart';
@@ -27,10 +26,11 @@ part 'player.action.dart';
 part 'player.grow.dart';
 part 'player.stat.dart';
 
-class Player extends Member implements Jsonable {
+class Player extends Member {
   StreamController<PlayerActEvent>? _streamController;
   Stream<PlayerActEvent>? get playerStream => _streamController?.stream;
   Player({
+    required this.id,
     required super.name,
     required super.birthDay,
     required super.national,
@@ -92,6 +92,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
   }
 
   Player.create({
+    required this.id,
     required super.name,
     DateTime? birthDay,
     National? national,
@@ -126,7 +127,7 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
     _currentGameRecord = PlayerGameRecord.init();
   }
 
-  final String id = const Uuid().v4();
+  final int id;
 
   ///스타팅 멤버인지 여부
   bool isStartingPlayer = false;
@@ -244,18 +245,19 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
 
   late PlayerGameRecord _currentGameRecord;
 
-  Fixture _currentFixture = Fixture.empty();
+  //TODO;
+  Fixture? _currentFixture;
 
   ClubInFixture get _myTeamCurrentFixture {
-    return _currentFixture.home.club.id == team?.id ? _currentFixture.home : _currentFixture.away;
+    return _currentFixture!.home.club.id == team?.id ? _currentFixture!.home : _currentFixture!.away;
   }
 
   ClubInFixture get _opponentTeamCurrentFixture {
-    return _currentFixture.home.club.id == team?.id ? _currentFixture.away : _currentFixture.home;
+    return _currentFixture!.home.club.id == team?.id ? _currentFixture!.away : _currentFixture!.home;
   }
 
   PosXY get _ballPosXY {
-    return _currentFixture.ball.posXY;
+    return _currentFixture!.ball.posXY;
   }
 
   /// 트레이팅, 게임시 성장할 수 있는 스텟
@@ -472,51 +474,4 @@ teamTrainingTypePercent: $teamTrainingTypePercent,
         PlayLevel.max => 0.25,
         _ => 1,
       };
-
-  Player.fromJson(Map<dynamic, dynamic> map)
-      : super(
-          name: map['name'],
-          birthDay: map['birthDay'],
-          national: National.fromString(map['national']),
-        ) {
-    height = map['height'];
-    backNumber = map['backNumber'];
-    bodyType = BodyType.fromString(map['bodyType']);
-    soccerIQ = map['soccerIQ'];
-    reflex = map['reflex'];
-    speed = map['speed'];
-    flexibility = map['flexibility'];
-    _potential = map['potential'];
-    isStartingPlayer = map['isStartingPlayer'];
-    startingPoxXY = PosXY.fromJson(map['startingPoxXY']);
-    _stat = Stat.fromJson(map['stat']);
-    tactics = Tactics.fromJson(map['tactics']);
-    _currentGameRecord = PlayerGameRecord.fromJson(map['currentGameRecord']);
-    personalTrainingTypes = (map['personalTrainingTypes'] as List).map((e) => TrainingType.fromString(e)).toList();
-    teamTrainingTypePercent = map['teamTrainingTypePercent'];
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'birthDay': birthDay,
-      'national': national.toString(),
-      'height': height,
-      'bodyType': bodyType.toString(),
-      'soccerIQ': soccerIQ,
-      'reflex': reflex,
-      'backNumber': backNumber,
-      'speed': speed,
-      'flexibility': flexibility,
-      'potential': potential,
-      'isStartingPlayer': isStartingPlayer,
-      'startingPoxXY': startingPoxXY.toJson(),
-      'stat': stat.toJson(),
-      'tactics': tactics.toJson(),
-      'currentGameRecord': _currentGameRecord.toJson(),
-      'personalTrainingTypes': personalTrainingTypes.map((e) => e.toString()).toList(),
-      'teamTrainingTypePercent': teamTrainingTypePercent,
-    };
-  }
 }
