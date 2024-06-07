@@ -1,15 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:random_name_generator/random_name_generator.dart';
 
-import 'package:soccer_simulator/data/data_source/dto/club_dto.dart';
 import 'package:soccer_simulator/domain/entities/club/club_season_stat.dart';
-import 'package:soccer_simulator/domain/entities/formation/formation.dart';
 import 'package:soccer_simulator/domain/entities/player/player.dart';
 import 'package:soccer_simulator/domain/entities/tactics/tactics.dart';
 import 'package:soccer_simulator/domain/enum/national.enum.dart';
 import 'package:soccer_simulator/domain/enum/position.enum.dart';
-import 'package:soccer_simulator/utils/function.dart';
 
 class Club {
   Club({
@@ -27,7 +23,7 @@ class Club {
     required this.noWinStack,
     required this.players,
   });
-  
+
   final int id;
 
   ///소속 국가
@@ -72,27 +68,6 @@ class Club {
   ///스타팅 멤버
   List<Player> get startingPlayers {
     return players.where((player) => player.isStartingPlayer).toList();
-  }
-
-  void createStartingMembers({
-    required int min,
-    required int max,
-    required Formation formation,
-  }) {
-    int backNumber = 1;
-    players = formation.posXYList
-        .map((posXY) => Player.create(
-              id: 1,
-              name: RandomNames(Zone.us).name(),
-              backNumber: backNumber++,
-              role: getPlayerRoleFromPos(posXY),
-              min: min,
-              max: max,
-            )
-              ..isStartingPlayer = true
-              ..team = this
-              ..startingPoxXY = posXY)
-        .toList();
   }
 
   startNewSeason(int season, int ranking) {

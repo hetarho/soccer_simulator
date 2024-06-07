@@ -33,7 +33,6 @@ extension PlayerMove on Player {
   _play() {
     _timer?.cancel();
     _timer = Timer.periodic(playSpeed, (timer) async {
-      playTime = _currentFixture!.playTime;
       bool teamHasBall = team!.players.where((player) => player.hasBall).isNotEmpty;
       lastAction = null;
 
