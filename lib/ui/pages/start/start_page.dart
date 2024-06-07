@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:soccer_simulator/data/data_source/save_slot_local_data_source.dart';
 import 'package:soccer_simulator/data/repositories/interfaces/save_slot_data_source.dart';
 import 'package:soccer_simulator/data/repositories/save_slot_repository.dart';
-import 'package:soccer_simulator/domain/entities/dbManager/db_manager.dart';
+import 'package:soccer_simulator/ui/dbManager/db_manager.dart';
 import 'package:soccer_simulator/domain/entities/saveSlot/save_slot.dart';
 import 'package:soccer_simulator/domain/use_case/save_slot_use_case.dart';
 import 'package:soccer_simulator/ui/providers/providers.dart';

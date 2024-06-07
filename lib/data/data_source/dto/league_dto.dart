@@ -8,6 +8,7 @@ part 'league_dto.g.dart';
 class LeagueDto with _$LeagueDto {
   const factory LeagueDto({
     required int id,
+    required int saveSlotId,
     required String name,
     required National national,
     required int level,

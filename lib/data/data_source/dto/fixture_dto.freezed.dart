@@ -22,8 +22,6 @@ FixtureDto _$FixtureDtoFromJson(Map<String, dynamic> json) {
 mixin _$FixtureDto {
   int get id => throw _privateConstructorUsedError;
   int get roundId => throw _privateConstructorUsedError;
-  int get homeClubId => throw _privateConstructorUsedError;
-  int get awayClubId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -37,7 +35,7 @@ abstract class $FixtureDtoCopyWith<$Res> {
           FixtureDto value, $Res Function(FixtureDto) then) =
       _$FixtureDtoCopyWithImpl<$Res, FixtureDto>;
   @useResult
-  $Res call({int id, int roundId, int homeClubId, int awayClubId});
+  $Res call({int id, int roundId});
 }
 
 /// @nodoc
@@ -55,8 +53,6 @@ class _$FixtureDtoCopyWithImpl<$Res, $Val extends FixtureDto>
   $Res call({
     Object? id = null,
     Object? roundId = null,
-    Object? homeClubId = null,
-    Object? awayClubId = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -66,14 +62,6 @@ class _$FixtureDtoCopyWithImpl<$Res, $Val extends FixtureDto>
       roundId: null == roundId
           ? _value.roundId
           : roundId // ignore: cast_nullable_to_non_nullable
-              as int,
-      homeClubId: null == homeClubId
-          ? _value.homeClubId
-          : homeClubId // ignore: cast_nullable_to_non_nullable
-              as int,
-      awayClubId: null == awayClubId
-          ? _value.awayClubId
-          : awayClubId // ignore: cast_nullable_to_non_nullable
               as int,
     ) as $Val);
   }
@@ -87,7 +75,7 @@ abstract class _$$FixtureDtoImplCopyWith<$Res>
       __$$FixtureDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, int roundId, int homeClubId, int awayClubId});
+  $Res call({int id, int roundId});
 }
 
 /// @nodoc
@@ -103,8 +91,6 @@ class __$$FixtureDtoImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? roundId = null,
-    Object? homeClubId = null,
-    Object? awayClubId = null,
   }) {
     return _then(_$FixtureDtoImpl(
       id: null == id
@@ -115,14 +101,6 @@ class __$$FixtureDtoImplCopyWithImpl<$Res>
           ? _value.roundId
           : roundId // ignore: cast_nullable_to_non_nullable
               as int,
-      homeClubId: null == homeClubId
-          ? _value.homeClubId
-          : homeClubId // ignore: cast_nullable_to_non_nullable
-              as int,
-      awayClubId: null == awayClubId
-          ? _value.awayClubId
-          : awayClubId // ignore: cast_nullable_to_non_nullable
-              as int,
     ));
   }
 }
@@ -130,11 +108,7 @@ class __$$FixtureDtoImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$FixtureDtoImpl implements _FixtureDto {
-  const _$FixtureDtoImpl(
-      {required this.id,
-      required this.roundId,
-      required this.homeClubId,
-      required this.awayClubId});
+  const _$FixtureDtoImpl({required this.id, required this.roundId});
 
   factory _$FixtureDtoImpl.fromJson(Map<String, dynamic> json) =>
       _$$FixtureDtoImplFromJson(json);
@@ -143,14 +117,10 @@ class _$FixtureDtoImpl implements _FixtureDto {
   final int id;
   @override
   final int roundId;
-  @override
-  final int homeClubId;
-  @override
-  final int awayClubId;
 
   @override
   String toString() {
-    return 'FixtureDto(id: $id, roundId: $roundId, homeClubId: $homeClubId, awayClubId: $awayClubId)';
+    return 'FixtureDto(id: $id, roundId: $roundId)';
   }
 
   @override
@@ -159,17 +129,12 @@ class _$FixtureDtoImpl implements _FixtureDto {
         (other.runtimeType == runtimeType &&
             other is _$FixtureDtoImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.roundId, roundId) || other.roundId == roundId) &&
-            (identical(other.homeClubId, homeClubId) ||
-                other.homeClubId == homeClubId) &&
-            (identical(other.awayClubId, awayClubId) ||
-                other.awayClubId == awayClubId));
+            (identical(other.roundId, roundId) || other.roundId == roundId));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, roundId, homeClubId, awayClubId);
+  int get hashCode => Object.hash(runtimeType, id, roundId);
 
   @JsonKey(ignore: true)
   @override
@@ -187,10 +152,7 @@ class _$FixtureDtoImpl implements _FixtureDto {
 
 abstract class _FixtureDto implements FixtureDto {
   const factory _FixtureDto(
-      {required final int id,
-      required final int roundId,
-      required final int homeClubId,
-      required final int awayClubId}) = _$FixtureDtoImpl;
+      {required final int id, required final int roundId}) = _$FixtureDtoImpl;
 
   factory _FixtureDto.fromJson(Map<String, dynamic> json) =
       _$FixtureDtoImpl.fromJson;
@@ -199,10 +161,6 @@ abstract class _FixtureDto implements FixtureDto {
   int get id;
   @override
   int get roundId;
-  @override
-  int get homeClubId;
-  @override
-  int get awayClubId;
   @override
   @JsonKey(ignore: true)
   _$$FixtureDtoImplCopyWith<_$FixtureDtoImpl> get copyWith =>

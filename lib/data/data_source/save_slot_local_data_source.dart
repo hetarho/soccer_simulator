@@ -1,6 +1,6 @@
 import 'package:soccer_simulator/data/data_source/dto/save_slot_dto.dart';
 import 'package:soccer_simulator/data/repositories/interfaces/save_slot_data_source.dart';
-import 'package:soccer_simulator/domain/entities/dbManager/db_manager.dart';
+import 'package:soccer_simulator/ui/dbManager/db_manager.dart';
 
 class SaveSlotLocalDataSource implements SaveSlotDataSource {
   final DbManager dbManager;

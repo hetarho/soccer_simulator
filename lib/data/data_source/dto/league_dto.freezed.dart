@@ -21,6 +21,7 @@ LeagueDto _$LeagueDtoFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$LeagueDto {
   int get id => throw _privateConstructorUsedError;
+  int get saveSlotId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   National get national => throw _privateConstructorUsedError;
   int get level => throw _privateConstructorUsedError;
@@ -36,7 +37,8 @@ abstract class $LeagueDtoCopyWith<$Res> {
   factory $LeagueDtoCopyWith(LeagueDto value, $Res Function(LeagueDto) then) =
       _$LeagueDtoCopyWithImpl<$Res, LeagueDto>;
   @useResult
-  $Res call({int id, String name, National national, int level});
+  $Res call(
+      {int id, int saveSlotId, String name, National national, int level});
 }
 
 /// @nodoc
@@ -53,6 +55,7 @@ class _$LeagueDtoCopyWithImpl<$Res, $Val extends LeagueDto>
   @override
   $Res call({
     Object? id = null,
+    Object? saveSlotId = null,
     Object? name = null,
     Object? national = null,
     Object? level = null,
@@ -61,6 +64,10 @@ class _$LeagueDtoCopyWithImpl<$Res, $Val extends LeagueDto>
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      saveSlotId: null == saveSlotId
+          ? _value.saveSlotId
+          : saveSlotId // ignore: cast_nullable_to_non_nullable
               as int,
       name: null == name
           ? _value.name
@@ -86,7 +93,8 @@ abstract class _$$LeagueDtoImplCopyWith<$Res>
       __$$LeagueDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name, National national, int level});
+  $Res call(
+      {int id, int saveSlotId, String name, National national, int level});
 }
 
 /// @nodoc
@@ -101,6 +109,7 @@ class __$$LeagueDtoImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? saveSlotId = null,
     Object? name = null,
     Object? national = null,
     Object? level = null,
@@ -109,6 +118,10 @@ class __$$LeagueDtoImplCopyWithImpl<$Res>
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      saveSlotId: null == saveSlotId
+          ? _value.saveSlotId
+          : saveSlotId // ignore: cast_nullable_to_non_nullable
               as int,
       name: null == name
           ? _value.name
@@ -131,6 +144,7 @@ class __$$LeagueDtoImplCopyWithImpl<$Res>
 class _$LeagueDtoImpl implements _LeagueDto {
   const _$LeagueDtoImpl(
       {required this.id,
+      required this.saveSlotId,
       required this.name,
       required this.national,
       required this.level});
@@ -141,6 +155,8 @@ class _$LeagueDtoImpl implements _LeagueDto {
   @override
   final int id;
   @override
+  final int saveSlotId;
+  @override
   final String name;
   @override
   final National national;
@@ -149,7 +165,7 @@ class _$LeagueDtoImpl implements _LeagueDto {
 
   @override
   String toString() {
-    return 'LeagueDto(id: $id, name: $name, national: $national, level: $level)';
+    return 'LeagueDto(id: $id, saveSlotId: $saveSlotId, name: $name, national: $national, level: $level)';
   }
 
   @override
@@ -158,6 +174,8 @@ class _$LeagueDtoImpl implements _LeagueDto {
         (other.runtimeType == runtimeType &&
             other is _$LeagueDtoImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.saveSlotId, saveSlotId) ||
+                other.saveSlotId == saveSlotId) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.national, national) ||
                 other.national == national) &&
@@ -166,7 +184,8 @@ class _$LeagueDtoImpl implements _LeagueDto {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, national, level);
+  int get hashCode =>
+      Object.hash(runtimeType, id, saveSlotId, name, national, level);
 
   @JsonKey(ignore: true)
   @override
@@ -185,6 +204,7 @@ class _$LeagueDtoImpl implements _LeagueDto {
 abstract class _LeagueDto implements LeagueDto {
   const factory _LeagueDto(
       {required final int id,
+      required final int saveSlotId,
       required final String name,
       required final National national,
       required final int level}) = _$LeagueDtoImpl;
@@ -194,6 +214,8 @@ abstract class _LeagueDto implements LeagueDto {
 
   @override
   int get id;
+  @override
+  int get saveSlotId;
   @override
   String get name;
   @override

@@ -9,6 +9,7 @@ part of 'league_dto.dart';
 _$LeagueDtoImpl _$$LeagueDtoImplFromJson(Map<String, dynamic> json) =>
     _$LeagueDtoImpl(
       id: (json['id'] as num).toInt(),
+      saveSlotId: (json['saveSlotId'] as num).toInt(),
       name: json['name'] as String,
       national: $enumDecode(_$NationalEnumMap, json['national']),
       level: (json['level'] as num).toInt(),
@@ -17,6 +18,7 @@ _$LeagueDtoImpl _$$LeagueDtoImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$LeagueDtoImplToJson(_$LeagueDtoImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'saveSlotId': instance.saveSlotId,
       'name': instance.name,
       'national': _$NationalEnumMap[instance.national]!,
       'level': instance.level,

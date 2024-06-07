@@ -9,6 +9,7 @@ class ClubInFixtureDto with _$ClubInFixtureDto {
     required int id,
     required int fixtureId,
     required int clubId,
+    required bool isHome,
     required int scoredGoal,
     required int hasBallTime,
     required int shoot,

@@ -10,14 +10,10 @@ _$FixtureDtoImpl _$$FixtureDtoImplFromJson(Map<String, dynamic> json) =>
     _$FixtureDtoImpl(
       id: (json['id'] as num).toInt(),
       roundId: (json['roundId'] as num).toInt(),
-      homeClubId: (json['homeClubId'] as num).toInt(),
-      awayClubId: (json['awayClubId'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$FixtureDtoImplToJson(_$FixtureDtoImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'roundId': instance.roundId,
-      'homeClubId': instance.homeClubId,
-      'awayClubId': instance.awayClubId,
     };

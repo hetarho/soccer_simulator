@@ -23,6 +23,7 @@ mixin _$ClubInFixtureDto {
   int get id => throw _privateConstructorUsedError;
   int get fixtureId => throw _privateConstructorUsedError;
   int get clubId => throw _privateConstructorUsedError;
+  bool get isHome => throw _privateConstructorUsedError;
   int get scoredGoal => throw _privateConstructorUsedError;
   int get hasBallTime => throw _privateConstructorUsedError;
   int get shoot => throw _privateConstructorUsedError;
@@ -46,6 +47,7 @@ abstract class $ClubInFixtureDtoCopyWith<$Res> {
       {int id,
       int fixtureId,
       int clubId,
+      bool isHome,
       int scoredGoal,
       int hasBallTime,
       int shoot,
@@ -70,6 +72,7 @@ class _$ClubInFixtureDtoCopyWithImpl<$Res, $Val extends ClubInFixtureDto>
     Object? id = null,
     Object? fixtureId = null,
     Object? clubId = null,
+    Object? isHome = null,
     Object? scoredGoal = null,
     Object? hasBallTime = null,
     Object? shoot = null,
@@ -90,6 +93,10 @@ class _$ClubInFixtureDtoCopyWithImpl<$Res, $Val extends ClubInFixtureDto>
           ? _value.clubId
           : clubId // ignore: cast_nullable_to_non_nullable
               as int,
+      isHome: null == isHome
+          ? _value.isHome
+          : isHome // ignore: cast_nullable_to_non_nullable
+              as bool,
       scoredGoal: null == scoredGoal
           ? _value.scoredGoal
           : scoredGoal // ignore: cast_nullable_to_non_nullable
@@ -130,6 +137,7 @@ abstract class _$$ClubInFixtureDtoImplCopyWith<$Res>
       {int id,
       int fixtureId,
       int clubId,
+      bool isHome,
       int scoredGoal,
       int hasBallTime,
       int shoot,
@@ -152,6 +160,7 @@ class __$$ClubInFixtureDtoImplCopyWithImpl<$Res>
     Object? id = null,
     Object? fixtureId = null,
     Object? clubId = null,
+    Object? isHome = null,
     Object? scoredGoal = null,
     Object? hasBallTime = null,
     Object? shoot = null,
@@ -172,6 +181,10 @@ class __$$ClubInFixtureDtoImplCopyWithImpl<$Res>
           ? _value.clubId
           : clubId // ignore: cast_nullable_to_non_nullable
               as int,
+      isHome: null == isHome
+          ? _value.isHome
+          : isHome // ignore: cast_nullable_to_non_nullable
+              as bool,
       scoredGoal: null == scoredGoal
           ? _value.scoredGoal
           : scoredGoal // ignore: cast_nullable_to_non_nullable
@@ -207,6 +220,7 @@ class _$ClubInFixtureDtoImpl implements _ClubInFixtureDto {
       {required this.id,
       required this.fixtureId,
       required this.clubId,
+      required this.isHome,
       required this.scoredGoal,
       required this.hasBallTime,
       required this.shoot,
@@ -224,6 +238,8 @@ class _$ClubInFixtureDtoImpl implements _ClubInFixtureDto {
   @override
   final int clubId;
   @override
+  final bool isHome;
+  @override
   final int scoredGoal;
   @override
   final int hasBallTime;
@@ -238,7 +254,7 @@ class _$ClubInFixtureDtoImpl implements _ClubInFixtureDto {
 
   @override
   String toString() {
-    return 'ClubInFixtureDto(id: $id, fixtureId: $fixtureId, clubId: $clubId, scoredGoal: $scoredGoal, hasBallTime: $hasBallTime, shoot: $shoot, pass: $pass, tackle: $tackle, dribble: $dribble)';
+    return 'ClubInFixtureDto(id: $id, fixtureId: $fixtureId, clubId: $clubId, isHome: $isHome, scoredGoal: $scoredGoal, hasBallTime: $hasBallTime, shoot: $shoot, pass: $pass, tackle: $tackle, dribble: $dribble)';
   }
 
   @override
@@ -250,6 +266,7 @@ class _$ClubInFixtureDtoImpl implements _ClubInFixtureDto {
             (identical(other.fixtureId, fixtureId) ||
                 other.fixtureId == fixtureId) &&
             (identical(other.clubId, clubId) || other.clubId == clubId) &&
+            (identical(other.isHome, isHome) || other.isHome == isHome) &&
             (identical(other.scoredGoal, scoredGoal) ||
                 other.scoredGoal == scoredGoal) &&
             (identical(other.hasBallTime, hasBallTime) ||
@@ -262,7 +279,7 @@ class _$ClubInFixtureDtoImpl implements _ClubInFixtureDto {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, fixtureId, clubId,
+  int get hashCode => Object.hash(runtimeType, id, fixtureId, clubId, isHome,
       scoredGoal, hasBallTime, shoot, pass, tackle, dribble);
 
   @JsonKey(ignore: true)
@@ -285,6 +302,7 @@ abstract class _ClubInFixtureDto implements ClubInFixtureDto {
       {required final int id,
       required final int fixtureId,
       required final int clubId,
+      required final bool isHome,
       required final int scoredGoal,
       required final int hasBallTime,
       required final int shoot,
@@ -301,6 +319,8 @@ abstract class _ClubInFixtureDto implements ClubInFixtureDto {
   int get fixtureId;
   @override
   int get clubId;
+  @override
+  bool get isHome;
   @override
   int get scoredGoal;
   @override
