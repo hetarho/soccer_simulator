@@ -126,6 +126,7 @@ class _FixturePageState extends ConsumerState<FixturePage> {
                     ],
                   ),
                   Container(
+                    
                     padding: const EdgeInsets.all(16),
                     color: Colors.green,
                     child: AspectRatio(
